@@ -1,0 +1,128 @@
+package LaTeXML::Package::pool;  # to put new subs & variables in common pool
+use LaTeXML::Package;            # to load these definitions
+use strict;                      # good style
+use warnings;
+
+# def les notes, comparer avec les arguemens optionnels etc
+# comment ajouter des tags?
+# comment imposer de neester les environenements?
+# ici pas de mise en forme, jsute des changement de case.
+# \usepackage[francais,bloc,completemulti]{automultiplechoice}  
+
+DefMacro('\@ifundefined{}{}{}','');
+
+DefMacro('\cleargroup','');
+DefMacro('\AMCcleardoublepage','');
+DefMacro('\AMCform','');
+DefMacro('\AMCformBegin','');
+DefMacro('\AMCnobloc','');
+
+
+# Load "anotherpackage"
+# RequirePackage('anotherpackage');
+#
+# A simple macro, just like in TeX
+#DefMacro('\thesection', '\thechapter.\roman{section}');
+
+
+# A constructor defines how a control sequence generates XML:
+
+# ===================================================================
+# TRADUCTION ET EQUIVALENCE
+# a faire voir automultiplechoice.sty...
+
+# ===================================================================
+# BAREME
+# % e=incohérence; b=bonne; m=mauvaise; p planché (on ne descent pas en dessous)
+DefConstructor('\bareme{}',"<ltx:text class='amc_bareme'>#1</ltx:text>"); # dans question
+DefConstructor('\scoring{}',"<ltx:text class='amc_bareme'>#1</ltx:text>"); # dans question
+
+DefConstructor('\baremeDefautS{}',"<ltx:text class='amc_baremeDefautS'>#1</ltx:text>"); # début document
+DefConstructor('\scoringDefaultS{}',"<ltx:text class='amc_baremeDefautS'>#1</ltx:text>"); # début document
+
+DefConstructor('\baremeDefautM{}',"<ltx:text class='amc_baremeDefautM'>#1</ltx:text>"); #début document
+DefConstructor('\scoringDefaultM{}',"<ltx:text class='amc_baremeDefautM'>#1</ltx:text>"); #début document
+
+DefConstructor('\exemplaire{}{}',"");   # on supprime la partie construction du sujet si présente
+DefConstructor('\onecopy{}{}',"");
+
+DefConstructor('\element{}{}',"<ltx:note class='amc_categorie'>#1</ltx:note>#2");   # on cree les categories
+
+
+
+# ===================================================================
+# QUESTIONS
+# question simple
+DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'>#body</ltx:note>");
+# question multiple
+DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'>#body</ltx:note>");# ajouter un test pour si aucune réponse correcte
+# Dans le cas où la question posée est juste informative et ne doit pas contribuer à la note de l'étudiant, on utilisera la commande \QuestionIndicative, comme dans l'exemple suivant :
+DefConstructor('\QuestionIndicative',"<ltx:note class='amc_bareme'>e=0,b=0,m=0</ltx:note>"); # pas testé
+
+DefEnvironment('{examcopy}[]',"");   # alternative to onecopy, # on supprime la partie construction du sujet si présente
+
+# question numérique à faire....
+
+# ===================================================================
+# REPONSE
+# Pas exploité, simple copie
+DefEnvironment('{reponses}','#body'); #FR
+DefEnvironment('{choices}','#body');  #EN
+
+DefEnvironment('{reponseshoriz}','#body');
+DefEnvironment('{choiceshoriz}','#body');
+
+DefConstructor('\bonne{}',"<ltx:note class='amc_bonne'>#1</ltx:note>"); # possible child bareme
+DefConstructor('\correctchoice{}',"<ltx:note class='amc_bonne'>#1</ltx:note>"); # possible child bareme
+
+DefConstructor('\mauvaise{}','<ltx:note class="amc_mauvaise">#1</ltx:note>');
+DefConstructor('\wrongchoice{}','<ltx:note class="amc_mauvaise">#1</ltx:note>');
+
+# ===================================================================
+# MISE EN FORME PAPIER
+#DefMacro('\raggedright','');
+#DefMacro('\raggedleft','');
+DefEnvironment('{multicols}{}',"#body");     # on supprime la mise en forme sur plusieurs colonnes pour les réponses, possible side effect in table
+
+DefConstructor('\AMCBoxedAnswers',"");     # on ne gère pas les pb de saut de colonne (lié à multicols)
+
+DefConstructor('\AMCidsPosition{}',"");
+DefConstructor('\AMCboxDimensions{}',"");  # dimension box à cocher
+DefConstructor('\AMCboxColor{}',"");       # couleur case
+DefConstructor('\AMCtext{}{}',"");         # Text par défaut question etc...
+DefConstructor('\AMCboxStyle{}',"");       # couleur case
+
+
+DefConstructor('\melangegroupe{}',"");         # mélange
+DefConstructor('\shufflegroup{}',"");         # mélange
+
+DefConstructor('\restituegroupe{}',"");       # restitution
+DefConstructor('\insertgroup{}',"");         # restitution
+
+DefConstructor('\cleargroup{}',"");         # purge
+DefConstructor('\copygroup{}{}',"");        # copy
+
+DefConstructor('\champnom{}',"");         # copy
+DefConstructor('\namefield{}',"");         # copy
+
+
+DefConstructor('\AMCrandomseed{}',"");         
+DefConstructor('\setdefaultgroupmode{}',"");   
+DefConstructor('\AMCaddpagesto{}',"");  
+
+DefConstructor('\setgroupmode{}{}',"");        
+DefConstructor('\setdefaultgroupmode{}',"");   
+
+
+
+
+
+
+
+# il en manque ...
+
+# \AMCinterBrep # longueur
+# \AMCinterIrep # longueur
+
+# Don't forget this, so perl knows the package loaded.
+1;
