@@ -64,10 +64,15 @@
 % ========================================================================
 Dependencies :
 \begin{itemize}
-	\item install python [tested with 2.7] and lxml library
+	\item install python [tested with 2.7] and lxml library (ubuntu using python package manager pip: sudo pip install lxml)
     \item install \texttt{PythonMagick} [tested with version 0.9.7-2] (ubuntu : sudo apt-get install python-pythonmagick). Useful to convert image files (*.eps, *.pdf, ...) into png.
     \item install \texttt{LateXML}\footnote{\url{http://dlmf.nist.gov/LaTeXML}} [tested with version 0.8.1] from package (ubuntu : sudo apt-get install latexml) or from source. If you choose to compile it, please check on :   
-     \url{http://dlmf.nist.gov/LaTeXML/get.html}  that all the dependencies are installed. This program does the first step of the conversion into XML.
+     \url{http://dlmf.nist.gov/LaTeXML/get.html}  that all the dependencies are installed. This program does the first step of the conversion into XML. Note that some version of \texttt{latexml} present an error in  
+\begin{verbatim}
+   /usr/share/perl5/LaTeXML/Common/Error.pm line 364.  
+   To fix it, change line 364 in Error.pm to \verb [[:cntrl:]]
+   see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=839639
+     \end{verbatim}
     \item install \texttt{xmlindent} [optional]. This program can be used to indent well the XML file (ubuntu : sudo apt-get install xmlindent). If not present just comment the call in the end of \texttt{amc2moodle.sh}.
 \end{itemize}
 
@@ -142,7 +147,8 @@ Note that i) moodle fill the missing element like feedback (see \ref{sec:feed});
  
 \section{Grading strategy}
 % ========================================================================
-In moodle 3, if the total grade is negative then the total grade for this question will be zero. The grading strategy is different from AMC especially for question with multiple answers. In this case, AMC affects a grade for each checked good answer and each non-checked wrong answer. The total grade of the question depend on the number of choice.
+In moodle 3, %if the total grade is negative then the total grade for this question will be zero. 
+the grading strategy is different from AMC especially for question with multiple answers. In this case, AMC affects a grade for each checked good answer and each non-checked wrong answer. The total grade of the question depend on the number of choice.
 
 In Moodle and here, only checked item leads to a grade, positive or negative. The grading is compute in the \py script.
 The defaut grading parameter are set in \py script to
