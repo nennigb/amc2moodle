@@ -193,11 +193,12 @@ A faire : <center> </center>,  small caps, sf, sl, sc
 
 <!--verbatim rendu comme du code, attention pb avec automultiplechoice et verbatim-->
 <!--use allttt instead of real evrbatim environemt-->
+<!-- Text in a <pre> element is displayed in a fixed-width font (usually Courier), and it preserves both spaces and line breaks. -->
 <xsl:template match="verbatim">
    <p>
-    <code>       
+    <pre>       
         <xsl:apply-templates/>
-    </code>
+    </pre>
    </p>
 </xsl:template>
 
