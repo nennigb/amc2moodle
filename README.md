@@ -1,5 +1,5 @@
 # `amc2moodle`
-==============
+
 
 amc2moodle, **is conversion tool to recast multiple choice quiz written with the LaTeX format used by automuliplechoice 1.0.3 into the moodle XML quiz format.**
 The automuliplechoice LaTeX format is convienient and can be used for preparing test and avoiding moodle web gui for multiple choice questions.
