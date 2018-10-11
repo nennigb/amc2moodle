@@ -14,7 +14,7 @@
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage[francais,bloc,completemulti]{automultiplechoice}     % Mandatory for conversion
-
+%\usepackage{attachfile}
 
 
 % exemple de commande utilisateur
@@ -39,7 +39,7 @@
 % B A R E M E 
 % e=incohérence; b=bonne; m=mauvaise; p planché (on ne descent pas en dessous)
 \baremeDefautS{e=-0.5,b=1,m=-0.5}% never put b<1,
-\baremeDefautM{e=-0.5,b=1,m=-0.25,p=-0.5}% never put b<1,
+\baremeDefautM{e=-0.5,b=1,m=-0.25,p=-0.5}% never put b<1, with amc2moodle m correspond to the grade if all the wrong answers are ticked, b correspond to the grade if all the good answers are ticked
 
 
 
@@ -61,6 +61,8 @@
 \element{cat1}{
 \begin{question}{Qsimple:img}    
 On souhaite faire passer \textit{exactement}, par $N$ points donnés, un \texttt{polynôme} de degré \textbf{strictement} égal à $N-1$. Pour trouver les coefficients on doit résoudre un \emph{problème}
+%\attachfile{./a.c}
+%\includesounds{./Son/piano2.mp3} % test pour inclure sons
         \begin{center}
             \includegraphics[width=0.5\textwidth]{./Figures/other/schema_interpL.png}
         \end{center}
