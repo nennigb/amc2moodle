@@ -217,7 +217,7 @@ bars = tree.xpath("//*[@class='amc_baremeDefautS']") # que sur attributs ici
 if len(bars)>0:
     # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
     amc_bs=dict(item.split("=") for item in bars[0].text.strip().split(","))
-    print "baremeDefautS :", amc_bs
+    print("baremeDefautS :", amc_bs)
     if (float(amc_bs['b'])<1): print "warning the grade the good answser in question will be < 100%, put b=1"
 
 # on cherche s'il existe un barème par défaut pour question multiple
@@ -226,8 +226,8 @@ barm = tree.xpath("//*[@class='amc_baremeDefautM']")
 if len(barm)>0:
     # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
     amc_bm=dict(item.split("=") for item in barm[0].text.strip().split(","))
-    print "baremeDefautM :", amc_bm
-    if (float(amc_bm['b'])<1): print "		-> warning the grade of the good answser(s) in questionmult may be < 100%, put b=1"
+    print("baremeDefautM :", amc_bm)
+    if (float(amc_bm['b'])<1): print("		-> warning the grade of the good answser(s) in questionmult may be < 100%, put b=1")
 
 
 ############################################################################
@@ -268,8 +268,8 @@ for Qi in Qlist:
     # si il y a une bareme local, on prend celui-la
     if len(barl)>0:
 		amc_bl=dict(item.split("=") for item in barl[0].text.strip().split(","))
-		print "bareme local :", amc_bl
-		if (float(amc_bl['b'])<1.): print "		->warning the grade of the good answser(s) may be < 100%, put b=1"        
+		print("bareme local :", amc_bl)
+		if (float(amc_bl['b'])<1.): print("		->warning the grade of the good answser(s) may be < 100%, put b=1"        )
 
 
     # inclusion des images dans les questions
@@ -327,8 +327,8 @@ for Qi in Qlist:
     # si il y a une bareme local, on prend celui-la
     if len(barl)>0:
 		amc_bml=dict(item.split("=") for item in barl[0].text.strip().split(","))
-		print "bareme local :", amc_bml
-		if (float(amc_bml['b'])<1): print "		->warning the grade of the good answser(s) may be < 100%, put b=1"  
+		print("bareme local :", amc_bml)
+		if (float(amc_bml['b'])<1): print("		->warning the grade of the good answser(s) may be < 100%, put b=1"  )
     
     # inclusion des images dans les questions
     Ilist = Qi.xpath("./questiontext/file")       
