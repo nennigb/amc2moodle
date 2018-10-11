@@ -16,13 +16,14 @@ DefMacro('\AMCcleardoublepage','');
 DefMacro('\AMCform','');
 DefMacro('\AMCformBegin','');
 DefMacro('\AMCnobloc','');
-
+DefMacro('\multiSymbole','');
 
 # Load "anotherpackage"
 # RequirePackage('anotherpackage');
 #
 # A simple macro, just like in TeX
 #DefMacro('\thesection', '\thechapter.\roman{section}');
+
 
 
 # A constructor defines how a control sequence generates XML:
@@ -45,10 +46,13 @@ DefConstructor('\scoringDefaultM{}',"<ltx:text class='amc_baremeDefautM'>#1</ltx
 
 DefConstructor('\exemplaire{}{}',"");   # on supprime la partie construction du sujet si présente
 DefConstructor('\onecopy{}{}',"");
+DefConstructor('\AMCcode{}{}',"");
 
 DefConstructor('\element{}{}',"<ltx:note class='amc_categorie'>#1</ltx:note>#2");   # on cree les categories
-
-
+#DefConstructor('\includesounds{}',"<ltx:ressource src='#1' type='mp3'>");   # on cree les categories
+#DefConstructor('\includesounds{}',"<ltx:text class='sound'>#1</ltx:text>");   # on cree les categories
+DefConstructor('\includesounds{}',"<ltx:graphics graphic='#1' options='sound'></ltx:graphics>");   # on cree les categories
+ 
 
 # ===================================================================
 # QUESTIONS
@@ -114,15 +118,14 @@ DefConstructor('\setgroupmode{}{}',"");
 DefConstructor('\setdefaultgroupmode{}',"");   
 
 
+# define some length already defined in automultiplechoice.sty  
+DefMacro('\AMCinterIrep', '\newdimen\AMCinterIrep'); #% entre les réponses
+DefMacro('\AMCinterBrep', '\newdimen\AMCinterBrep'); #% entre les blocs de réponses
+DefMacro('\AMCinterIquest', '\newdimen\AMCinterIquest');
+DefMacro('\AMCinterBquest', '\newdimen\AMCinterBquest');
 
 
 
-
-
-# il en manque ...
-
-# \AMCinterBrep # longueur
-# \AMCinterIrep # longueur
 
 # Don't forget this, so perl knows the package loaded.
 1;
