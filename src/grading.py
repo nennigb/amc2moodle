@@ -120,6 +120,8 @@ Elles peuvent etre spécifier dans le fichier .tex avec
 \baremeDefautM{e=-0.5,b=0.5,m=-0.25,p=-0.5}
 ou au niveau de la question
 """
+
+ShuffleAll = True                             # Shuffle all answsers
 amc_autocomplete=1							# ajout amc_aucune si obligatoire"
 amc_aucune = u"aucune de ces réponses n'est correcte"
 amc_bs = {'e':-1,'b':1,'m':-0.5}              # Simple :: e :incohérence, b: bonne,  m: mauvaise,  p: planché
@@ -252,6 +254,12 @@ Qlist = tree.xpath("//*[@class='amc_question']")
 # calcul nombre de question totale
 Qtot = len(Qlist)  
 for Qi in Qlist:
+    # apply shuffleing
+    shuffleanswers = etree.SubElement(Qi, "shuffleanswers") 
+    if ShuffleAll is True:
+        shuffleanswers.text = 'true'
+    else:
+        shuffleanswers.text = 'false'
     # est qu'il y a une bareme local cherche dans les child
     #barl = Qi.xpath("./text[@class='amc_bareme']")
     barl = Qi.xpath("bareme")
@@ -304,6 +312,12 @@ Qlist = tree.xpath("//*[@class='amc_questionmult']")
 # calcul nombre de question au total
 Qtot += len(Qlist)  
 for Qi in Qlist:
+    # apply shuffleing
+    shuffleanswers = etree.SubElement(Qi, "shuffleanswers") 
+    if ShuffleAll is True:
+        shuffleanswers.text = 'true'
+    else:
+        shuffleanswers.text = 'false'
     # est qu'il y a une bareme local cherche dans les child
     #barl = Qi.xpath("./text[@class='amc_bareme']")
     #barl = Qi.xpath("./*[@class='amc_bareme']")
@@ -411,4 +425,6 @@ xslt.close()
 
 xml.close()
 
-print " > "+str(Qtot)+" questions converted..."
+print('\n')
+print(' > shuffleanswers is ' + str(ShuffleAll))
+print( " > "+str(Qtot)+" questions converted...")

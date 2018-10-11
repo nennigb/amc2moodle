@@ -52,7 +52,11 @@
 
 %===================================================================
 \begin{abstract}
-	\input{../README.md}
+amc2moodle, is conversion tool to recast multiple choice quiz written with the LaTeX format used by automuliplechoice 1.0.3 into the moodle XML quiz format.
+
+It is based on LaTeXML for a first step conversion of the LaTeX file into XML. Then a set of transformation is applied in python and with XSLT stylesheet to conform to moodle XML format. Most of LaTeX possibilities are supported (equations, tables, graphics, user defined commands). The question can then be imported in the moodle question bank using category tags.
+
+The automuliplechoice LaTeX format is convienient and can be used for preparing test and avoiding moodle web gui for multiple choice questions.
 \end{abstract}
 
 
@@ -125,6 +129,7 @@ Note that i) moodle fill the missing element like feedback (see \ref{sec:feed});
 \item Use user's command defined in the \LaTeX~file.
 \item \texttt{\textbackslash usepackage[utf8]\{inputenc\}}   for accents
 \item Use packages that are supported by \texttt{LateXML}. See the list at \url{http://dlmf.nist.gov/LaTeXML/manual/included.bindings/}. Instead you need to add a binding to \texttt{LateXML}.
+\item All answsers are Shuffled by default, you can keep the answer initial order by setting \texttt{ShuffleAll = False} in \texttt{grading.py}
 \end{itemize}
 
 \subsection{What you cannot do}\label{sec:cannot}
@@ -143,6 +148,13 @@ Note that i) moodle fill the missing element like feedback (see \ref{sec:feed});
 \item You cannot remove the add of "None of these answers are correct" choice at the end of each multiple question.
 
 
+\end{itemize}
+
+
+\subsection{Troubleshooting}
+% -----------------------------------------------------------------------
+\begin{itemize}
+\item[Error] 'convert: not authorized..' see ImageMagick policy.xml file
 \end{itemize}
  
 \section{Grading strategy}
@@ -167,6 +179,7 @@ This value can be changed (as in AMC) with the tex command
 or at the question level with the tex command \texttt{bareme}.
 The gade $g_i$ in \% is then computed as
 $g_i = 100\cdot c_i / N_i$ where $i$ stand for the good or the wrong answer. Here, $N_i$ is the total number of the good or the wrong answer and $c_i$ the coefficient (\texttt{m}, \texttt{b}\dots). It important to set b=1 to get 100\% if all the good answers are found. The \texttt{e} parameter is not used here, because it is not possible to tick 2 answers in moodle for one-answer-question. The only case where incoherent can be used is if the ``\emph{there isn't any correct answer''} answer is ticked with another question but it is not implemented.
+For instance if \texttt{m=-0.5} and \texttt{b=1}, a student who ticks all the wrong answers get -0.5, a student who ticks all the good answer get  1 and student who ticks all the boxes get 0.5.
 
 Another difference is that moodle 3 use tabulated grade like : 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10 and their multiple. If your grade are not conform to that you must use : 'Nearest grade if not listed' in import option in the moodle question bank. But check at least that the sum of good answer give 100\% !
 
