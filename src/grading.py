@@ -37,6 +37,8 @@ warning :
     the grade are not computed exactly as in amc, see amc2moodle.pdf
 
 """
+from __future__ import print_function
+# from __future__ import unicode_literals # do not really fix path pb
 import sys
 from lxml import etree
 from PythonMagick import Image
@@ -63,25 +65,25 @@ def basename(s):
 
 
 def EncodeImg(Ii,pathin,pathout):
-	""" fonction qui encode un png en base64 
-	Ii : l'element xml ou il faut la brancher
-	pathin et pathout les chemins des fichiers """
- 	print Ii.attrib
-	ext=Ii.attrib['ext']	
-	img_name  = Ii.attrib['name']
- 	pathF=Ii.attrib['pathF'] +'/'
-	
-	# si ce n'est pas du png on converti en png
-	if (Ii.attrib['ext'] != 'png'):
-		im = Image(pathF+ img_name +'.' + ext)
-		img_name = img_name + ".png"
-		im.write(pathF + img_name)
-	else:
-            img_name  = Ii.attrib['name']+'.'+ext
+    """ fonction qui encode un png en base64 
+    Ii : l'element xml ou il faut la brancher
+    pathin et pathout les chemins des fichiers """
+    print(Ii.attrib)
+    ext=Ii.attrib['ext']    
+    img_name  = Ii.attrib['name']
+    pathF=Ii.attrib['pathF'] + '/'
+
+    # si ce n'est pas du png on converti en png
+    if (Ii.attrib['ext'] != 'png'):
+        im = Image(pathF+ img_name +'.' + ext)
+        img_name = img_name + ".png"
+        im.write(pathF + img_name)
+    else:
+        img_name  = Ii.attrib['name']+'.'+ext
       
-	img_file = open(	pathF + img_name, "rb") 
-	Ii.attrib.update({'name':img_name,'path':'/','encoding':"base64"})
-	Ii.text=base64.b64encode(img_file.read())     
+    img_file = open(    pathF + img_name, "rb") 
+    Ii.attrib.update({'name':img_name,'path':'/','encoding':"base64"})
+    Ii.text=base64.b64encode(img_file.read())     
      
 
 
@@ -96,19 +98,19 @@ def EncodeImg(Ii,pathin,pathout):
 
 # usage : python grading.py $pathin $filein $pathout $fileout $keep $catname $catflag
 if len(sys.argv)!=8:
-    print "Problem with the number of imput args, check calling seq. in amc2moodle.sh ."
+    print("Problem with the number of imput args, check calling seq. in amc2moodle.sh .")
     exit() 
     
     
 # 1st arg is the program name    
-pathin = sys.argv[1]    		# path to input xml file
-filein = pathin+sys.argv[2]    	# input xml filename
-pathout = sys.argv[3]   		# path to output xml file
+pathin = sys.argv[1]            # path to input xml file
+filein = pathin+sys.argv[2]        # input xml filename
+pathout = sys.argv[3]           # path to output xml file
 fileout = pathout+sys.argv[4]   # output xml filename
 keep = int(sys.argv[5])         # keep intermediate file plug in deb...
 catname = sys.argv[6]           # output xml filename
 catflag = int(sys.argv[7])           # output xml filename
-deb=0					    # set to 1 to write intermediate xml file and write verbose output
+deb=0                        # set to 1 to write intermediate xml file and write verbose output
 
 """ 
 ======================================================================
@@ -122,7 +124,7 @@ ou au niveau de la question
 """
 
 ShuffleAll = True                             # Shuffle all answsers
-amc_autocomplete=1							# ajout amc_aucune si obligatoire"
+amc_autocomplete=1                            # ajout amc_aucune si obligatoire"
 amc_aucune = u"aucune de ces réponses n'est correcte"
 amc_bs = {'e':-1,'b':1,'m':-0.5}              # Simple :: e :incohérence, b: bonne,  m: mauvaise,  p: planché
 amc_bm = {'e':-1,'b':1,'m':-0.5, 'p':-1}    # Multiple :: e :incohérence, b: bonne,  m: mauvaise,  p: planché
@@ -177,13 +179,15 @@ for Ii in Ilist:
         img_size = img_options.split('=')[-1] # il reste pt, mais cela ne semble pas poser de pb
         img_dim = img_options.split('=')[0]
     else:
-        img_options='' 
+        img_options=''
         img_size='200pt'
         img_dim='width'
          
    
-    img_path = pathin+'/'+img_name[0:img_name.rfind('/')]
+    img_path = pathin + '/'+img_name[0:img_name.rfind('/')]
+    print(img_path)
     name = basename(img_name)
+    print(name, ext, img_dim, align[img_align])
     Ii.attrib.update({'ext':ext,'dim':img_dim,'size':img_size,'pathF':img_path,'align':align[img_align],'name':name})
     #print Ii.attrib
     
@@ -218,7 +222,8 @@ if len(bars)>0:
     # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
     amc_bs=dict(item.split("=") for item in bars[0].text.strip().split(","))
     print("baremeDefautS :", amc_bs)
-    if (float(amc_bs['b'])<1): print "warning the grade the good answser in question will be < 100%, put b=1"
+    if (float(amc_bs['b'])<1):
+        print("warning the grade the good answser in question will be < 100%, put b=1")
 
 # on cherche s'il existe un barème par défaut pour question multiple
 barm = tree.xpath("//*[@class='amc_baremeDefautM']")
@@ -227,7 +232,7 @@ if len(barm)>0:
     # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
     amc_bm=dict(item.split("=") for item in barm[0].text.strip().split(","))
     print("baremeDefautM :", amc_bm)
-    if (float(amc_bm['b'])<1): print("		-> warning the grade of the good answser(s) in questionmult may be < 100%, put b=1")
+    if (float(amc_bm['b'])<1): print("        -> warning the grade of the good answser(s) in questionmult may be < 100%, put b=1")
 
 
 ############################################################################
@@ -267,9 +272,9 @@ for Qi in Qlist:
     amc_bl = amc_bs
     # si il y a une bareme local, on prend celui-la
     if len(barl)>0:
-		amc_bl=dict(item.split("=") for item in barl[0].text.strip().split(","))
-		print("bareme local :", amc_bl)
-		if (float(amc_bl['b'])<1.): print("		->warning the grade of the good answser(s) may be < 100%, put b=1"        )
+        amc_bl=dict(item.split("=") for item in barl[0].text.strip().split(","))
+        print("bareme local :", amc_bl)
+        if (float(amc_bl['b'])<1.): print("        ->warning the grade of the good answser(s) may be < 100%, put b=1"        )
 
 
     # inclusion des images dans les questions
@@ -326,9 +331,9 @@ for Qi in Qlist:
     amc_bml = amc_bm
     # si il y a une bareme local, on prend celui-la
     if len(barl)>0:
-		amc_bml=dict(item.split("=") for item in barl[0].text.strip().split(","))
-		print("bareme local :", amc_bml)
-		if (float(amc_bml['b'])<1): print("		->warning the grade of the good answser(s) may be < 100%, put b=1"  )
+        amc_bml=dict(item.split("=") for item in barl[0].text.strip().split(","))
+        print("bareme local :", amc_bml)
+        if (float(amc_bml['b'])<1): print("        ->warning the grade of the good answser(s) may be < 100%, put b=1"  )
     
     # inclusion des images dans les questions
     Ilist = Qi.xpath("./questiontext/file")       
@@ -391,13 +396,13 @@ for Qi in Qlist:
 
 # on affiche
 if (deb==1):
-	#print(etree.tostring(tree, pretty_print=True,encoding="utf-8"))
-	# Ecriture fichier output intermediaire (grading edit)
-	# ouverture
-	xmltemp =  open(filetemp, 'w')
-	# ecriture
-	tree.write(xmltemp, pretty_print=True,encoding="utf-8")
-	xmltemp.close()
+    #print(etree.tostring(tree, pretty_print=True,encoding="utf-8"))
+    # Ecriture fichier output intermediaire (grading edit)
+    # ouverture
+    xmltemp =  open(filetemp, 'w')
+    # ecriture
+    tree.write(xmltemp, pretty_print=True,encoding="utf-8")
+    xmltemp.close()
 
 
 ############################################################################
@@ -409,7 +414,7 @@ transform = etree.XSLT(xslt_tree)
 # applique tranformation
 result_tree = transform(tree)
 if (deb==1):
-	print(etree.tostring(result_tree, pretty_print=True,encoding="utf-8"))
+    print(etree.tostring(result_tree, pretty_print=True,encoding="utf-8"))
 
 
 ############################################################################
