@@ -22,7 +22,7 @@
 # path to the python and xslt file. Watchout no space before =
 src="/home/bn/Enseignement/Moodle/amc2moodle/src"
 
-# peut-être judicieux de tout faire en python..
+# peut-être judicieux de tout faire en python pour portabilité..
 
 # ====================================================================
 # init variable
@@ -49,8 +49,8 @@ cat << EOF
     suitable for moodle import. Only question and questionmult 
     environnement are ready!
     
-    This GNU bash script is not fully compatible with Mac. See issues 
-    on amc2moodle github.
+    This GNU bash script is not fully compatible with Mac and path error may
+    occured. See issues on amc2moodle github page.
 
 
     OPTIONS:
@@ -69,6 +69,9 @@ remarques()
 cat << EOF
 
     File converted. Check below for errors...
+    
+    This GNU bash script is not fully compatible with Mac and path error may
+    occured. See issues on amc2moodle github page.
 
     For import into moodle :
     --------------------------------
