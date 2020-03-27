@@ -15,7 +15,7 @@
 \usepackage{graphicx}
 \usepackage[francais,bloc,completemulti]{automultiplechoice}     % Mandatory for conversion
 %\usepackage{attachfile}
-
+\usepackage{tikz}
 
 % exemple de commande utilisateur
 \providecommand{\abs}[1]{\lvert#1\rvert}
@@ -168,6 +168,24 @@ for (int i=0;i<4; i++)\{ \\
 \end{questionmult}
 }
 
+% test for tikz 
+\element{tikz}{
+\begin{question}{tikz:Q1}
+  Among the following shape, where is the circle
+ 
+  \begin{choices}
+    \correctchoice{\begin{tikzpicture}
+\draw (2,2) circle (1cm);
+\end{tikzpicture}}
+    \wrongchoice{\begin{tikzpicture}
+\filldraw[fill=blue!40!white, draw=black] (0,0) rectangle (2,2);
+\draw (0,0) parabola (2,2);
+\end{tikzpicture}}
+    \wrongchoice{$\triangle$}
+  \end{choices}
+\end{question}
+}
+
 % #################################################################
 % C R E A T I O N  D E S  C O P I E S
 % #################################################################
@@ -203,6 +221,7 @@ Certaine question peuvent sembler étrange, c'est le but !
     \copygroup{cat1}{BigGroupe}
     \copygroup{cat2}{BigGroupe}
     \copygroup{english}{BigGroupe}
+    \copygroup{tikz}{BigGroupe}
     \melangegroupe{BigGroupe}
     \restituegroupe{BigGroupe}
 }   

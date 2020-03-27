@@ -48,6 +48,10 @@ cat << EOF
     This script converts a tex file of AMC questions into an xml file
     suitable for moodle import. Only question and questionmult 
     environnement are ready!
+    
+    This GNU bash script is not fully compatible with Mac. See issues 
+    on amc2moodle github.
+
 
     OPTIONS:
        -h      Show this message

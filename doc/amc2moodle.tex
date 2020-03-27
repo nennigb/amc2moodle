@@ -105,7 +105,7 @@ Here is recall the \amc~-h output. Note that, ``\textbackslash'', stands for a l
 
 \subsection{Code structure}
 %-----------------------------------------------------------------------
-The command line calls a shell script \texttt{amc2moodle.sh}. This script then call
+The command line calls a shell script \texttt{amc2moodle.sh}. This script work with linux and can be adapted for mac\footnote{see \url{https://github.com/nennigb/amc2moodle/issues/2}}. This script then call
 \begin{itemize}
 \item \texttt{LateXML} with \texttt{automuliplechoice.sty.ltxml}. The package has been made using \texttt{note} element in LateXML and most of  AMC environment or command names are pass through attribute (in french for the moment). User command can be added in the .tex file. This first step is used to get an XML file \texttt{tex2xml.xml}. Thanks to \texttt{LateXML}, most \LaTeX possibilities are supported in the conversion to moodle. Note that option passed to \texttt{automuliplechoice.sty} package are ignored.
 
@@ -129,13 +129,15 @@ Note that i) moodle fill the missing element like feedback (see \ref{sec:feed});
 \item Use user's command defined in the \LaTeX~file.
 \item \texttt{\textbackslash usepackage[utf8]\{inputenc\}}   for accents
 \item Use packages that are supported by \texttt{LateXML}. See the list at \url{http://dlmf.nist.gov/LaTeXML/manual/included.bindings/}. Instead you need to add a binding to \texttt{LateXML}.
-\item All answsers are Shuffled by default, you can keep the answer initial order by setting \texttt{ShuffleAll = False} in \texttt{grading.py}
+\item Use \texttt{tikz}. \texttt{LateXML} generates \texttt{svg} content, embedded in the question or answer html text.
+\item All answers are Shuffled by default, you can keep the answer initial order by setting \texttt{ShuffleAll = False} in \texttt{grading.py}
 \end{itemize}
 
 \subsection{What you cannot do}\label{sec:cannot}
 % ========================================================================
 \begin{itemize}
 \item Use underscore in question name field !
+\item Use accentuated path (problem with \texttt{lxml} and python2)
 \item Use verbatim. This environment is not supported by \texttt{automultiplechoice} 1.0.3. Use \texttt{alltt} package instead.
 \item Use font size (easy to add)
 \item Use amsmath environments like align, aligned\dots Because  \texttt{tex} attribute of \elem{equation}, provided by \texttt{LateXML} output, doesn't contains really the raw tex equation.
@@ -218,7 +220,7 @@ A complete example to illustrate the possibilities of \amc, is given in \texttt{
 	\end{questionmult}
 }
 \end{verbatim}
-\includepdf[pages=-,scale=.95,nup=1x2,landscape,
+\includepdf[pages=-,scale=.95,nup=1x1,%portrait,
 pagecommand={\thispagestyle{plain}},linktodoc=false,
 addtotoc={1,subsection,1,AMC example,sec:exQCM}]{../test/QCM.pdf}
 
