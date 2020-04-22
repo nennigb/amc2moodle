@@ -41,12 +41,51 @@ from __future__ import print_function
 # from __future__ import unicode_literals # do not really fix path pb
 import sys
 from lxml import etree
-from PythonMagick import Image
+# from PythonMagick import Image
 import base64
-
+import os
 # ======================================================================
 # fonction pour le traitement des fichiers images
 # ======================================================================
+class ImageCustom:
+    def __init__(self,fileIn=None,fileOut=None):
+        self.pythonmagick = self.loadImageTool()
+        if fileIn is not None and fileOut is not None:
+            self.convertImage(fileIn,fileOut)
+
+    def loadImageTool(self):
+        """
+        chargement pythonmagick si disponible
+        """
+        loadok = False
+        try:
+            global Image
+            from PythonMagick import Image 
+            loadok = True
+        except ModuleNotFoundError:
+            global Image
+            from PIL import Image
+            global pdf2image
+            import pdf2image
+        return loadok
+    
+
+    def convertImage(self,fileIn,fileOut):
+        """
+        convertion image en fonction de la librairie
+        """    
+        if self.pythonmagick:
+            im = Image(fileIn)
+            im.write(fileOut)
+        else:
+            if os.path.splitext(fileIn)[1] == '.pdf':
+                pages = pdf2image.convert_from_path(fileIn, dpi=500)
+                for page in pages:
+                    page.save(fileOut,'PNG')
+            else:
+                im = Image.open(fileIn)
+                im.save(fileOut)
+
 
 def basename(s):
     """fonction pour extraire le nom (sans extension et sans path)
@@ -71,18 +110,20 @@ def EncodeImg(Ii,pathin,pathout):
     print(Ii.attrib)
     ext=Ii.attrib['ext']    
     img_name  = Ii.attrib['name']
-    pathF=Ii.attrib['pathF'] + '/'
+    pathF=Ii.attrib['pathF']
 
     # si ce n'est pas du png on converti en png
     if (Ii.attrib['ext'] != 'png'):
-        im = Image(pathF+ img_name +'.' + ext)
-        img_name = img_name + ".png"
-        im.write(pathF + img_name)
+        # im = Image(pathF+ img_name +'.' + ext)
+        img_name_in = img_name +'.' + ext
+        img_name_out = img_name + ".png"
+        # im.write(pathF + img_name)
+        im = ImageCustom(os.path.join(pathF,img_name_in),os.path.join(pathF,img_name_out))
     else:
-        img_name  = Ii.attrib['name']+'.'+ext
+        img_name_out  = Ii.attrib['name']+'.'+ext
       
-    img_file = open(    pathF + img_name, "rb") 
-    Ii.attrib.update({'name':img_name,'path':'/','encoding':"base64"})
+    img_file = open(os.path.join(pathF,img_name_out), "rb") 
+    Ii.attrib.update({'name':img_name_out,'path':'/','encoding':"base64"})
     Ii.text=base64.b64encode(img_file.read())     
      
 
@@ -184,7 +225,7 @@ for Ii in Ilist:
         img_dim='width'
          
    
-    img_path = pathin + '/'+img_name[0:img_name.rfind('/')]
+    img_path = os.path.join(pathin,img_name[0:img_name.rfind('/')]).replace('/./','/')
     print(img_path)
     name = basename(img_name)
     print(name, ext, img_dim, align[img_align])
@@ -419,9 +460,11 @@ if (deb==1):
 
 ############################################################################
 # écriture fichier out
-xmlout =  open(fileout, 'w')
-result_tree.write(xmlout, pretty_print=True,encoding="utf-8")
-xmlout.close()
+# xmlout =  open(fileout, 'w')
+# result_tree.write(xmlout, pretty_print=True,encoding="utf-8")
+# xmlout.close()
+result_tree.write(fileout, pretty_print=True,encoding="utf-8")
+print(result_tree)
 
 # fermeture des fichiers
 xslt_pre.close()
