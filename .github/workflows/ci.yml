@@ -33,7 +33,7 @@ jobs:
         # install ubuntu package
         sudo apt-get install python-pythonmagick
         # add libtext-unidecode-perl to fix bug in deb package : https://github.com/brucemiller/LaTeXML/issues/1022
-        sudo apt get install libtext-unidecode-perl
+        sudo apt-get install libtext-unidecode-perl
         sudo apt-get install latexml
         sudo apt-get install xmlindent
         
