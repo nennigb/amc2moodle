@@ -44,7 +44,7 @@ jobs:
         
     - name: Test latexml
       run: |
-        latexml --noparse --nocomment --path=./src --dest=./out.xml  ./src/QCM.tex
+        latexml --noparse --nocomment --path=./src --dest=./out.xml  ./test/QCM.tex
         
         
 
