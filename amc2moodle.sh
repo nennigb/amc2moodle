@@ -20,7 +20,7 @@
 
  
 # path to the python and xslt file. Watchout no space before =
-src="/home/bn/Enseignement/Moodle/amc2moodle/src"
+src="./src"
 
 # peut-être judicieux de tout faire en python pour portabilité..
 
