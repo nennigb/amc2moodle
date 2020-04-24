@@ -31,7 +31,7 @@ jobs:
         python -m pip install --upgrade pip
         
         # install ubuntu package
-        sudo apt-get install python-pythonmagick
+        sudo apt-get install imagemagick
         sudo apt-get install texlive-latex-recommended texlive-pictures
         # add libtext-unidecode-perl to fix bug in deb package : https://github.com/brucemiller/LaTeXML/issues/1022
         sudo apt-get install libtext-unidecode-perl
@@ -40,6 +40,7 @@ jobs:
         
         # install python package
         pip install lxml
+        pip install pythonmagick
         # pip install pillow
         # pip install pdf2image
         
