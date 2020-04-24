@@ -20,7 +20,7 @@
 
  
 # path to the python and xslt file. Watchout no space before =
-src="./src"
+src=$(pwd)/src
 
 # peut-être judicieux de tout faire en python pour portabilité..
 
