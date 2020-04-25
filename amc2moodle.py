@@ -55,7 +55,7 @@ def run():
     This GNU bash script is not fully compatible with Mac and path error may
     occured. See issues on amc2moodle github page.""")
     #
-    parser.add_argument("inputfile",nargs='+',help="Input TeX file (mandatory)")
+    parser.add_argument("inputfile",nargs='?',help="Input TeX file (mandatory)")
     # parser.add_argument("-i", "--input",nargs=1,dest='inputfile',help="Input TeX file (mandatory)",required=False)
     parser.add_argument("-o", "--output",nargs=1, help="Output XML file (optional)",required=False)
     parser.add_argument("-k", "--keep", help="Keep temporary file (useful for debuging) (optional)",required=False,action="store_true")
@@ -65,7 +65,7 @@ def run():
     # print(args)
     #
     if args.inputfile:
-        fileIn = args.inputfile[0]
+        fileIn = args.inputfile
     if args.output:
         fileOut = args.output[0]
     keepFlag = args.keep
