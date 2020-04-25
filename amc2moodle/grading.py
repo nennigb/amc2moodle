@@ -67,8 +67,10 @@ class ImageCustom:
                 from PythonMagick import Image 
                 loadok = True
                 self.typeW = 'pythonmagick'
+                # print('PythonMagick is loaded')
             except ModuleNotFoundError:
-                print('Unable to load PythonMagick')
+                pass
+                # print('Unable to load PythonMagick')
         # try loading WAnd
         if not loadok:
             try:
@@ -76,8 +78,10 @@ class ImageCustom:
                 from wand.image import Image 
                 loadok = True
                 self.typeW = 'wand'
+                # print('Wand is loaded')
             except ModuleNotFoundError:
-                print('Unable to load wand')
+                pass
+                # print('Unable to load wand')
         # try loading WAnd
         if not loadok:
             try:
@@ -87,7 +91,8 @@ class ImageCustom:
                 loadok = True
                 self.typeW = 'pillowpdf2image'
             except ModuleNotFoundError:
-                print('Unable to load Pillow and pdf2image')
+                pass
+                # print('Unable to load Pillow and pdf2image')
         
         return loadok
     
@@ -110,6 +115,8 @@ class ImageCustom:
         elif self.typeW == 'wand':
             im = Image(filename=fileIn)
             im.save(filename=fileOut)
+        else:
+            print('Please install Wand (or PythonMagick or Pillow and pdf2image)')
 
 
 def basename(s):
@@ -132,7 +139,7 @@ def EncodeImg(Ii,pathin,pathout):
     """ fonction qui encode un png en base64 
     Ii : l'element xml ou il faut la brancher
     pathin et pathout les chemins des fichiers """
-    print(Ii.attrib)
+    # print(Ii.attrib)
     ext=Ii.attrib['ext']    
     img_name  = Ii.attrib['name']
     pathF=Ii.attrib['pathF']
@@ -256,9 +263,9 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
             
     
         img_path = os.path.join(pathin,img_name[0:img_name.rfind('/')]).replace('/./','/')
-        print(img_path)
+        # print(img_path)
         name = basename(img_name)
-        print(name, ext, img_dim, align[img_align])
+        # print(name, ext, img_dim, align[img_align])
         Ii.attrib.update({'ext':ext,'dim':img_dim,'size':img_size,'pathF':img_path,'align':align[img_align],'name':name})
         #print Ii.attrib
         
@@ -311,7 +318,6 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
     # <text>$course$/filein/amc_element_tag</text>
     Clist = tree.xpath("//*[@class='amc_categorie']")
     for Ci in Clist:
-        print(catname)
         if (catflag==1):
             Ci.text = "$course$/"+catname.split('.')[0]+"/"+ Ci.text
         else:
@@ -495,7 +501,8 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
     # result_tree.write(xmlout, pretty_print=True,encoding="utf-8")
     # xmlout.close()
     result_tree.write(fileout, pretty_print=True,encoding="utf-8")
-    print(result_tree)
+    if deb == 1:
+        print(result_tree)
 
     # fermeture des fichiers
     xslt_pre.close()
