@@ -26,3 +26,7 @@ jobs:
     - name: Install amc2moodle
       run: |
         pip install .
+    - name: Run amc2moodle
+      run: |
+        amc2moodle ./test/QCM_wo-tikz.tex -o ./test/QCM_wo-tikz.xml  -k -c amc
+        amc2moodle ./test/QCM.tex -o ./test/QCM.xml  -k -c amc
