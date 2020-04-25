@@ -114,6 +114,8 @@ class amc2moodle:
                 self.keepFlag = keepFile
             if catname is not None:
                 self.catname = catname
+            else:
+                self.catname = self.input
             #temporary file
             self.tempxmlfile = os.path.join(getPathFile(self.input),self.tempxmlfiledef)
             self.showData()
@@ -158,7 +160,7 @@ class amc2moodle:
             'latexml',
             '--noparse',
             '--nocomments',
-            '--path=%s'%getPathFile(self.output),
+            '--path=%s'%os.path.dirname(__file__),
             '--dest=%s'%self.tempxmlfile,
             self.input])
 

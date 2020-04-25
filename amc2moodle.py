@@ -70,7 +70,7 @@ def run():
         fileOut = args.output[0]
     keepFlag = args.keep
     if args.catname:
-        catname = args.catname
+        catname = args.catname[0]
     #
     if fileIn is not None:
         fileInOk = os.path.exists(fileIn)

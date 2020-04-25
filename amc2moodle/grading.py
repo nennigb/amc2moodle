@@ -308,6 +308,7 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
     # <text>$course$/filein/amc_element_tag</text>
     Clist = tree.xpath("//*[@class='amc_categorie']")
     for Ci in Clist:
+        print(catname)
         if (catflag==1):
             Ci.text = "$course$/"+catname.split('.')[0]+"/"+ Ci.text
         else:
