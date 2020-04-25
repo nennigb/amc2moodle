@@ -204,7 +204,8 @@ class amc2moodle:
         self.runXMLindent()
         #copy file from working dir to outputdir
         if getPathFile(self.input) != '.':
-            shutil.copyfile(os.path.join(getPathFile(self.input),getFilename(self.output)),self.output)
+            if os.path.join(getPathFile(self.input),getFilename(self.output)) != self.output:
+                shutil.copyfile(os.path.join(getPathFile(self.input),getFilename(self.output)),self.output)
         #
         self.endMessage()
 

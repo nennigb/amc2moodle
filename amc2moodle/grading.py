@@ -201,10 +201,12 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
     filetemp0 = os.path.join(pathout,"temp0.xml")
     filetemp  = os.path.join(pathout,"temp.xml")
 
+    #path of the file
+
     # path to xslt stylesheet
-    filexslt_ns  = os.path.join(sys.path[0],"transform_ns.xslt")       # 1. remove namespace
-    filexslt_pre = os.path.join(sys.path[0],"transform2html.xslt")     # 2. convert to html, tab, figure, equations
-    filexslt     = os.path.join(sys.path[0],"transform.xslt")          # 3. remane element and finish the job
+    filexslt_ns  = os.path.join(os.path.dirname(__file__),"transform_ns.xslt")       # 1. remove namespace
+    filexslt_pre = os.path.join(os.path.dirname(__file__),"transform2html.xslt")     # 2. convert to html, tab, figure, equations
+    filexslt     = os.path.join(os.path.dirname(__file__),"transform.xslt")          # 3. remane element and finish the job
 
 
 
