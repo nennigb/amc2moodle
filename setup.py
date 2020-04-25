@@ -48,5 +48,9 @@ setup(
         "License :: OSI Approved :: GNU GPL 3",
         "Operating System :: OS Independent",
     ],
+    install_requires=[
+        'wand>=0.5.9',
+        'lxml>=4.5.0'
+    ],
     python_requires='>=3.6',
 )

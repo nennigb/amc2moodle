@@ -8,7 +8,7 @@ latexmk -pdf QCM.tex
 cd ../doc
 latexmk -pdf  amc2moodle.tex 
 cp amc2moodle.pdf ../.
-latexmk -pdf -C -output-directory=.. amc2moodle.tex 
+latexmk -pdf -C amc2moodle.tex 
 cd ..
 
 # run amc2moodle on the QCM.tex test
