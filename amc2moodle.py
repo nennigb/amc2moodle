@@ -31,7 +31,7 @@ warning :
 
 """
 
-import grading
+from amc2moodle import grading
 import subprocess
 import sys
 import argparse

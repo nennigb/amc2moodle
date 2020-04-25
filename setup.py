@@ -35,7 +35,9 @@ setup(
     url="https://github.com/nennigb/amc2moodle",
     zip_safe=False,
     packages=find_packages(),
-    package_data={'amc2moodle': ['src/*']},
+    package_data={'': ['*.xslt']},
+    scripts=['amc2moodle.py'],
+    # package_data={'amc2moodle': ['src/*']},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU GPL 3",
