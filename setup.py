@@ -1,6 +1,12 @@
 from setuptools import setup, find_packages
 import subprocess
 import os
+import shutil
+
+#move script
+if not os.path.exists('scripts'):
+    os.makedirs('scripts')
+shutil.copyfile('amc2moodle.py', 'scripts/amc2moodle')
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -35,10 +41,8 @@ setup(
     url="https://github.com/nennigb/amc2moodle",
     zip_safe=False,
     packages=find_packages(),
-    # package_dir={"":"src"},
     package_data={'': ['*.xslt']},
-    scripts=['amc2moodle.py'],
-    # package_data={'amc2moodle': ['src/*']},
+    scripts=['scripts/amc2moodle'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU GPL 3",
