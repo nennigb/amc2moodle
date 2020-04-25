@@ -63,26 +63,29 @@ class ImageCustom:
         # try loading PythonMagick
         if not loadok:
             try:
+                global Image
                 from PythonMagick import Image 
                 loadok = True
-                typeW = 'pythonmagick'
+                self.typeW = 'pythonmagick'
             except ModuleNotFoundError:
                 print('Unable to load PythonMagick')
         # try loading WAnd
         if not loadok:
             try:
+                global Image
                 from wand.image import Image 
                 loadok = True
-                typeW = 'wand'
+                self.typeW = 'wand'
             except ModuleNotFoundError:
                 print('Unable to load wand')
         # try loading WAnd
         if not loadok:
             try:
+                global Image
                 from PIL import Image 
                 import pdf2image
                 loadok = True
-                typeW = 'pillowpdf2image'
+                self.typeW = 'pillowpdf2image'
             except ModuleNotFoundError:
                 print('Unable to load Pillow and pdf2image')
         
