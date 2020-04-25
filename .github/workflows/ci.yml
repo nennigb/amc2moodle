@@ -46,7 +46,8 @@ jobs:
         
     - name: Test latexml
       run: |
-        latexml --noparse --nocomment --path=./src --dest=./out.xml  ./test/QCM.tex   
+        # add --stric flag to be more strict in error catching
+        latexml --noparse --nocomment --strict --path=./src --dest=./out.xml  ./test/QCM.tex   
     - name: Test amc2moodle
       run: |
         ./amc2moodle.sh -i ./test/QCM.tex -o ./test/out.xml -c test # trouble if pathin != pathout ?
