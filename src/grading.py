@@ -140,18 +140,25 @@ def EncodeImg(Ii,pathin,pathout):
 # usage : python grading.py $pathin $filein $pathout $fileout $keep $catname $catflag
 if len(sys.argv)!=8:
     print("Problem with the number of imput args, check calling seq. in amc2moodle.sh .")
-    exit() 
+    pathin = 'test'            # path to input xml file
+    filein = 'tex2xml.xml'        # input xml filename
+    pathout = 'test'           # path to output xml file
+    fileout = 'QCM_wo-tikz.xml'   # output xml filename
+    keep = 0         # keep intermediate file plug in deb...
+    catname = 'QCM_wo-tikz.tex'           # output xml filename
+    catflag = 0           # output xml filename
+    deb=0                        # set to 1 to write intermediate xml file and write verbose output
+    # exit() 
     
-    
-# 1st arg is the program name    
-pathin = sys.argv[1]            # path to input xml file
-filein = pathin+sys.argv[2]        # input xml filename
-pathout = sys.argv[3]           # path to output xml file
-fileout = pathout+sys.argv[4]   # output xml filename
-keep = int(sys.argv[5])         # keep intermediate file plug in deb...
-catname = sys.argv[6]           # output xml filename
-catflag = int(sys.argv[7])           # output xml filename
-deb=0                        # set to 1 to write intermediate xml file and write verbose output
+else:# 1st arg is the program name    
+    pathin = sys.argv[1]            # path to input xml file
+    filein = pathin+sys.argv[2]        # input xml filename
+    pathout = sys.argv[3]           # path to output xml file
+    fileout = pathout+sys.argv[4]   # output xml filename
+    keep = int(sys.argv[5])         # keep intermediate file plug in deb...
+    catname = sys.argv[6]           # output xml filename
+    catflag = int(sys.argv[7])           # output xml filename
+    deb=0                        # set to 1 to write intermediate xml file and write verbose output
 
 """ 
 ======================================================================
@@ -188,7 +195,7 @@ filexslt     = sys.path[0] + "/transform.xslt"          # 3. remane element and 
 # on parse le fichier xml
 # Elements are lists
 # Elements carry attributes as a dict
-xml =  open(filein, 'r')
+xml =  open(os.path.join(pathin,filein), 'r')
 tree0 = etree.parse(xml)
 
 # on supprime le namespace [a terme faire autrement]
@@ -476,3 +483,4 @@ xml.close()
 print('\n')
 print(' > shuffleanswers is ' + str(ShuffleAll))
 print( " > "+str(Qtot)+" questions converted...")
+

@@ -20,7 +20,7 @@
 
 
 # path to the python and xslt file. Watchout no space before =
-src="/home/bn/Enseignement/Moodle/amc2moodle/src"
+src="/Users/luclaurent/Documents/1DIVERS/Tools/amc2moodle/src"
 
 # peut-être judicieux de tout faire en python pour portabilité..
 
@@ -30,7 +30,7 @@ keep=0            # 0: delete temp file, 1: keep temp file
 unset filein
 unset fileout
 
-# set -x
+set -x
 
 # ====================================================================
 # function giving usage
@@ -194,5 +194,6 @@ fi
 
 # print a help message for the importation in moodle
 remarques
+
 
 
