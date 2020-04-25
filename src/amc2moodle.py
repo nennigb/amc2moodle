@@ -1,4 +1,35 @@
 #!/usr/bin/env python
+"""
+    This file is part of amc2moodle, a convertion tool to recast quiz written
+    with the LaTeX format used by automuliplechoice 1.0.3 into the 
+    moodle XML quiz format.
+    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr 
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+usage :
+    ./amc2moodle.py -h to see option
+        
+part of amc2moodle : 
+    call xslt stylesheet and complete the require xml element
+    compute the grade according to the amc way
+    convert non png img into png and embedded them in the output_file
+    
+warning : 
+    the grade are not computed exactly as in amc, see amc2moodle.pdf
+
+"""
 
 import amc2moodle
 import subprocess
