@@ -31,12 +31,13 @@ warning :
 
 """
 
-import amc2moodle
+import grading
 import subprocess
 import sys
 import argparse
 import os
 import importlib  #python 3.x
+import shutil
 
 def checkTools(show=True):
     """
@@ -53,17 +54,33 @@ def checkTools(show=True):
     if not lxmlOk:
         print ("Please install lxml's Python module")
     # LaTeXML
-    latexMLwhich = subprocess.run(['which','latexml'])
+    latexMLwhich = subprocess.run(['which','latexml'],stdout=subprocess.DEVNULL)
     latexmlOk = latexMLwhich.returncode == 0
     if not latexmlOk:
         print ("Please install LaTeXML software (see https://dlmf.nist.gov/LaTeXML/)")
     # xmlindent
-    xmlindentwhich = subprocess.run(['which','xmlindent'])
+    xmlindentwhich = subprocess.run(['which','xmlindent'],stdout=subprocess.DEVNULL)
     xmlindentOk = xmlindentwhich.returncode == 0
     # if not xmlindentOk:
     #     print ("Please install (optional) XML indent software (see http://xmlindent.sourceforge.net/)")
     #
     return wandOk and lxmlOk and latexmlOk
+
+def getFilename(fileIn):
+    """
+    get the filename without path
+    """
+    return os.path.basename(fileIn)
+
+def getPathFile(fileIn):
+    """
+    get the path of a file without
+    """
+    dirname = os.path.dirname(fileIn)
+    if not dirname:
+        dirname='.'
+    return dirname 
+    
     
 
 class amc2moodle:
@@ -101,7 +118,7 @@ class amc2moodle:
             if catname is not None:
                 self.catname = catname
             #temporary file
-            self.tempxmlfile = os.path.join(getPathFile(self.output),self.tempxmlfiledef)
+            self.tempxmlfile = os.path.join(getPathFile(self.input),self.tempxmlfiledef)
             self.showData()
         #run the building of the xml file for Moodle
         self.runBuilding()
@@ -116,8 +133,9 @@ class amc2moodle:
         print(' > path output TeX: %s'%getPathFile(self.output))
         print(' > output XML file: %s'%getFilename(self.output))
         print(' > temp XML file: %s'%self.tempxmlfile)
-        print(' > keep temp files: %s'self.keepFlag)
+        print(' > keep temp files: %s'%self.keepFlag)
         print(' > categorie name: %s'%self.catname)
+
     def endMessage(self):
         print("""File converted. Check below for errors...
 
@@ -142,10 +160,10 @@ class amc2moodle:
         subprocess.run([
             'latexml',
             '--noparse',
-            '--nocomment',
+            '--nocomments',
             '--path=%s'%getPathFile(self.output),
-            '--dest=%s'%getFullPathFile(self.output),
-            getFullPathFile(self.file)])
+            '--dest=%s'%self.tempxmlfile,
+            self.input])
 
     def runXMLindent(self):
         """
@@ -158,9 +176,9 @@ class amc2moodle:
         if xmlindentOk:
             subprocess.run([
                 'xmlindent',
-                getFullpath(self.output),
+                self.output,
                 '-o',
-                getFullpath(self.output)])
+                self.output])
 
     def runBuilding(self):
         """
@@ -170,33 +188,58 @@ class amc2moodle:
         self.runLaTeXML()
         #run script
         print(' > Running Python conversion')
-        amc2moodle.grading()
+        grading.grading(
+            inputfile=getFilename(self.tempxmlfile),
+            inputdir=getPathFile(self.input),
+            outputfile=getFilename(self.output),
+            outputdir=getPathFile(self.input),
+            keepFlag=self.keepFlag,
+            incatname=self.catname
+        )
         #remove temporary file
         if not self.keepFlag:
             print(' > Remove temp file: %s'%self.tempxmlfile)
             os.remove(self.tempxmlfile)
         #run XMLindent
         self.runXMLindent()
+        #copy file from working dir to outputdir
+        if getPathFile(self.input) != '.':
+            shutil.copyfile(os.path.join(getPathFile(self.input),getFilename(self.output)),self.output)
         #
         self.endMessage()
 
-def run(parser):
+def run():
     """
     Read parser and run amc2mooodle
     """
-    parser.add_argument("file1",nargs='?',dest='input',help="Input TeX file (mandatory)")
-    parser.add_argument("-i", "--input",nargs=1, help="Input TeX file (mandatory)",required=True)
+    #defulat values
+    fileIn = None
+    fileOut = None
+    keepFlag = False
+    catname = None
+    #deal with arguments
+    parser = argparse.ArgumentParser(description="""This script converts a tex file of AMC questions into an xml file
+    suitable for moodle import. Only question and questionmult
+    environnement are ready!
+    This GNU bash script is not fully compatible with Mac and path error may
+    occured. See issues on amc2moodle github page.""")
+    #
+    parser.add_argument("inputfile",nargs='?',help="Input TeX file (mandatory)")
+    # parser.add_argument("-i", "--input",nargs=1,dest='inputfile',help="Input TeX file (mandatory)",required=False)
     parser.add_argument("-o", "--output",nargs=1, help="Output XML file (optional)",required=False)
-    parser.add_argument("-k", "--keep", help="Keep temporary file (useful for debuging) (optional)",required=False)
+    parser.add_argument("-k", "--keep", help="Keep temporary file (useful for debuging) (optional)",required=False,action="store_true")
     parser.add_argument("-c", "--catname", nargs=1, help="Use \element{label} as category tag as a subcategorie root_cat_name (optional)",required=False)
     #
     args = parser.parse_args()
     print(args)
     #
-    if args.input:
-        fileIn = args.input[0]
+    if args.inputfile:
+        fileIn = args.inputfile
     if args.output:
-        fileOut = args.output[0]    
+        fileOut = args.output[0]
+    keepFlag = args.keep
+    if args.catname:
+        catname = args.catname
     #
     fileInOk = os.path.exists(fileIn)
     #
@@ -212,13 +255,11 @@ def run(parser):
             print('Output file: %s - status: Already exists (will be overwritten)'%fileOut)
 
     # run computation
-    if fileInOk:
-        amc2moodle(fileIn=fileIn,fileOut=fileOut,keep=keepFlag,catname=)
+    if fileInOk:        
+        amc2moodle(fileInput=fileIn,fileOutput=fileOut,keepFile=keepFlag,catname=catname)
 
 
 # Run autonomous
 if __name__ == '__main__':
-    #
-    parser = argparse.ArgumentParser()
     # run with options
-    run(parser)
+    run()
