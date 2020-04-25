@@ -32,7 +32,7 @@ from amc2moodle import grading
 import subprocess
 import sys
 import os
-import importlib  #python 3.x
+from importlib import util #python 3.x
 import shutil
 
 
@@ -41,12 +41,12 @@ def checkTools(show=True):
     Check if the required Tools are available
     """
     # Wand Python module
-    wand_loader = importlib.util.find_spec('wand') 
+    wand_loader = util.find_spec('wand') 
     wandOk = wand_loader is not None
     if not wandOk:
         print ("Please install Wand's Python module")
     # lxml Python Module
-    lxml_loader = importlib.util.find_spec('lxml') 
+    lxml_loader = util.find_spec('lxml') 
     lxmlOk = lxml_loader is not None
     if not lxmlOk:
         print ("Please install lxml's Python module")
