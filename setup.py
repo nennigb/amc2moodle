@@ -41,7 +41,7 @@ setup(
     url="https://github.com/nennigb/amc2moodle",
     zip_safe=False,
     packages=find_packages(),
-    package_data={'': ['*.xslt']},
+    package_data={'': ['*.xslt','automultiplechoice.sty.ltxml']},
     scripts=['scripts/amc2moodle'],
     classifiers=[
         "Programming Language :: Python :: 3",
