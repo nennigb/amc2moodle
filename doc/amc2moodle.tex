@@ -68,24 +68,34 @@ The automuliplechoice LaTeX format is convienient and can be used for preparing 
 % ========================================================================
 Dependencies :
 \begin{itemize}
-	\item install python [tested with 2.7] and lxml library (ubuntu using python package manager pip: sudo pip install lxml)
-    \item install \texttt{PythonMagick} [tested with version 0.9.7-2] (ubuntu : sudo apt-get install python-pythonmagick). Useful to convert image files (*.eps, *.pdf, ...) into png.
-    \item install \texttt{LateXML}\footnote{\url{http://dlmf.nist.gov/LaTeXML}} [tested with version 0.8.1] from package (ubuntu : sudo apt-get install latexml) or from source. If you choose to compile it, please check on :   
+	\item install python [tested with 3.7.6], lxml and wand libraries (on Ubuntu or macOS using python package manager pip: \texttt{pip install lxml wand}). A \texttt{sudo} command could be added in front of the previous command if necessary.
+    % \item install \texttt{PythonMagick} [tested with version 0.9.7-2] (ubuntu : sudo apt-get install python-pythonmagick). Useful to convert image files (*.eps, *.pdf, ...) into png.
+    \item install \texttt{LateXML}\footnote{\url{http://dlmf.nist.gov/LaTeXML}} [tested with version 0.8.4] from package (ubuntu : sudo apt-get install latexml) or from source. If you choose to compile it, please check on :   
      \url{http://dlmf.nist.gov/LaTeXML/get.html}  that all the dependencies are installed. This program does the first step of the conversion into XML. Note that some version of \texttt{latexml} present an error in  
 \begin{verbatim}
    /usr/share/perl5/LaTeXML/Common/Error.pm line 364.  
    To fix it, change line 364 in Error.pm to [[:cntrl:]]
    see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=839639
      \end{verbatim}
-    \item install \texttt{xmlindent} [optional]. This program can be used to indent well the XML file (ubuntu : sudo apt-get install xmlindent). If not present just comment the call in the end of \texttt{amc2moodle.sh}.
+    \item install \texttt{xmlindent} [optional]. This program can be used to indent well the XML file (ubuntu : sudo apt-get install xmlindent). %If not present just comment the call in the end of \texttt{amc2moodle.sh}.
 \end{itemize}
 
 
 
 Install :
 \begin{itemize}
-     \item Create a link in /usr/bin or add to the execution \amc~ root path the folder.
-     \item Set the \texttt{src} folder in the \texttt{amc2moodle.sh} script or modify it to take into account an environment variable.
+  \item in the root folder of the amc2moodle (where \texttt{setup.py} is), run \texttt{pip install .} (the last character is a dot) or \texttt{python setup.py install} (the first command is recommanded).
+  \item the command \texttt{amc2moodle} is available on a terminal.
+     %\item Create a link in /usr/bin or add to the execution \amc~ root path the folder.
+     %\item Set the \texttt{src} folder in the \texttt{amc2moodle.sh} script or modify it to take into account an environment variable.
+\end{itemize} 
+
+Uninstall :
+\begin{itemize}
+  \item if the installation has been done with \texttt{pip install .} as recommanded: uninstallation could be done with the command \texttt{pip uninstall amc2moodle}
+  \item if the installation has been done with \texttt{python setup.py install} the install files could be removed manually in the \texttt{site-packages} and the \texttt{bin} folders of the used Python.
+     %\item Create a link in /usr/bin or add to the execution \amc~ root path the folder.
+     %\item Set the \texttt{src} folder in the \texttt{amc2moodle.sh} script or modify it to take into account an environment variable.
 \end{itemize} 
 
 
@@ -105,7 +115,7 @@ Here is recall the \amc~-h output. Note that, ``\textbackslash'', stands for a l
 
 \subsection{Code structure}
 %-----------------------------------------------------------------------
-The command line calls a shell script \texttt{amc2moodle.sh}. This script work with linux and can be adapted for mac\footnote{see \url{https://github.com/nennigb/amc2moodle/issues/2}}. This script then call
+The command line calls a shell script \texttt{amc2moodle}. This script work with linux and mac. This script then call via a dedicated class (on \texttt{amc2moodle\_class.py})
 \begin{itemize}
 \item \texttt{LateXML} with \texttt{automuliplechoice.sty.ltxml}. The package has been made using \texttt{note} element in LateXML and most of  AMC environment or command names are pass through attribute (in french for the moment). User command can be added in the .tex file. This first step is used to get an XML file \texttt{tex2xml.xml}. Thanks to \texttt{LateXML}, most \LaTeX possibilities are supported in the conversion to moodle. Note that option passed to \texttt{automuliplechoice.sty} package are ignored.
 
@@ -122,7 +132,7 @@ Note that i) moodle fill the missing element like feedback (see \ref{sec:feed});
 \item Convert \texttt{question} and \texttt{questionmult} environments.
 \item You don't need to remove questionnaires part \textbackslash \texttt{exemplaire} or \textbackslash \texttt{onecopy}. But if this part contains undefined commands, remove/comment it!
 \item Put in-line equations like $x^2$ or use equation environment (or \$\$ delimiters). For the moment eqnarray  or the amsmath environments multline, align are not supported. The choice have been made to keep equation in tex and use mathjax filter of moodle for rendering. In my opinion, it is better for modifying question after importation.
-\item Include image, in all format supported by \texttt{PythonMagick}. \amc   will convert it in .png for moodle export. The image will be embedded as text (base64) in the output xml file. The folder is '/' in moodle. The image can be in an another folder than the tex file.
+\item Include image, in all format supported by \texttt{WAnd}. \amc   will convert it in .png for moodle export. The image will be embedded as text (base64) in the output xml file. The folder is '/' in moodle. The image can be in an another folder than the tex file.
 \item Include Table, with the tabular environment. In the present form, \amc put  border around each cell.
 \item Use italic, typerwritter, bold, emphasize\dots
 \item Automatically add an answer like ``there is no good answer'' if there is no good answer.
