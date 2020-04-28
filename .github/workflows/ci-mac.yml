@@ -32,7 +32,7 @@ jobs:
         
         # install brew package
         brew cask install basictex
-        brew install imagemagick --with-perl
+        brew install imagemagick
         brew install latexml
 
         
