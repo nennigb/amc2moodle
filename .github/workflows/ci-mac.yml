@@ -33,6 +33,7 @@ jobs:
         # install brew package
         brew cask install basictex
         brew install imagemagick
+        brew install libxml2
         brew install cpanm
         cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML XML::LibXSLT UUID::Tiny
         brew install latexml
