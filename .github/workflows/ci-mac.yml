@@ -38,8 +38,8 @@ jobs:
         export PATH=/usr/local/opt/libxslt/bin:$PATH
         brew install cpanm
         brew update
-        cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML XML::LibXSLT UUID::Tiny 
-        brew install latexml
+        # cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML XML::LibXSLT UUID::Tiny 
+        brew install latexml --HEAD
 
         
     - name: Test latexml alone
