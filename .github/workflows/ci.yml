@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [2.7]
+        python-version: [3.5]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -40,7 +40,7 @@ jobs:
         
         # install python package
         pip install lxml
-        pip install pythonmagick
+        pip install Wand
         # pip install pillow
         # pip install pdf2image
         
@@ -48,9 +48,9 @@ jobs:
       run: |
         # add --stric flag to be more strict in error catching
         latexml --noparse --nocomment --strict --path=./src --dest=./out.xml  ./test/QCM.tex   
-    - name: Test amc2moodle
-      run: |
-        ./amc2moodle.sh -i ./test/QCM.tex -o ./test/out.xml -c test # trouble if pathin != pathout ?
+   # - name: Test amc2moodle
+   #   run: |
+   #     ./amc2moodle.sh -i ./test/QCM.tex -o ./test/out.xml -c test # trouble if pathin != pathout ?
    
    
         
