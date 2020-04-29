@@ -35,11 +35,12 @@ jobs:
         brew install imagemagick
         brew install libxml2
         brew install libxslt
-        export PATH=/usr/local/opt/libxslt/bin:$PATH
+        
         brew install cpanm
         brew update
-        # cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML XML::LibXSLT UUID::Tiny 
-        brew install latexml --HEAD
+        env PKG_CONFIG_PATH="/usr/local/opt/libxml2/lib/pkgconfig" cpanm XML::LibXSLT --force
+        cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML UUID::Tiny # XML::LibXSLT
+        brew install latexml 
 
         
     - name: Test latexml alone
