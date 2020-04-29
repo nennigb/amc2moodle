@@ -32,7 +32,7 @@ jobs:
         
         # install brew package
         brew cask install basictex   # basictex doesn't contain tikz
-        tlmgr install tikz
+        # tlmgr install tikz
         brew install libxml2
         brew install libxslt
         brew install imagemagick
