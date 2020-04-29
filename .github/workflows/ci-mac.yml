@@ -31,14 +31,16 @@ jobs:
         python -m pip install --upgrade pip
         
         # install brew package
-        brew cask install basictex
-        brew install imagemagick
+        brew cask install basictex        
         brew install libxml2
         brew install libxslt
+        brew install imagemagick --perl
         
         brew install cpanm
-        brew update
-        env PKG_CONFIG_PATH="/usr/local/opt/libxml2/lib/pkgconfig" cpanm XML::LibXSLT --force
+        #brew update
+        export PATH="/usr/local/opt/libxml2/bin:$PATH"
+        export PATH="/usr/local/opt/libxslt/bin:$PATH"
+        cpanm --configure-args="INC=\"$(xml2-config --cflags) $(xslt-config --cflags)\" LIBS=\"$(xml2-config --libs) $(xslt-config --libs) -lexslt\"" XML::LibXSLT
         cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML UUID::Tiny # XML::LibXSLT
         brew install latexml 
 
