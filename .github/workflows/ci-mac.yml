@@ -31,7 +31,7 @@ jobs:
         python -m pip install --upgrade pip
         
         # install brew package
-        brew cask install basictex        
+        brew install mactex-no-gui   # basictex doesn't containe tikz
         brew install libxml2
         brew install libxslt
         brew install imagemagick
