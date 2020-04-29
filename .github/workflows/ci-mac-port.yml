@@ -32,8 +32,8 @@ jobs:
         
         # install macport package
         sudo port install texlive-latex-recommended texlive-pictures
-	sudo port install LaTeXML 
-        
+        sudo port install LaTeXML 
+
     - name: Test latexml alone
       run: |
         latexml --noparse --nocomment --strict --path=./src --dest=./out.xml  ./test/QCM.tex 
