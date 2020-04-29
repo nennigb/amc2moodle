@@ -34,7 +34,7 @@ jobs:
         brew cask install basictex        
         brew install libxml2
         brew install libxslt
-        brew install imagemagick --perl
+        brew install imagemagick
         
         brew install cpanm
         #brew update
