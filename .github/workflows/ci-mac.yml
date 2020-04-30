@@ -34,7 +34,8 @@ jobs:
         brew cask install basictex   # basictex doesn't contain tikz  
         #/usr/local/texlive/2019/bin/x86_64-darwin  
         echo `ls -R /usr/local/texlive`
-        export PATH="/usr/local/texlive/2020/bin/x86_64-darwin:$PATH"    
+        export PATH="/usr/local/texlive/2020basic/bin/x86_64-darwin:$PATH"  
+        echo $PATH  
         sudo tlmgr install tikz
         
         brew install libxml2
