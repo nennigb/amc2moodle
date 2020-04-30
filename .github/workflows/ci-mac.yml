@@ -31,8 +31,9 @@ jobs:
         python -m pip install --upgrade pip
         
         # install brew package
-        brew cask install basictex   # basictex doesn't contain tikz
-        # tlmgr install tikz
+        brew cask install basictex   # basictex doesn't contain tikz        
+        sudo tlmgr install tikz
+        
         brew install libxml2
         brew install libxslt
         brew install imagemagick
