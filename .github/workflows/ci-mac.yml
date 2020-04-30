@@ -31,7 +31,10 @@ jobs:
         python -m pip install --upgrade pip
         
         # install brew package
-        brew cask install basictex   # basictex doesn't contain tikz        
+        brew cask install basictex   # basictex doesn't contain tikz  
+        #/usr/local/texlive/2019/bin/x86_64-darwin  
+        echo `ls -R /usr/local/texlive`
+        export PATH="/usr/local/texlive/2020/bin/x86_64-darwin:$PATH"    
         sudo tlmgr install tikz
         
         brew install libxml2
