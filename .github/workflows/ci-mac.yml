@@ -36,7 +36,7 @@ jobs:
         echo `ls -R /usr/local/texlive`
         export PATH="/usr/local/texlive/2020basic/bin/x86_64-darwin:$PATH"  
         echo $PATH  
-        sudo tlmgr install tikz
+        sudo tlmgr install pgf
         
         brew install libxml2
         brew install libxslt
