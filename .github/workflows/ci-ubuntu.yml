@@ -33,6 +33,8 @@ jobs:
         
         # install ubuntu package
         sudo apt-get install imagemagick
+        # move policy file
+        sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
         sudo apt-get install texlive-latex-recommended texlive-pictures
         # add libtext-unidecode-perl to fix bug in deb package : https://github.com/brucemiller/LaTeXML/issues/1022
         sudo apt-get install libtext-unidecode-perl
