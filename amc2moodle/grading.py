@@ -61,16 +61,16 @@ class ImageCustom:
         """
         loadok = False
         # try loading PythonMagick
-        if not loadok:
-            try:
-                global Image
-                from PythonMagick import Image 
-                loadok = True
-                self.typeW = 'pythonmagick'
-                # print('PythonMagick is loaded')
-            except ModuleNotFoundError:
-                pass
-                # print('Unable to load PythonMagick')
+        # if not loadok:
+            # try:
+            #     global Image
+            #     from PythonMagick import Image 
+            #     loadok = True
+            #     self.typeW = 'pythonmagick'
+            #     # print('PythonMagick is loaded')
+            # except ModuleNotFoundError:
+            #     pass
+            #     # print('Unable to load PythonMagick')
         # try loading WAnd
         if not loadok:
             try:
@@ -83,16 +83,16 @@ class ImageCustom:
                 pass
                 # print('Unable to load wand')
         # try loading WAnd
-        if not loadok:
-            try:
-                global Image
-                from PIL import Image 
-                import pdf2image
-                loadok = True
-                self.typeW = 'pillowpdf2image'
-            except ModuleNotFoundError:
-                pass
-                # print('Unable to load Pillow and pdf2image')
+        # if not loadok:
+        #     try:
+        #         global Image
+        #         from PIL import Image 
+        #         import pdf2image
+        #         loadok = True
+        #         self.typeW = 'pillowpdf2image'
+        #     except ModuleNotFoundError:
+        #         pass
+        #         # print('Unable to load Pillow and pdf2image')
         
         return loadok
     
@@ -100,7 +100,8 @@ class ImageCustom:
     def convertImage(self,fileIn,fileOut):
         """
         convertion image en fonction de la librairie
-        """    
+        """
+        print(self.typeW)
         if self.typeW == 'pythonmagick':
             im = Image(fileIn)
             im.write(fileOut)
@@ -114,7 +115,13 @@ class ImageCustom:
                 im.save(fileOut)
         elif self.typeW == 'wand':
             im = Image(filename=fileIn)
+            # remove timestamp from png (keep checksum unchanged for test)
+            im.artifacts['png:exclude-chunks'] = 'date,time,pdf'
+            im.strip()
+            for (k,v) in im.artifacts.items():
+                print(k,v)
             im.save(filename=fileOut)
+            im.close()
         else:
             print('Please install Wand (or PythonMagick or Pillow and pdf2image)')
 
@@ -135,29 +142,50 @@ def basename(s):
         
 
 
-def EncodeImg(Ii,pathin,pathout):
-    """ fonction qui encode un png en base64 
-    Ii : l'element xml ou il faut la brancher
-    pathin et pathout les chemins des fichiers """
+def EncodeImg(Ii, pathin, pathout):
+    """ Convert image in png and encode it in base64 text.
+
+    Parameters
+    ----------
+    Ii : element tree
+        The xml element containing the image information (path, ...). This 
+        element is modified.
+        
+    pathin, pathout : string
+        the input and output path
+    
+    """
+
     # print(Ii.attrib)
-    ext=Ii.attrib['ext']    
-    img_name  = Ii.attrib['name']
-    pathF=Ii.attrib['pathF']
+    ext = Ii.attrib['ext']
+    img_name = Ii.attrib['name']
+    pathF = Ii.attrib['pathF']
 
     # si ce n'est pas du png on converti en png
     if (Ii.attrib['ext'] != 'png'):
         # im = Image(pathF+ img_name +'.' + ext)
-        img_name_in = img_name +'.' + ext
+        img_name_in = img_name + '.' + ext
         img_name_out = img_name + ".png"
         # im.write(pathF + img_name)
-        im = ImageCustom(os.path.join(pathF,img_name_in),os.path.join(pathF,img_name_out))
+        im = ImageCustom(os.path.join(pathF, img_name_in),
+                         os.path.join(pathF, img_name_out))
     else:
-        img_name_out  = Ii.attrib['name']+'.'+ext
-      
-    img_file = open(os.path.join(pathF,img_name_out), "rb") 
-    Ii.attrib.update({'name':img_name_out,'path':'/','encoding':"base64"})
-    Ii.text=base64.b64encode(img_file.read())     
-     
+        img_name_out = Ii.attrib['name'] + '.' + ext
+
+    img_file = open(os.path.join(pathF, img_name_out), "rb")
+    Ii.attrib.update({'name': img_name_out, 'path': '/',
+                      'encoding': "base64",
+                      'pathF': ''})   # remove path question
+    # Ensure same order at all execution
+    # https://lxml.de/FAQ.html#how-can-i-sort-the-attributes
+    attrib = Ii.attrib
+    if len(attrib) > 1:
+        attributes = sorted(attrib.items())
+        attrib.clear()
+        attrib.update(attributes)
+    # Embbed image
+    Ii.text = base64.b64encode(img_file.read())
+    img_file.close()
 
 
 
@@ -214,6 +242,7 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
     #path of the file
 
     # path to xslt stylesheet
+    # TODO use pkgutils
     filexslt_ns  = os.path.join(os.path.dirname(__file__),"transform_ns.xslt")       # 1. remove namespace
     filexslt_pre = os.path.join(os.path.dirname(__file__),"transform2html.xslt")     # 2. convert to html, tab, figure, equations
     filexslt     = os.path.join(os.path.dirname(__file__),"transform.xslt")          # 3. remane element and finish the job
@@ -505,6 +534,7 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
         print(result_tree)
 
     # fermeture des fichiers
+    xslt_ns.close()
     xslt_pre.close()
     xslt.close()
 
