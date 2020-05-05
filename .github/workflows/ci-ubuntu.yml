@@ -53,6 +53,7 @@ jobs:
       run: |
         python -m amc2moodle.test
     - name: Archive test output
+      if: ${{ always() }}
       uses: actions/upload-artifact@v1
       with:
         name: test_notikz
