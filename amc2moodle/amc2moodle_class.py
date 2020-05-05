@@ -147,8 +147,8 @@ class amc2moodle:
             - Choose 'moodle XML format'
             - In the option chose : 'choose the closest grade if not listed'
             in the 'General option'
-            (Moodle used tabulated grades like 1/2, 1/3 etc...)
-        .""")
+            (Moodle used tabulated grades like 1/2, 1/3 etc...).
+        """)
 
     def runLaTeXML(self):
         """
@@ -200,7 +200,7 @@ class amc2moodle:
             print(' > Remove temp file: %s'%self.tempxmlfile)
             os.remove(self.tempxmlfile)
         #run XMLindent
-        self.runXMLindent()
+        # self.runXMLindent()
         #copy file from working dir to outputdir
         if getPathFile(self.input) != '.':
             if os.path.join(getPathFile(self.input),getFilename(self.output)) != self.output:
