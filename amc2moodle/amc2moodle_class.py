@@ -16,29 +16,18 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-        
-part of amc2moodle : 
-    call xslt stylesheet and complete the require xml element
-    compute the grade according to the amc way
-    convert non png img into png and embedded them in the output_file
-    
-warning : 
-    the grade are not computed exactly as in amc, see amc2moodle.pdf
-
 """
 
 from amc2moodle import grading
 import subprocess
 import sys
 import os
-from importlib import util #python 3.x
+from importlib import util  # python 3.x
 import shutil
 
 
 def checkTools(show=True):
-    """
-    Check if the required Tools are available
+    """ Check if the required Tools are available.
     """
     # Wand Python module
     wand_loader = util.find_spec('wand') 
@@ -51,46 +40,47 @@ def checkTools(show=True):
     if not lxmlOk:
         print ("Please install lxml's Python module")
     # LaTeXML
-    latexMLwhich = subprocess.run(['which','latexml'],stdout=subprocess.DEVNULL)
+    latexMLwhich = subprocess.run(['which', 'latexml'],
+                                  stdout=subprocess.DEVNULL)
     latexmlOk = latexMLwhich.returncode == 0
     if not latexmlOk:
         print ("Please install LaTeXML software (see https://dlmf.nist.gov/LaTeXML/)")
     # xmlindent
-    xmlindentwhich = subprocess.run(['which','xmlindent'],stdout=subprocess.DEVNULL)
+    xmlindentwhich = subprocess.run(['which', 'xmlindent'],
+                                    stdout=subprocess.DEVNULL)
     xmlindentOk = xmlindentwhich.returncode == 0
     # if not xmlindentOk:
     #     print ("Please install (optional) XML indent software (see http://xmlindent.sourceforge.net/)")
     #
     return wandOk and lxmlOk and latexmlOk
 
+
 def getFilename(fileIn):
-    """
-    get the filename without path
+    """ Get the filename without path.
     """
     return os.path.basename(fileIn)
 
+
 def getPathFile(fileIn):
-    """
-    get the path of a file without
+    """ Get the path of a file without.
     """
     dirname = os.path.dirname(fileIn)
     if not dirname:
-        dirname='.'
-    return dirname 
-    
-    
+        dirname = '.'
+    return dirname
+
 
 class amc2moodle:
-    def __init__(self,fileInput=None,fileOutput=None,keepFile=None,catname=None):
-        """
-        initialized object
+    def __init__(self, fileInput=None, fileOutput=None, keepFile=None,
+                 catname=None):
+        """ Initialized object
         """
         print('========================')
         print('========================')
         print('=== Start amc2moodle ===')
         print('========================')
         print('========================')
-        # default value
+        # default value # TODO move elsewhere
         self.output = None
         self.tempxmlfiledef = 'tex2xml.xml'
         self.tempxmlfile = 'tex2xml.xml'
@@ -102,90 +92,80 @@ class amc2moodle:
         if fileInput is None:
             print('Input TeX file is missing')
             sys.exit()
-        else:            
-            #load data
+        else:
+            # load data
             self.input = fileInput
             if fileOutput is not None:
                 self.output = fileOutput
             else:
                 tmp = os.path.splitext(self.input)
-                self.output = tmp[0]+'.xml'
+                self.output = tmp[0] + '.xml'
             if keepFile is not None:
                 self.keepFlag = keepFile
             if catname is not None:
                 self.catname = catname
             else:
                 self.catname = self.input
-            #temporary file
-            self.tempxmlfile = os.path.join(getPathFile(self.input),self.tempxmlfiledef)
+            # temporary file
+            self.tempxmlfile = os.path.join(getPathFile(self.input),
+                                            self.tempxmlfiledef)
             self.showData()
         #run the building of the xml file for Moodle
         self.runBuilding()
 
     def showData(self):
-        """
-        show loaded parameters
+        """ Show loaded parameters.
         """
         print('====== Parameters ======')
-        print(' > path input TeX: %s'%getPathFile(self.input))
-        print(' > input TeX file: %s'%getFilename(self.input))
-        print(' > path output TeX: %s'%getPathFile(self.output))
-        print(' > output XML file: %s'%getFilename(self.output))
-        print(' > temp XML file: %s'%self.tempxmlfile)
-        print(' > keep temp files: %s'%self.keepFlag)
-        print(' > categorie name: %s'%self.catname)
+        print(' > path input TeX: %s' % getPathFile(self.input))
+        print(' > input TeX file: %s' % getFilename(self.input))
+        print(' > path output TeX: %s' % getPathFile(self.output))
+        print(' > output XML file: %s' % getFilename(self.output))
+        print(' > temp XML file: %s' % self.tempxmlfile)
+        print(' > keep temp files: %s' % self.keepFlag)
+        print(' > categorie name: %s' % self.catname)
 
     def endMessage(self):
         print("""File converted. Check below for errors...
-
-            This GNU bash script is not fully compatible with Mac and path error may
-            occured. See issues on amc2moodle github page.
 
             For import into moodle :
             --------------------------------
             - Go to the course admistration\question bank\import
             - Choose 'moodle XML format'
             - In the option chose : 'choose the closest grade if not listed'
-            in the 'General option'
-            (Moodle used tabulated grades like 1/2, 1/3 etc...).
+              in the 'General option' since Moodle used tabulated grades 
+              like 1/2, 1/3 etc...
         """)
 
     def runLaTeXML(self):
+        """ Run LaTeXML on the input TeX file.
         """
-        Run LaTeXML on the input TeX file
-        """
-        #run LaTeXML
+        # run LaTeXML
         print(' > Running LaTeXML conversion')
         subprocess.run([
             'latexml',
             '--noparse',
             '--nocomments',
-            '--path=%s'%os.path.dirname(__file__),
-            '--dest=%s'%self.tempxmlfile,
+            '--path=%s' % os.path.dirname(__file__),
+            '--dest=%s' % self.tempxmlfile,
             self.input])
 
     def runXMLindent(self):
-        """
-        Build the xml file for Moodle quizz
+        """ Build the xml file for Moodle quizz.
         """
         # check for xmlindent
-        xmlindentwhich = subprocess.run(['which','xmlindent'])
+        xmlindentwhich = subprocess.run(['which', 'xmlindent'])
         xmlindentOk = xmlindentwhich.returncode == 0
-        #
+
         if xmlindentOk:
-            subprocess.run([
-                'xmlindent',
-                self.output,
-                '-o',
-                self.output])
+            subprocess.run(['xmlindent', self.output,'-o', self.output])
 
     def runBuilding(self):
-        """
-        Build the xml file for Moodle quizz
+        """ Build the xml file for Moodle quizz.
         """
         print('====== Build XML =======')
         self.runLaTeXML()
-        #run script
+        # run script
         print(' > Running Python conversion')
         grading.grading(
             inputfile=getFilename(self.tempxmlfile),
@@ -195,15 +175,17 @@ class amc2moodle:
             keepFlag=self.keepFlag,
             incatname=self.catname
         )
-        #remove temporary file
+        # remove temporary file
         if not self.keepFlag:
-            print(' > Remove temp file: %s'%self.tempxmlfile)
+            print(' > Remove temp file: %s' % self.tempxmlfile)
             os.remove(self.tempxmlfile)
-        #run XMLindent
+        # run XMLindent
         # self.runXMLindent()
-        #copy file from working dir to outputdir
+        # copy file from working dir to outputdir
+        # TODO need to check
         if getPathFile(self.input) != '.':
-            if os.path.join(getPathFile(self.input),getFilename(self.output)) != self.output:
-                shutil.copyfile(os.path.join(getPathFile(self.input),getFilename(self.output)),self.output)
-        #
+            if os.path.join(getPathFile(self.input),
+                            getFilename(self.output)) != self.output:
+                shutil.copyfile(os.path.join(getPathFile(self.input), getFilename(self.output)),
+                                self.output)
         self.endMessage()
