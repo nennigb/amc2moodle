@@ -7,17 +7,19 @@ name: CI-Ubuntu
 on:
   push:
     branches: [ master ]
+    paths-ignore:         # Don't trigger on files that are updated by the CI
+      - README.md
   pull_request:
     branches: [ master ]
-
+    
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # python-version: [3.5, 3.6, 3.7, 3.8]
-        python-version: [3.5]
+        python-version: [3.5, 3.6, 3.7, 3.8]
+        # python-version: [3.5]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -47,7 +49,7 @@ jobs:
         latexml --noparse --nocomment --strict --path=./amc2moodle --dest=./out.xml  ./test/QCM.tex   
     - name: Install amc2moodle
       run: |
-        # add -e to have write access for test. todo : change with temp file
+        # add -e to have write access for test. TODO : change with temp file
         pip install -e .
     - name: Test amc2moodle
       run: |
