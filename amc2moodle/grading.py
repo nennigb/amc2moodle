@@ -20,12 +20,11 @@
 
 """
 from __future__ import print_function
-# from __future__ import unicode_literals # do not really fix path pb
 import sys
 from lxml import etree
-# from PythonMagick import Image
 import base64
 import os
+
 # ======================================================================
 # fonction pour le traitement des fichiers images
 # ======================================================================
@@ -38,8 +37,7 @@ class ImageCustom:
             self.convertImage(fileIn,fileOut)
 
     def loadImageTool(self):
-        """
-        chargement pythonmagick, Wand, Pillow/pdf2image si disponible
+        """ Chargement pythonmagick, Wand, Pillow/pdf2image si disponible
         """
         loadok = False
         # try loading WAnd
@@ -95,21 +93,6 @@ class ImageCustom:
             print('Please install Wand (or PythonMagick or Pillow and pdf2image)')
 
 
-def basename(s):
-    """fonction pour extraire le nom (sans extension et sans path)
-    s : nom complet
-    name : nom du fichier
-    """
-    start = s.split('.')[-2]
-    path = start.split('/')
-    if len(path) > 1:
-        name = path[-1]
-    else:
-        name = path
-
-    return name
-        
-
 def EncodeImg(Ii, pathin, pathout):
     """ Convert image to png and encode it in base64 text.
 
@@ -123,7 +106,6 @@ def EncodeImg(Ii, pathin, pathout):
         the input and output path
     """
 
-    # print(Ii.attrib)
     ext = Ii.attrib['ext']
     img_name = Ii.attrib['name']
     pathF = Ii.attrib['pathF']
@@ -274,7 +256,7 @@ def grading(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
         img_path = os.path.join(pathin,
                                 img_name[0:img_name.rfind('/')]).replace('/./', '/')
         # print(img_path)
-        name = basename(img_name)
+        name = os.path.basename(img_name)
         # print(name, ext, img_dim, align[img_align])
         Ii.attrib.update({'ext':ext, 'dim': img_dim, 'size': img_size,
                           'pathF': img_path, 'align': align[img_align],
