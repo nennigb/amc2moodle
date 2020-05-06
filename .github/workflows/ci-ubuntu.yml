@@ -52,13 +52,18 @@ jobs:
     - name: Test amc2moodle
       run: |
         python -m amc2moodle.test
-    - name: Archive test output
+    - name: Archive test output (no tikz)
       if: ${{ always() }}
       uses: actions/upload-artifact@v1
       with:
         name: test_notikz
         path: test_notikz.xml    
-   
+    - name: Archive test output (tikz)
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v1
+      with:
+        name: test_tikz
+        path: test_tikz.xml   
    
         
         
