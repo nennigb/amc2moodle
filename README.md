@@ -1,4 +1,5 @@
 # `amc2moodle`
+![CI-Ubuntu](https://github.com/nennigb/amc2moodle/workflows/CI-Ubuntu/badge.svg)
 
 `amc2moodle`, is **a tool to convert automultiplechoice quizz (v1.0.3-v1.4) to moodle questions (XML format).**
 The automuliplechoice LaTeX format is convenient, and can be used for preparing question and avoiding moodle web gui.
@@ -129,7 +130,7 @@ Feedback are present, in a certain way, in `automuliplechoice` with the `\explai
 
 ## Troubleshooting
 In case of problem, do not hesitate to ask help on  [issues](https://github.com/nennigb/amc2moodle/issues)
-  - 'convert: not authorized..' see ImageMagick policy.xml file
+  - 'convert: not authorized..' see ImageMagick policy.xml file see [here](https://stackoverflow.com/questions/52699608/wand-policy-error-error-constitute-c-readimage-412)
 
 ## Related Project
   - [auto-multiple-choice](https://www.auto-multiple-choice.net),  is a piece of software that can help you creating and managing multiple choice questionnaires (MCQ), with automated marking.
