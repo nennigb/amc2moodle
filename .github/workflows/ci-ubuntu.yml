@@ -58,7 +58,7 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v1
       with:
-        name: test_notikz
+        name: test_notikz_${{ matrix.python-version }}
         path: test_notikz.xml    
     - name: Archive test output (tikz)
       if: ${{ always() }}
