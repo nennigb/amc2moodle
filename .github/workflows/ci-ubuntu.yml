@@ -64,7 +64,7 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v1
       with:
-        name: test_tikz
+        name: test_tikz_${{ matrix.python-version }}
         path: test_tikz.xml   
    
         
