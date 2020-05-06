@@ -18,24 +18,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-usage :
-    python grading.py $pathin $filein $pathout $fileout $keep $catname $catflag
-        pathin, path to input xml file
-        filein, input xml filename
-        pathout, path to output xml file
-        fileout, output xml filename
-        keep, keep intermediate file plug in deb...
-        catname, output xml filename
-        catflag, output xml filename
-        
-part of amc2moodle : 
-    call xslt stylesheet and complete the require xml element
-    compute the grade according to the amc way
-    convert non png img into png and embedded them in the output_file
-    
-warning : 
-    the grade are not computed exactly as in amc, see amc2moodle.pdf
-
 """
 from __future__ import print_function
 # from __future__ import unicode_literals # do not really fix path pb
@@ -48,7 +30,7 @@ import os
 # fonction pour le traitement des fichiers images
 # ======================================================================
 class ImageCustom:
-    def __init__(self,fileIn=None,fileOut=None):
+    def __init__(self, fileIn=None, fileOut=None):
         self.wrapperOk = False
         self.typeW = None
         self.loadImageTool()
@@ -60,17 +42,6 @@ class ImageCustom:
         chargement pythonmagick, Wand, Pillow/pdf2image si disponible
         """
         loadok = False
-        # try loading PythonMagick
-        # if not loadok:
-            # try:
-            #     global Image
-            #     from PythonMagick import Image 
-            #     loadok = True
-            #     self.typeW = 'pythonmagick'
-            #     # print('PythonMagick is loaded')
-            # except ModuleNotFoundError:
-            #     pass
-            #     # print('Unable to load PythonMagick')
         # try loading WAnd
         if not loadok:
             try:
@@ -95,13 +66,11 @@ class ImageCustom:
         #         # print('Unable to load Pillow and pdf2image')
         
         return loadok
-    
 
-    def convertImage(self,fileIn,fileOut):
+    def convertImage(self, fileIn, fileOut):
         """
-        convertion image en fonction de la librairie
+        Convertion image en fonction de la librairie.
         """
-        print(self.typeW)
         if self.typeW == 'pythonmagick':
             im = Image(fileIn)
             im.write(fileOut)
@@ -118,8 +87,8 @@ class ImageCustom:
             # remove timestamp from png (keep checksum unchanged for test)
             im.artifacts['png:exclude-chunks'] = 'date,time,pdf'
             im.strip()
-            for (k,v) in im.artifacts.items():
-                print(k,v)
+            for (k, v) in im.artifacts.items():
+                print(k, v)
             im.save(filename=fileOut)
             im.close()
         else:
@@ -131,29 +100,27 @@ def basename(s):
     s : nom complet
     name : nom du fichier
     """
-    start=s.split('.')[-2]
-    path = start.split('/') 
-    if len(path)>1:
-        name=path[-1]
+    start = s.split('.')[-2]
+    path = start.split('/')
+    if len(path) > 1:
+        name = path[-1]
     else:
-        name=path        
-        
+        name = path
+
     return name
         
 
-
 def EncodeImg(Ii, pathin, pathout):
-    """ Convert image in png and encode it in base64 text.
+    """ Convert image to png and encode it in base64 text.
 
     Parameters
     ----------
     Ii : element tree
-        The xml element containing the image information (path, ...). This 
+        The xml element containing the image information (path, ...). This
         element is modified.
-        
+
     pathin, pathout : string
         the input and output path
-    
     """
 
     # print(Ii.attrib)
@@ -189,32 +156,37 @@ def EncodeImg(Ii, pathin, pathout):
 
 
 
-def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag=False,incatname=None):
-    """
-    function to build Moodle XML file from xml file obtain with LaTeXML
+def grading(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
+            keepFlag=False, incatname=None):
+    """ Build Moodle XML file from xml file obtain with LaTeXML.
+
+    Call xslt stylesheet and complete the required xml element,
+    Compute the grade according to the amc way
+    Convert non png img into png and embedded them in the output_file
+
+    Remark : The grade are not computed exactly as in amc, see the doc.
     """
 
     if inputfile is None or inputdir is None or outputfile is None or outputdir is None:
         print("Problem with the number of imput args, check calling seq. in amc2moodle.sh .")
-        pathin = 'test'            # path to input xml file
+        pathin = 'test'               # path to input xml file
         filein = 'tex2xml.xml'        # input xml filename
-        pathout = 'test'           # path to output xml file
+        pathout = 'test'              # path to output xml file
         fileout = 'QCM_wo-tikz.xml'   # output xml filename
-        keep = 0         # keep intermediate file plug in deb...
-        catname = 'QCM_wo-tikz.tex'           # output xml filename
-        catflag = 0           # output xml filename
-        deb=0                        # set to 1 to write intermediate xml file and write verbose output
-        # exit() 
-        
-    else:# 1st arg is the program name    
-        pathin = inputdir            # path to input xml file
-        filein = os.path.join(inputdir,inputfile)        # input xml filename
-        pathout = outputdir           # path to output xml file
-        fileout = os.path.join(outputdir,outputfile)   # output xml filename
-        keep = keepFlag         # keep intermediate file plug in deb...
-        catname = incatname           # output xml filename
-        catflag = catname is not None           # output xml filename
-        deb=0                        # set to 1 to write intermediate xml file and write verbose output
+        keep = 0                      # keep intermediate file plug in deb...
+        catname = 'QCM_wo-tikz.tex'   # output xml filename
+        catflag = 0                   # output xml filename
+        deb = 0                       # set to 1 to write intermediate xml file and write verbose output
+
+    else:  # 1st arg is the program name
+        pathin = inputdir              # path to input xml file
+        filein = os.path.join(inputdir, inputfile)      # input xml filename
+        pathout = outputdir            # path to output xml file
+        fileout = os.path.join(outputdir, outputfile)   # output xml filename
+        keep = keepFlag                # keep intermediate file plug in deb...
+        catname = incatname            # output xml filename
+        catflag = catname is not None  # output xml filename
+        deb = 0                        # set to 1 to write intermediate xml file and write verbose output
 
     """ 
     ======================================================================
@@ -226,120 +198,130 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
     \baremeDefautM{e=-0.5,b=0.5,m=-0.25,p=-0.5}
     ou au niveau de la question
     """
-
-    ShuffleAll = True                             # Shuffle all answsers
-    amc_autocomplete=1                            # ajout amc_aucune si obligatoire"
+    # TODO to options file
+    # Shuffle all answsers
+    ShuffleAll = True
+    # ajout amc_aucune si obligatoire"
+    amc_autocomplete = 1
     amc_aucune = u"aucune de ces réponses n'est correcte"
-    amc_bs = {'e':-1,'b':1,'m':-0.5}              # Simple :: e :incohérence, b: bonne,  m: mauvaise,  p: planché
-    amc_bm = {'e':-1,'b':1,'m':-0.5, 'p':-1}    # Multiple :: e :incohérence, b: bonne,  m: mauvaise,  p: planché
-    moo_defautgrade = 1.                        # valeur par défaut de la note de la question
-
+    # Simple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
+    amc_bs = {'e': -1, 'b': 1, 'm': -0.5}
+    # Multiple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
+    amc_bm = {'e': -1, 'b': 1, 'm': -0.5, 'p': -1}
+    # valeur par défaut de la note de la question
+    moo_defautgrade = 1.
 
     # file out for debug pupose
-    filetemp0 = os.path.join(pathout,"temp0.xml")
-    filetemp  = os.path.join(pathout,"temp.xml")
+    filetemp0 = os.path.join(pathout, "temp0.xml")
+    filetemp = os.path.join(pathout, "temp.xml")
 
-    #path of the file
+    # path of the file
 
     # path to xslt stylesheet
     # TODO use pkgutils
-    filexslt_ns  = os.path.join(os.path.dirname(__file__),"transform_ns.xslt")       # 1. remove namespace
-    filexslt_pre = os.path.join(os.path.dirname(__file__),"transform2html.xslt")     # 2. convert to html, tab, figure, equations
-    filexslt     = os.path.join(os.path.dirname(__file__),"transform.xslt")          # 3. remane element and finish the job
+    # 1. remove namespace
+    filexslt_ns = os.path.join(os.path.dirname(__file__),
+                               "transform_ns.xslt")
+    # 2. convert to html, tab, figure, equations
+    filexslt_pre = os.path.join(os.path.dirname(__file__),
+                                "transform2html.xslt")
+    # 3. remane element and finish the job
+    filexslt = os.path.join(os.path.dirname(__file__),
+                            "transform.xslt")
 
 
-
-    ############################################################################
+    ##########################################################################
     # Pré traitement
     # on parse le fichier xml
     # Elements are lists
     # Elements carry attributes as a dict
-    xml =  open(filein, 'r')
+    xml = open(filein, 'r')
     tree0 = etree.parse(xml)
 
     # on supprime le namespace [a terme faire autrement]
-    xslt_ns =  open(filexslt_ns, 'r')
-    xslt_ns_tree= etree.parse(xslt_ns)
+    xslt_ns = open(filexslt_ns, 'r')
+    xslt_ns_tree = etree.parse(xslt_ns)
     transform_ns = etree.XSLT(xslt_ns_tree)
     # applique tranformation
     tree = transform_ns(tree0)
     # on modifie les element graphic pour gérer les chemins, le taille et la mise en forme.
     # <graphics candidates="schema_interpL.png" graphic="schema_interpL.png" options="width=216.81pt" xml:id="g1" class="ltx_centering"/>
-    Ilist = tree.xpath(".//graphics") # que sur attributs ici
+    Ilist = tree.xpath(".//graphics")  # que sur attributs ici
     # conversion des notations d'alignement
-    align={'ltx_align_right':'right','ltx_align_left':'left','ltx_centering':'center'}
+    align = {'ltx_align_right': 'right', 'ltx_align_left': 'left',
+             'ltx_centering': 'center'}
     # ext extension, path:chemin img, dim [width/height],size, dimension en point
 
     for Ii in Ilist:
-        img_name=Ii.attrib['graphic']
-        ext=img_name.split('.')[-1]
-    
+        img_name = Ii.attrib['graphic']
+        ext = img_name.split('.')[-1]
         # not all attrib are mandatory... check if they exist before use it
         # try for class
         if 'class' in Ii.attrib:
-            img_align=Ii.attrib['class']
+            img_align = Ii.attrib['class']
         else:
-            img_align='ltx_centering' # default value center !
+            img_align = 'ltx_centering'  # default value center !
         # try for option
         if 'options' in Ii.attrib:
-            img_options=Ii.attrib['options']
-            img_size = img_options.split('=')[-1] # il reste pt, mais cela ne semble pas poser de pb
+            img_options = Ii.attrib['options']
+            img_size = img_options.split('=')[-1]  # il reste pt, mais cela ne semble pas poser de pb
             img_dim = img_options.split('=')[0]
         else:
-            img_options=''
-            img_size='200pt'
-            img_dim='width'
-            
-    
-        img_path = os.path.join(pathin,img_name[0:img_name.rfind('/')]).replace('/./','/')
+            img_options = ''
+            img_size = '200pt'
+            img_dim = 'width'
+
+        img_path = os.path.join(pathin,
+                                img_name[0:img_name.rfind('/')]).replace('/./', '/')
         # print(img_path)
         name = basename(img_name)
         # print(name, ext, img_dim, align[img_align])
-        Ii.attrib.update({'ext':ext,'dim':img_dim,'size':img_size,'pathF':img_path,'align':align[img_align],'name':name})
-        #print Ii.attrib
-        
-    #path
-    #ext
+        Ii.attrib.update({'ext':ext, 'dim': img_dim, 'size': img_size,
+                          'pathF': img_path, 'align': align[img_align],
+                          'name': name})
+
+    # path
+    # ext
     # dim = width or height
     # size :
-    #width options="height=216.81pt"
-    #alig <-> class
+    # width options="height=216.81pt"
+    # alig <-> class
 
     # remise en forme + html + math + image + tableau
     xslt_pre =  open(filexslt_pre, 'r')
-    xslt_pre_tree= etree.parse(xslt_pre)
+    xslt_pre_tree = etree.parse(xslt_pre)
     transform_pre = etree.XSLT(xslt_pre_tree)
     # applique tranformation
     tree = transform_pre(tree)
-    if (deb==1):
-        #print(etree.tostring(tree, pretty_print=True))
+    if (deb == 1):
+        # print(etree.tostring(tree, pretty_print=True))
         # ecriture
-        xmltemp0 =  open(filetemp0, 'w')
+        xmltemp0 = open(filetemp0, 'w')
         tree.write(xmltemp0, pretty_print=True)
         xmltemp0.close()
 
-
-    ############################################################################
+    ###########################################################################
     # Recherche barème par défaut
     # attribut amc_baremeDefautS et amc_baremeDefautM
     # on cherche s'il existe un barème par défaut pour question simple
-    bars = tree.xpath("//*[@class='amc_baremeDefautS']") # que sur attributs ici
+    bars = tree.xpath("//*[@class='amc_baremeDefautS']")  # que sur attributs ici
     # bar[0].text contient la chaine de caractère
-    if len(bars)>0:
+    if len(bars) > 0:
         # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
-        amc_bs=dict(item.split("=") for item in bars[0].text.strip().split(","))
+        amc_bs = dict(item.split("=") for item in bars[0].text.strip().split(","))
         print("baremeDefautS :", amc_bs)
-        if (float(amc_bs['b'])<1):
+        if (float(amc_bs['b']) < 1):
             print("warning the grade the good answser in question will be < 100%, put b=1")
 
     # on cherche s'il existe un barème par défaut pour question multiple
     barm = tree.xpath("//*[@class='amc_baremeDefautM']")
     # bar[0].text contient la chaine de caractère
-    if len(barm)>0:
+    if len(barm) > 0:
         # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
-        amc_bm=dict(item.split("=") for item in barm[0].text.strip().split(","))
+        amc_bm = dict(item.split("=") for item in barm[0].text.strip().split(","))
         print("baremeDefautM :", amc_bm)
-        if (float(amc_bm['b'])<1): print("        -> warning the grade of the good answser(s) in questionmult may be < 100%, put b=1")
+        if (float(amc_bm['b']) < 1):
+            print("        -> warning the grade of the good answser(s) in questionmult may be < 100%, put b=1")
 
 
     ############################################################################
@@ -347,68 +329,67 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
     # <text>$course$/filein/amc_element_tag</text>
     Clist = tree.xpath("//*[@class='amc_categorie']")
     for Ci in Clist:
-        if (catflag==1):
-            Ci.text = "$course$/"+catname.split('.')[0]+"/"+ Ci.text
+        if (catflag == 1):
+            Ci.text = "$course$/"+catname.split('.')[0] + "/" + Ci.text
         else:
             Ci.text = "$course$/"+catname.split('.')[0]
 
 
-
-    ############################################################################
-    # Application du barème dans chaque question 
+    ###########################################################################
+    # Application du barème dans chaque question
     # + vérf barème locale : attribut amc_bareme
-    # on suppose que le bareme est au même niveau que des element amc_bonne ou amc_mauvaise
+    # on suppose que le bareme est au même niveau que des element amc_bonne
+    # ou amc_mauvaise
 
     # Question simple
-    # ==========================================================================
+    # =========================================================================
     #Qlist = tree.xpath("//text[@class='amc_question']")
     Qlist = tree.xpath("//*[@class='amc_question']")
     # calcul nombre de question totale
-    Qtot = len(Qlist)  
+    Qtot = len(Qlist)
     for Qi in Qlist:
         # apply shuffleing
-        shuffleanswers = etree.SubElement(Qi, "shuffleanswers") 
+        shuffleanswers = etree.SubElement(Qi, "shuffleanswers")
         if ShuffleAll is True:
             shuffleanswers.text = 'true'
         else:
             shuffleanswers.text = 'false'
         # est qu'il y a une bareme local cherche dans les child
-        #barl = Qi.xpath("./text[@class='amc_bareme']")
+        # barl = Qi.xpath("./text[@class='amc_bareme']")
         barl = Qi.xpath("bareme")
         # Par défaut on a le bareme global
         amc_bl = amc_bs
         # si il y a une bareme local, on prend celui-la
-        if len(barl)>0:
+        if len(barl) > 0:
             amc_bl=dict(item.split("=") for item in barl[0].text.strip().split(","))
             print("bareme local :", amc_bl)
-            if (float(amc_bl['b'])<1.): print("        ->warning the grade of the good answser(s) may be < 100%, put b=1"        )
-
+            if (float(amc_bl['b']) < 1.):
+                print("        ->warning the grade of the good answser(s) may be < 100%, put b=1")
 
         # inclusion des images dans les questions
         Ilist = Qi.xpath("./questiontext/file")       
         for Ii in Ilist:
-            Ii=EncodeImg(Ii,pathin,pathout)
-            
+            Ii = EncodeImg(Ii, pathin, pathout)
 
-        # bonne cherche dans les child    
-        Rlist = Qi.xpath("./*[starts-with(@class, 'amc_bonne')]")    
+        # bonne cherche dans les child
+        Rlist = Qi.xpath("./*[starts-with(@class, 'amc_bonne')]")
         for Ri in Rlist:
-            frac = etree.SubElement(Ri, "fraction") # body pointe vers une case de tree
+            frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bl['b'])*100.)
             # inclusion des images dans les réponses
             RIlist = Ri.xpath("file")       
             for Ii in RIlist:
-                Ii=EncodeImg(Ii,pathin,pathout)
-        
-        # Mauvaise cherche dans les child   
+                Ii = EncodeImg(Ii, pathin, pathout)
+
+        # Mauvaise cherche dans les child
         Rlist = Qi.xpath("./*[starts-with(@class, 'amc_mauvaise')]")    
         for Ri in Rlist:
-            frac = etree.SubElement(Ri, "fraction") # body pointe vers une case de tree
+            frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bl['m'])*100.)
             # inclusion des images dans les réponses
             RIlist = Ri.xpath("file")       
             for Ii in RIlist:
-                Ii=EncodeImg(Ii,pathin,pathout)
+                Ii = EncodeImg(Ii, pathin, pathout)
             
         # e:incohérente n'a pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
 
@@ -416,112 +397,113 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
         Dgrade = etree.SubElement(Qi, "defaultgrade")
         Dgrade.text = str(moo_defautgrade)
         
-        
     # Question multiple
     # ==========================================================================
-    #Qlist = tree.xpath("//text[@class='amc_questionmult']")
+    # Qlist = tree.xpath("//text[@class='amc_questionmult']")
     Qlist = tree.xpath("//*[@class='amc_questionmult']")
     # calcul nombre de question au total
-    Qtot += len(Qlist)  
+    Qtot += len(Qlist)
     for Qi in Qlist:
         # apply shuffleing
-        shuffleanswers = etree.SubElement(Qi, "shuffleanswers") 
+        shuffleanswers = etree.SubElement(Qi, "shuffleanswers")
         if ShuffleAll is True:
             shuffleanswers.text = 'true'
         else:
             shuffleanswers.text = 'false'
         # est qu'il y a une bareme local cherche dans les child
-        #barl = Qi.xpath("./text[@class='amc_bareme']")
-        #barl = Qi.xpath("./*[@class='amc_bareme']")
+        # barl = Qi.xpath("./text[@class='amc_bareme']")
+        # barl = Qi.xpath("./*[@class='amc_bareme']")
         barl = Qi.xpath("bareme")
         # Par défaut on a le bareme global
         amc_bml = amc_bm
         # si il y a une bareme local, on prend celui-la
-        if len(barl)>0:
-            amc_bml=dict(item.split("=") for item in barl[0].text.strip().split(","))
+        if len(barl) > 0:
+            amc_bml = dict(item.split("=") for item in barl[0].text.strip().split(","))
             print("bareme local :", amc_bml)
-            if (float(amc_bml['b'])<1): print("        ->warning the grade of the good answser(s) may be < 100%, put b=1"  )
-        
+            if (float(amc_bml['b']) < 1):
+                print("        ->warning the grade of the good answser(s) may be < 100%, put b=1")
+
         # inclusion des images dans les questions
-        Ilist = Qi.xpath("./questiontext/file")       
+        Ilist = Qi.xpath("./questiontext/file")
         for Ii in Ilist:
-            Ii=EncodeImg(Ii,pathin,pathout)
-            
+            Ii = EncodeImg(Ii, pathin, pathout)
+
         # on compte le nombre de réponse NR
-        #Rlistb = Qi.xpath("./text[@class='amc_bonne']")           
-        Rlistb = Qi.xpath("./*[starts-with(@class, 'amc_bonne')]")           
+        # Rlistb = Qi.xpath("./text[@class='amc_bonne']")
+        Rlistb = Qi.xpath("./*[starts-with(@class, 'amc_bonne')]")
         NRb = len(Rlistb)
-        
-        #Rlistm = Qi.xpath("./text[@class='amc_mauvaise']") 
-        Rlistm = Qi.xpath("./*[starts-with(@class, 'amc_mauvaise')]") 
+
+        # Rlistm = Qi.xpath("./text[@class='amc_mauvaise']")
+        Rlistm = Qi.xpath("./*[starts-with(@class, 'amc_mauvaise')]")
         NRm = len(Rlistm)
-        
-        
+
         # =====================================================================
-        # Ajouter les réponses "aucune réponse"    
+        # Ajouter les réponses "aucune réponse"
         # Si déjà une bonne réponse on en ajoute une mauvaise
-        if ( (amc_autocomplete==1) & (NRb>0) ):
-            aucune = etree.SubElement(Qi, 'note', attrib={'class':'amc_mauvaise'} ) 
-            aucunec = etree.SubElement(aucune, 'note' ) 
+        if ((amc_autocomplete == 1) & (NRb > 0)):
+            aucune = etree.SubElement(Qi, 'note',
+                                      attrib={'class': 'amc_mauvaise'})
+            aucunec = etree.SubElement(aucune, 'note')
             aucunec.text = amc_aucune
-            NRm+=1
+            NRm += 1
             Rlistm.append(aucune)
-            
+
         # Si pas de bonne on en ajoute une bonne
-        if ( (amc_autocomplete==1) & (NRb==0) ):
-            aucune = etree.SubElement(Qi, 'note', attrib={'class':'amc_bonne'} ) 
-            aucunec = etree.SubElement(aucune, 'note' ) 
+        if ((amc_autocomplete == 1) & (NRb == 0)):
+            aucune = etree.SubElement(Qi, 'note',
+                                      attrib={'class': 'amc_bonne'})
+            aucunec = etree.SubElement(aucune, 'note')
             aucunec.text = amc_aucune
-            NRb+=1
+            NRb += 1
             Rlistb.append(aucune)
 
         # =====================================================================
         # ajout d'un champ fraction au reponse
-        # bonne cherche dans les Qi childs       
+        # bonne cherche dans les Qi childs
         for Ri in Rlistb:
-            frac = etree.SubElement(Ri, "fraction") # body pointe vers une case de tree
+            frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bml['b'])*100./NRb)
-            RIlist = Ri.xpath("file")       
+            RIlist = Ri.xpath("file")
             for Ii in RIlist:
-                Ii=EncodeImg(Ii,pathin,pathout)
-        
-        # Mauvaise cherche dans les Qi childs 
+                Ii = EncodeImg(Ii, pathin, pathout)
+
+        # Mauvaise cherche dans les Qi childs
         for Ri in Rlistm:
-            frac = etree.SubElement(Ri, "fraction") # body pointe vers une case de tree
+            frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bml['m'])*100./NRm)
-            RIlist = Ri.xpath("file")       
+            RIlist = Ri.xpath("file")
             for Ii in RIlist:
-                Ii=EncodeImg(Ii,pathin,pathout)
-        
+                Ii = EncodeImg(Ii, pathin, pathout)
+
 
         # incohérente pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
 
         # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
         Dgrade = etree.SubElement(Qi, "defaultgrade")
-        Dgrade.text = str(moo_defautgrade)    
+        Dgrade.text = str(moo_defautgrade)
 
 
     # on affiche
-    if (deb==1):
-        #print(etree.tostring(tree, pretty_print=True,encoding="utf-8"))
+    if (deb == 1):
+        # print(etree.tostring(tree, pretty_print=True,encoding="utf-8"))
         # Ecriture fichier output intermediaire (grading edit)
         # ouverture
         xmltemp =  open(filetemp, 'w')
         # ecriture
-        tree.write(xmltemp, pretty_print=True,encoding="utf-8")
+        tree.write(xmltemp, pretty_print=True, encoding="utf-8")
         xmltemp.close()
 
 
     ############################################################################
     # Reformatage à partir de xslt
     # chargement
-    xslt =  open(filexslt, 'r')
-    xslt_tree= etree.parse(xslt)
+    xslt = open(filexslt, 'r')
+    xslt_tree = etree.parse(xslt)
     transform = etree.XSLT(xslt_tree)
     # applique tranformation
     result_tree = transform(tree)
-    if (deb==1):
-        print(etree.tostring(result_tree, pretty_print=True,encoding="utf-8"))
+    if (deb == 1):
+        print(etree.tostring(result_tree, pretty_print=True, encoding="utf-8"))
 
 
     ############################################################################
@@ -529,19 +511,17 @@ def grading(inputfile=None,inputdir=None,outputfile=None,outputdir=None,keepFlag
     # xmlout =  open(fileout, 'w')
     # result_tree.write(xmlout, pretty_print=True,encoding="utf-8")
     # xmlout.close()
-    result_tree.write(fileout, pretty_print=True,encoding="utf-8")
+    result_tree.write(fileout, pretty_print=True, encoding="utf-8")
     if deb == 1:
         print(result_tree)
 
-    # fermeture des fichiers
+    # fermeture des fichiers xslt
     xslt_ns.close()
     xslt_pre.close()
     xslt.close()
-
-
+    # close xml output file
     xml.close()
 
     print('\n')
     print(' > shuffleanswers is ' + str(ShuffleAll))
-    print( " > "+str(Qtot)+" questions converted...")
-
+    print(" > " + str(Qtot) + " questions converted...")
