@@ -92,6 +92,11 @@ class ImageCustom:
         else:
             print('Please install Wand (or PythonMagick or Pillow and pdf2image)')
 
+def basename(s):
+    """ Return basename (without extension) from a path s.
+    """
+    name = os.path.splitext(os.path.basename(s))[0]
+    return name
 
 def EncodeImg(Ii, pathin, pathout):
     """ Convert image to png and encode it in base64 text.
@@ -256,7 +261,7 @@ def grading(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
         img_path = os.path.join(pathin,
                                 img_name[0:img_name.rfind('/')]).replace('/./', '/')
         # print(img_path)
-        name = os.path.basename(img_name)
+        name = basename(img_name)
         # print(name, ext, img_dim, align[img_align])
         Ii.attrib.update({'ext':ext, 'dim': img_dim, 'size': img_size,
                           'pathF': img_path, 'align': align[img_align],
