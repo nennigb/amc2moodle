@@ -143,7 +143,7 @@ def EncodeImg(Ii, pathin, pathout):
 
 
 
-def grading(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
+def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             keepFlag=False, incatname=None):
     """ Build Moodle XML file from xml file obtain with LaTeXML.
 

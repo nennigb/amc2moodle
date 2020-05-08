@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from amc2moodle import grading
+from amc2moodle import convert
 import subprocess
 import sys
 import os
@@ -167,7 +167,7 @@ class amc2moodle:
         self.runLaTeXML()
         # run script
         print(' > Running Python conversion')
-        grading.grading(
+        convert.to_moodle(
             inputfile=getFilename(self.tempxmlfile),
             inputdir=getPathFile(self.input),
             outputfile=getFilename(self.output),
