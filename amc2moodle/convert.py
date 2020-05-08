@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
     This file is part of amc2moodle, a convertion tool to recast quiz written
-    with the LaTeX format used by automuliplechoice 1.0.3 into the 
+    with the LaTeX format used by automuliplechoice 1.0.3 into the
     moodle XML quiz format.
-    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr 
+    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,81 +24,49 @@ import sys
 from lxml import etree
 import base64
 import os
+from wand.image import Image as wandImage
 
 # ======================================================================
-# fonction pour le traitement des fichiers images
+# Image processing utilities
 # ======================================================================
-class ImageCustom:
-    def __init__(self, fileIn=None, fileOut=None):
-        self.wrapperOk = False
-        self.typeW = None
-        self.loadImageTool()
-        if fileIn is not None and fileOut is not None:
-            self.convertImage(fileIn,fileOut)
-
-    def loadImageTool(self):
-        """ Chargement pythonmagick, Wand, Pillow/pdf2image si disponible
-        """
-        loadok = False
-        # try loading WAnd
-        if not loadok:
-            try:
-                global Image
-                from wand.image import Image 
-                loadok = True
-                self.typeW = 'wand'
-                # print('Wand is loaded')
-            except ModuleNotFoundError:
-                pass
-                # print('Unable to load wand')
-        # try loading WAnd
-        # if not loadok:
-        #     try:
-        #         global Image
-        #         from PIL import Image 
-        #         import pdf2image
-        #         loadok = True
-        #         self.typeW = 'pillowpdf2image'
-        #     except ModuleNotFoundError:
-        #         pass
-        #         # print('Unable to load Pillow and pdf2image')
-        
-        return loadok
-
-    def convertImage(self, fileIn, fileOut):
-        """
-        Convertion image en fonction de la librairie.
-        """
-        if self.typeW == 'pythonmagick':
-            im = Image(fileIn)
-            im.write(fileOut)
-        elif self.typeW == 'pillowpdf2image':
-            if os.path.splitext(fileIn)[1] == '.pdf':
-                pages = pdf2image.convert_from_path(fileIn, dpi=500)
-                for page in pages:
-                    page.save(fileOut,'PNG')
-            else:
-                im = Image.open(fileIn)
-                im.save(fileOut)
-        elif self.typeW == 'wand':
-            im = Image(filename=fileIn)
-            # remove timestamp from png (keep checksum unchanged for test)
-            im.artifacts['png:exclude-chunks'] = 'date,time,pdf'
-            im.strip()
-            for (k, v) in im.artifacts.items():
-                print(k, v)
-            im.save(filename=fileOut)
-            im.close()
-        else:
-            print('Please install Wand (or PythonMagick or Pillow and pdf2image)')
-
 def basename(s):
     """ Return basename (without extension) from a path s.
     """
     name = os.path.splitext(os.path.basename(s))[0]
     return name
 
-def EncodeImg(Ii, pathin, pathout):
+
+class ImageCustom:
+    """ Create an Image class to create a common interface for Image libs.
+
+    For simplicity, this class support only wand. See python-refactor branch
+    to see the previous interface
+
+    TODO : create to abstract class to define the common interface.
+    """
+
+    def __init__(self, fileIn=None, fileOut=None):
+        if fileIn is not None and fileOut is not None:
+            self.convertImage(fileIn, fileOut)
+
+
+    def convertImage(self, fileIn, fileOut):
+        """ Image conversion with wand.
+        """
+        im = wandImage(filename=fileIn)
+        # remove timestamp from png (keep checksum unchanged for test)
+        im.artifacts['png:exclude-chunks'] = 'date,time'
+        im.strip()
+        # for (k, v) in im.artifacts.items():
+        #     print(k, v)
+        print("  Conversion from {} to {}.".format(os.path.splitext(fileIn)[1],
+                                                   os.path.splitext(fileOut)[1]
+                                                   ))
+        im.save(filename=fileOut)
+        im.close()
+
+
+def encodeImg(Ii, pathin, pathout):
     """ Convert image to png and encode it in base64 text.
 
     Parameters
@@ -144,7 +112,7 @@ def EncodeImg(Ii, pathin, pathout):
 
 
 def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
-            keepFlag=False, incatname=None):
+              keepFlag=False, incatname=None):
     """ Build Moodle XML file from xml file obtain with LaTeXML.
 
     Call xslt stylesheet and complete the required xml element,
@@ -152,6 +120,8 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
     Convert non png img into png and embedded them in the output_file
 
     Remark : The grade are not computed exactly as in amc, see the doc.
+
+    TODO Factorize question type
     """
 
     if inputfile is None or inputdir is None or outputfile is None or outputdir is None:
@@ -175,7 +145,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
         catflag = catname is not None  # output xml filename
         deb = 0                        # set to 1 to write intermediate xml file and write verbose output
 
-    """ 
+    """
     ======================================================================
     #  on définie les valeurs par défaut
     ======================================================================
@@ -215,7 +185,6 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
     # 3. remane element and finish the job
     filexslt = os.path.join(os.path.dirname(__file__),
                             "transform.xslt")
-
 
     ##########################################################################
     # Pré traitement
@@ -354,9 +323,9 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
                 print("        ->warning the grade of the good answser(s) may be < 100%, put b=1")
 
         # inclusion des images dans les questions
-        Ilist = Qi.xpath("./questiontext/file")       
+        Ilist = Qi.xpath("./questiontext/file")
         for Ii in Ilist:
-            Ii = EncodeImg(Ii, pathin, pathout)
+            Ii = encodeImg(Ii, pathin, pathout)
 
         # bonne cherche dans les child
         Rlist = Qi.xpath("./*[starts-with(@class, 'amc_bonne')]")
@@ -364,26 +333,26 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bl['b'])*100.)
             # inclusion des images dans les réponses
-            RIlist = Ri.xpath("file")       
+            RIlist = Ri.xpath("file")
             for Ii in RIlist:
-                Ii = EncodeImg(Ii, pathin, pathout)
+                Ii = encodeImg(Ii, pathin, pathout)
 
         # Mauvaise cherche dans les child
-        Rlist = Qi.xpath("./*[starts-with(@class, 'amc_mauvaise')]")    
+        Rlist = Qi.xpath("./*[starts-with(@class, 'amc_mauvaise')]")
         for Ri in Rlist:
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bl['m'])*100.)
             # inclusion des images dans les réponses
-            RIlist = Ri.xpath("file")       
+            RIlist = Ri.xpath("file")
             for Ii in RIlist:
-                Ii = EncodeImg(Ii, pathin, pathout)
-            
+                Ii = encodeImg(Ii, pathin, pathout)
+
         # e:incohérente n'a pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
 
         # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
         Dgrade = etree.SubElement(Qi, "defaultgrade")
         Dgrade.text = str(moo_defautgrade)
-        
+
     # Question multiple
     # ==========================================================================
     # Qlist = tree.xpath("//text[@class='amc_questionmult']")
@@ -413,7 +382,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
         # inclusion des images dans les questions
         Ilist = Qi.xpath("./questiontext/file")
         for Ii in Ilist:
-            Ii = EncodeImg(Ii, pathin, pathout)
+            Ii = encodeImg(Ii, pathin, pathout)
 
         # on compte le nombre de réponse NR
         # Rlistb = Qi.xpath("./text[@class='amc_bonne']")
@@ -452,7 +421,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             frac.text = str(float(amc_bml['b'])*100./NRb)
             RIlist = Ri.xpath("file")
             for Ii in RIlist:
-                Ii = EncodeImg(Ii, pathin, pathout)
+                Ii = encodeImg(Ii, pathin, pathout)
 
         # Mauvaise cherche dans les Qi childs
         for Ri in Rlistm:
@@ -460,7 +429,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             frac.text = str(float(amc_bml['m'])*100./NRm)
             RIlist = Ri.xpath("file")
             for Ii in RIlist:
-                Ii = EncodeImg(Ii, pathin, pathout)
+                Ii = encodeImg(Ii, pathin, pathout)
 
 
         # incohérente pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
