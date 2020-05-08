@@ -52,9 +52,6 @@ setup(
     zip_safe=False,
     packages=['amc2moodle'],
     include_package_data=True,
-    package_data={'': ['amc2moodle/xslt/*.xslt',
-                       'automultiplechoice.sty.ltxml',
-                       'test/*']},
     scripts=['amc2moodle/bin/amc2moodle'],
     classifiers=[
         "Programming Language :: Python :: 3",
