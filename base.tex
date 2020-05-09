@@ -1,0 +1,47 @@
+\documentclass[a4paper]{article}
+%review 
+
+
+%#########################################################################
+\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+%\usepackage[francais]{babel}
+%\usepackage{lmodern}
+\usepackage[hmargin=4cm, vmargin=2cm, includeheadfoot]{geometry}
+\usepackage{alltt}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb}
+\usepackage{color}
+\usepackage{graphicx}
+%\usepackage{attachfile}
+\usepackage{tikz}
+
+% exemple de commande utilisateur
+\providecommand{\abs}[1]{\lvert#1\rvert}
+%#########################################################################
+% Entête
+%#########################################################################
+
+
+
+\title{Test basicTex}
+\author{BN}
+
+
+
+%#########################################################################
+% Document
+%#########################################################################
+\begin{document}
+    Among the following shape, where is the circle
+
+\begin{tikzpicture}
+          \draw (2,2) circle (1cm);
+\end{tikzpicture}
+\begin{tikzpicture}
+          \filldraw[fill=blue!40!white, draw=black] (0,0) rectangle (2,2);
+          \draw (0,0) parabola (2,2);
+\end{tikzpicture}
+
+  
+\end{document}
