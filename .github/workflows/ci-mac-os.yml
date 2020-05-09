@@ -27,8 +27,8 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v2
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v2
     
     - name: Install the dependences
       run: |
@@ -50,7 +50,7 @@ jobs:
         
     - name: Test latexml
       run: |
-        # add --stric flag to be more strict in error catching
+        # add --strict flag to be more strict in error catching
         latexml --noparse --nocomment --strict --path=./amc2moodle --dest=./out.xml  ./test/QCM.tex   
     - name: Install amc2moodle
       run: |
