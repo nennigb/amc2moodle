@@ -36,6 +36,7 @@ jobs:
         brew install cpanm
         brew install libxml2 libxslt
         cpanm XML::LibXML
+        cpanm XML::XSLT
         cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXSLT UUID::Tiny
         brew install latexml
         
