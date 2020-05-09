@@ -1,0 +1,10 @@
+include amc2moodle/bin/amc2moodle
+include amc2moodle/*.xslt
+include amc2moodle/*sty.ltxml
+include test/Figures/*
+include test/QCM.pdf
+include test/QCM.tex
+include test/QCM.xml
+include test/QCM_wo-tikz.tex
+include LICENSE
+include README.md
