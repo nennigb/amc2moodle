@@ -72,7 +72,7 @@ def getPathFile(fileIn):
 
 class amc2moodle:
     def __init__(self, fileInput=None, fileOutput=None, keepFile=None,
-                 catname=None):
+                 catname=None,indentXML=False):
         """ Initialized object
         """
         print('========================')
@@ -85,6 +85,7 @@ class amc2moodle:
         self.tempxmlfiledef = 'tex2xml.xml'
         self.tempxmlfile = 'tex2xml.xml'
         self.keepFlag = False
+        self.indentXML = indentXML
         self.catname = None
         # check required tools
         if not checkTools(show=True):
@@ -142,13 +143,14 @@ class amc2moodle:
         """
         # run LaTeXML
         print(' > Running LaTeXML conversion')
-        subprocess.run([
+        runStatus = subprocess.run([
             'latexml',
             '--noparse',
             '--nocomments',
             '--path=%s' % os.path.dirname(__file__),
             '--dest=%s' % self.tempxmlfile,
             self.input])
+        return runStatus.returncode == 0
 
     def runXMLindent(self):
         """ Build the xml file for Moodle quizz.
@@ -156,36 +158,49 @@ class amc2moodle:
         # check for xmlindent
         xmlindentwhich = subprocess.run(['which', 'xmlindent'])
         xmlindentOk = xmlindentwhich.returncode == 0
+        # check for xmllint (Macos)
+        xmllintwhich = subprocess.run(['which', 'xmllint'])
+        xmllintOk = xmllintwhich.returncode == 0
 
         if xmlindentOk:
-            subprocess.run(['xmlindent', self.output,'-o', self.output])
+            print(' > Indenting')
+            subprocess.run(['xmlindent', self.output,'-o', self.output],
+                                    stdout=subprocess.DEVNULL)
+        #
+        if xmllintOk and not xmlindentOk:
+            print(' > Indenting')
+            subprocess.run(['xmllint', self.output,'--format','--output', self.output],
+                                    stdout=subprocess.DEVNULL)
 
     def runBuilding(self):
         """ Build the xml file for Moodle quizz.
         """
         print('====== Build XML =======')
-        self.runLaTeXML()
-        # run script
-        print(' > Running Python conversion')
-        convert.to_moodle(
-            inputfile=getFilename(self.tempxmlfile),
-            inputdir=getPathFile(self.input),
-            outputfile=getFilename(self.output),
-            outputdir=getPathFile(self.input),
-            keepFlag=self.keepFlag,
-            incatname=self.catname
-        )
-        # remove temporary file
-        if not self.keepFlag:
-            print(' > Remove temp file: %s' % self.tempxmlfile)
-            os.remove(self.tempxmlfile)
-        # run XMLindent
-        # self.runXMLindent()
-        # copy file from working dir to outputdir
-        # TODO need to check
-        if getPathFile(self.input) != '.':
-            if os.path.join(getPathFile(self.input),
-                            getFilename(self.output)) != self.output:
-                shutil.copyfile(os.path.join(getPathFile(self.input), getFilename(self.output)),
-                                self.output)
-        self.endMessage()
+        if self.runLaTeXML():
+            # run script
+            print(' > Running Python conversion')
+            convert.to_moodle(
+                inputfile = getFilename(self.tempxmlfile),
+                inputdir = getPathFile(self.input),
+                outputfile = getFilename(self.output),
+                outputdir = getPathFile(self.input),
+                keepFlag = self.keepFlag,
+                incatname = self.catname
+            )
+            # remove temporary file
+            if not self.keepFlag:
+                print(' > Remove temp file: %s' % self.tempxmlfile)
+                os.remove(self.tempxmlfile)
+            # run XMLindent
+            if self.indentXML:
+                self.runXMLindent()
+            # copy file from working dir to outputdir
+            # TODO need to check
+            if getPathFile(self.input) != '.':
+                if os.path.join(getPathFile(self.input),
+                                getFilename(self.output)) != self.output:
+                    shutil.copyfile(os.path.join(getPathFile(self.input), getFilename(self.output)),
+                                    self.output)
+            self.endMessage()
+        else:
+            print('ERROR during lateXML processing')

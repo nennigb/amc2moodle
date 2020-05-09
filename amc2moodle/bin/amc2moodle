@@ -32,6 +32,7 @@ def run():
     fileIn = None
     fileOut = None
     keepFlag = False
+    indentFlag = False
     catname = None
     # deal with arguments
     parser = argparse.ArgumentParser(description="""This script converts a tex file of AMC questions into an xml file
@@ -50,6 +51,9 @@ def run():
     parser.add_argument("-c", "--catname", nargs=1,
                         help="Use \element{label} as category tag as a subcategorie root_cat_name (optional)",
                         required=False)
+    parser.add_argument("-p", "--prettify",
+                        help="Prettify the XML file using indent tool",
+                        required=False, action="store_true")
 
     args = parser.parse_args()
 
@@ -58,6 +62,7 @@ def run():
     if args.output:
         fileOut = args.output[0]
     keepFlag = args.keep
+    indentFlag = args.prettify
     if args.catname:
         catname = args.catname[0]
 
@@ -80,7 +85,8 @@ def run():
     # run conversion
     if fileInOk:
         a2m.amc2moodle(fileInput=fileIn, fileOutput=fileOut,
-                       keepFile=keepFlag, catname=catname)
+                       keepFile=keepFlag, catname=catname,
+                       indentXML=indentFlag)
 
 
 # Run autonomous
