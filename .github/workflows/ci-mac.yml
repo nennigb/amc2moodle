@@ -38,19 +38,9 @@ jobs:
         echo $PATH  
         sudo tlmgr install pgf
         sudo texhash
-    - name: Test BasicTex
-      run: |
-        echo $PATH
+        
         pdflatex base.tex
-    - name: Archive base.pdf
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v1
-      with:
-        name: base.pdf
-        path: base.pdf 
-      
-    - name: Install LaTeXML and its deps
-      run: |              
+                
         brew install libxml2
         brew install libxslt
         brew install imagemagick
@@ -63,10 +53,14 @@ jobs:
         cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML UUID::Tiny # XML::LibXSLT
         brew install latexml 
 
-        
-    - name: Test latexml alone
-      run: |
         latexml --noparse --nocomment --path=./src --dest=./out.xml  ./test/QCM.tex
+ 
+    - name: Archive base.pdf
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v1
+      with:
+        name: base.pdf
+        path: base.pdf 
 
         
 
