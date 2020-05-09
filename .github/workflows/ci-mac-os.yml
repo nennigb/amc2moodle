@@ -27,8 +27,8 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v2
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v2
     
     - name: Install the dependences
       run: |
@@ -49,7 +49,7 @@ jobs:
         brew install imagemagick
 
         #update PATH 
-        bash --login
+        export PATH=/Library/TeX/texbin:$PATH
         
     - name: Test latexml
       run: |
