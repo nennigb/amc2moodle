@@ -62,6 +62,7 @@ def run():
         catname = args.catname[0]
 
     # check input file
+    fileInOk = False
     if fileIn is not None:
         fileInOk = os.path.exists(fileIn)
 
