@@ -26,7 +26,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     
-    - name: Install the dependences
+    - name: Install the tex dependancies
       run: |
         python -m pip install --upgrade pip
         
@@ -36,8 +36,20 @@ jobs:
         echo `ls -R /usr/local/texlive`
         export PATH="/usr/local/texlive/2020basic/bin/x86_64-darwin:$PATH"  
         echo $PATH  
-        sudo tlmgr install pgf latex-graphics amsmath tikz
-        
+        sudo tlmgr install pgf latex-graphics 
+        sudo texhash
+    - name: Test BasicTex
+      run: |
+        pdflatex base.tex
+    - name: Archive base.pdf
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v1
+      with:
+        name: base.pdf
+        path: base.pdf 
+      
+    - name: Install LaTeXML and its deps
+      run: |              
         brew install libxml2
         brew install libxslt
         brew install imagemagick
