@@ -183,7 +183,7 @@ class amc2moodle:
                 inputfile = getFilename(self.tempxmlfile),
                 inputdir = getPathFile(self.input),
                 outputfile = getFilename(self.output),
-                outputdir = getPathFile(self.input),
+                outputdir = getPathFile(self.output),
                 keepFlag = self.keepFlag,
                 incatname = self.catname
             )
@@ -195,12 +195,12 @@ class amc2moodle:
             if self.indentXML:
                 self.runXMLindent()
             # copy file from working dir to outputdir
-            # TODO need to check
-            if getPathFile(self.input) != '.':
-                if os.path.join(getPathFile(self.input),
-                                getFilename(self.output)) != self.output:
-                    shutil.copyfile(os.path.join(getPathFile(self.input), getFilename(self.output)),
-                                    self.output)
+            # # TODO need to check
+            # if getPathFile(self.input) != '.':
+            #     if os.path.join(getPathFile(self.input),
+            #                     getFilename(self.output)) != self.output:
+            #         shutil.copyfile(os.path.join(getPathFile(self.input), getFilename(self.output)),
+            #                         self.output)
             self.endMessage()
         else:
             print('ERROR during lateXML processing')
