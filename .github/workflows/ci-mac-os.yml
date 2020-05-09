@@ -33,6 +33,7 @@ jobs:
     - name: Install the dependences
       run: |
         python -m pip install --upgrade pip
+        brew update
         #install xml libraries
         brew install cpanm
         brew install libxml2 libxslt
