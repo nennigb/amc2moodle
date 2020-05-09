@@ -32,7 +32,7 @@ jobs:
     
     - name: Install the dependences
       run: |
-        python -m pip install --upgrade pip
+        python3 -m pip install --upgrade pip
         brew update
         #install xml libraries
         brew install cpanm
@@ -47,6 +47,9 @@ jobs:
 
         # install imagemagick
         brew install imagemagick
+
+        #update PATH 
+        bash --login
         
     - name: Test latexml
       run: |
@@ -55,10 +58,10 @@ jobs:
     - name: Install amc2moodle
       run: |
         # add -e to have write access for test. TODO : change with temp file
-        pip install -e .
+        pip3 install -e .
     - name: Test amc2moodle
       run: |
-        python -m amc2moodle.test
+        python3 -m amc2moodle.test
     - name: Archive test output (no tikz)
       if: ${{ always() }}
       uses: actions/upload-artifact@v1
