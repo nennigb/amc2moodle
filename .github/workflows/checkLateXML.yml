@@ -7,6 +7,8 @@ name: CI-mac-os
 on:
   push:
     branches: [ '*' ]
+    paths-ignore:         # Don't trigger on files that are updated by the CI
+      - README.md
   pull_request:
     branches: [ '*' ]
 
@@ -16,7 +18,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: [3.5]
+        python-version: [3.5, 3.6, 3.7, 3.8]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -31,17 +33,40 @@ jobs:
     - name: Install the dependences
       run: |
         python -m pip install --upgrade pip
-        
-        # install brew package
-        brew cask install basictex
-        brew install imagemagick
+        #install xml libraries
         brew install cpanm
         brew install libxml2 libxslt
-        cpanm XML::LibXML
-        cpanm XML::XSLT
-        cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXSLT UUID::Tiny
-        brew install latexml
+        cpanm XML::LibXML XML::XSLT
+        cpanm XML::LibXSLT --force
+        cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI UUID::Tiny
         
-    - name: Test latexml alone
+        # install brew latex packages, libs and lateXML
+        brew cask install basictex
+        brew install latexml
+
+        # install imagemagick
+        brew install imagemagick
+        
+    - name: Test latexml
       run: |
-        latexml --noparse --nocomment --path=./src --dest=./out.xml  ./test/QCM.tex
+        # add --stric flag to be more strict in error catching
+        latexml --noparse --nocomment --strict --path=./amc2moodle --dest=./out.xml  ./test/QCM.tex   
+    - name: Install amc2moodle
+      run: |
+        # add -e to have write access for test. TODO : change with temp file
+        pip install -e .
+    - name: Test amc2moodle
+      run: |
+        python -m amc2moodle.test
+    - name: Archive test output (no tikz)
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v1
+      with:
+        name: test_notikz_${{ matrix.python-version }}
+        path: test_notikz.xml    
+    - name: Archive test output (tikz)
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v1
+      with:
+        name: test_tikz_${{ matrix.python-version }}
+        path: test_tikz.xml   
