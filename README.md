@@ -16,15 +16,17 @@ The question can then be imported in the moodle question bank using category tag
 ### before installing amc2moodle :
 
   -  install python (version >=3.5)
-  -  install`imageMagick`, useful to convert image files (*.eps, *.pdf, ...) into png
+  -  install `imageMagick`, useful to convert image files (*.eps, *.pdf, ...) into png
       - ubuntu : `sudo apt-get install imagemagick`
+      - MacOS: `brew install imagemagick` (see [`ImageMagick` website](https://imagemagick.org/script/download.php) for more details )
   -  install [`LaTeXML`](http://dlmf.nist.gov/LaTeXML) [tested with version 0.8.1] This program does the first step of the conversion into XML
       - ubuntu : `sudo apt-get install latexml`
       - see also [LaTeXML wiki](https://github.com/brucemiller/LaTeXML/wiki/Installation-Guides) or [install notes](https://dlmf.nist.gov/LaTeXML/get.html) that all the dependencies are installed (perl, latex, imagemagick).
   -  install `xmlindent` [optional]. This program can be used to indent well the XML file
       - ubuntu : `sudo apt-get install xmlindent`
+      - MacOS: not necessary. Script will use `xmllint` natively available on MacOS.
 
-For Macos users, most dependencies can be installed with `brew` but `LaTeXML` installation can failed for some version. Please see the steps given in the install script [workflow](.github/workflows).
+For MacOS users, most dependencies can be installed with `brew` but `LaTeXML` installation can failed for some version. Please see the steps given in the install script [workflow](.github/workflows).
 
 
 ### Install with pip
@@ -42,7 +44,7 @@ to install it in editable mode, usefull if git is used.
 
 
 
-Note : for ubuntu users use `pip3` instead of pip for python3.
+Note : for ubuntu users use `pip3` instead of `pip` for python3.
 
 ### Uninstallation
 Run `pip uninstall amc2moodle`.
