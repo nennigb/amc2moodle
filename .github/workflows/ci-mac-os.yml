@@ -48,8 +48,8 @@ jobs:
         # install imagemagick
         brew install imagemagick
 
-        #update PATH 
-        export PATH=/Library/TeX/texbin:$PATH
+    - name: Update $PATH
+      run: echo ::add-path::/Library/TeX/texbin  # <--- condabin VS bin
         
     - name: Test latexml
       run: |
