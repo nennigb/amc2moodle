@@ -49,7 +49,7 @@ Note : for ubuntu users use `pip3` instead of `pip` for python3.
 ### Uninstallation
 Run `pip uninstall amc2moodle`.
 
-## Convertion
+## Conversion
 The program can be run in a shell terminal,
 ```
 amc2moodle input_Tex_file.tex -o output_file.xml -c catname
