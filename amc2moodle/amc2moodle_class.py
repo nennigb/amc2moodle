@@ -24,6 +24,7 @@ import sys
 import os
 from importlib import util  # python 3.x
 import shutil
+import tempfile
 
 
 def checkTools(show=True):
@@ -83,6 +84,7 @@ class amc2moodle:
         # default value # TODO move elsewhere
         self.output = None
         self.tempxmlfiledef = 'tex2xml.xml'
+        self.tempdir = tempfile.TemporaryDirectory()
         self.tempxmlfile = 'tex2xml.xml'
         self.keepFlag = False
         self.indentXML = indentXML
@@ -108,7 +110,7 @@ class amc2moodle:
             else:
                 self.catname = self.input
             # temporary file
-            self.tempxmlfile = os.path.join(getPathFile(self.input),
+            self.tempxmlfile = os.path.join(self.tempdir.name,
                                             self.tempxmlfiledef)
             self.showData()
         #run the building of the xml file for Moodle
@@ -120,6 +122,7 @@ class amc2moodle:
         print('====== Parameters ======')
         print(' > path input TeX: %s' % getPathFile(self.input))
         print(' > input TeX file: %s' % getFilename(self.input))
+        print(' > temporary directory: %s' % getPathFile(self.tempdir.name))
         print(' > path output TeX: %s' % getPathFile(self.output))
         print(' > output XML file: %s' % getFilename(self.output))
         print(' > temp XML file: %s' % self.tempxmlfile)
@@ -182,25 +185,32 @@ class amc2moodle:
             convert.to_moodle(
                 inputfile = getFilename(self.tempxmlfile),
                 inputdir = getPathFile(self.input),
+                workingdir = self.tempdir.name,
                 outputfile = getFilename(self.output),
                 outputdir = getPathFile(self.output),
                 keepFlag = self.keepFlag,
                 incatname = self.catname
             )
             # remove temporary file
-            if not self.keepFlag:
-                print(' > Remove temp file: %s' % self.tempxmlfile)
-                os.remove(self.tempxmlfile)
+            if self.keepFlag:
+                #copy all temporary files
+                tempdirSave = tempfile.mkdtemp(prefix='tmp_amc2moodle_',
+                        dir=getPathFile(self.output))
+                #
+                print(' > Save all temp files in: %s' % tempdirSave)
+                shutil.copytree(
+                    self.tempdir.name, 
+                    os.path.join(tempdirSave,'files'), 
+                    symlinks=False, 
+                    ignore=None, 
+                    copy_function=shutil.copy2, 
+                    ignore_dangling_symlinks=False)
+                # os.remove(self.tempxmlfile)
+            #clean temporary directory
+            # self.tempdir.cleanup()
             # run XMLindent
             if self.indentXML:
                 self.runXMLindent()
-            # copy file from working dir to outputdir
-            # # TODO need to check
-            # if getPathFile(self.input) != '.':
-            #     if os.path.join(getPathFile(self.input),
-            #                     getFilename(self.output)) != self.output:
-            #         shutil.copyfile(os.path.join(getPathFile(self.input), getFilename(self.output)),
-            #                         self.output)
             self.endMessage()
         else:
             print('ERROR during lateXML processing')
