@@ -25,6 +25,7 @@ import os
 from importlib import util  # python 3.x
 import shutil
 import tempfile
+from distutils.dir_util import copy_tree
 
 
 def checkTools(show=True):
@@ -73,7 +74,7 @@ def getPathFile(fileIn):
 
 class amc2moodle:
     def __init__(self, fileInput=None, fileOutput=None, keepFile=None,
-                 catname=None,indentXML=False):
+                 catname=None,indentXML=False,usetempdir=True):
         """ Initialized object
         """
         print('========================')
@@ -83,7 +84,7 @@ class amc2moodle:
         print('========================')
         # default value # TODO move elsewhere
         self.output = None
-        self.tempxmlfiledef = 'tex2xml.xml'
+        self.tempxmlfiledef = 'tex2xml.xml'        
         self.tempdir = tempfile.TemporaryDirectory()
         self.tempxmlfile = 'tex2xml.xml'
         self.keepFlag = False
@@ -109,6 +110,9 @@ class amc2moodle:
                 self.catname = catname
             else:
                 self.catname = self.input
+            if not usetempdir:
+                self.tempdir = tempfile.TemporaryDirectory(dir=getPathFile(self.input),
+                        prefix='amc2moodle')
             # temporary file
             self.tempxmlfile = os.path.join(self.tempdir.name,
                                             self.tempxmlfiledef)
@@ -198,16 +202,7 @@ class amc2moodle:
                         dir=getPathFile(self.output))
                 #
                 print(' > Save all temp files in: %s' % tempdirSave)
-                shutil.copytree(
-                    self.tempdir.name, 
-                    os.path.join(tempdirSave,'files'), 
-                    symlinks=False, 
-                    ignore=None, 
-                    copy_function=shutil.copy2, 
-                    ignore_dangling_symlinks=False)
-                # os.remove(self.tempxmlfile)
-            #clean temporary directory
-            # self.tempdir.cleanup()
+                copy_tree(self.tempdir.name, tempdirSave)
             # run XMLindent
             if self.indentXML:
                 self.runXMLindent()
