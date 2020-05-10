@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
     This file is part of amc2moodle, a convertion tool to recast quiz written
-    with the LaTeX format used by automuliplechoice 1.0.3 into the 
+    with the LaTeX format used by automuliplechoice 1.0.3 into the
     moodle XML quiz format.
-    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr 
+    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 from amc2moodle import amc2moodle_class as a2m
 import argparse
 import os
+import sys
 
 
 def run():
@@ -31,27 +32,28 @@ def run():
     # default values
     fileIn = None
     fileOut = None
-    keepFlag = False
-    indentFlag = False
-    tempDir = True
-    catname = None
     # deal with arguments
-    parser = argparse.ArgumentParser(description="""This script converts a tex file of AMC questions into an xml file
-    suitable for moodle import. Only question and questionmult
-    environnement are ready!
-    """)
+    parser = argparse.ArgumentParser(description='''This program converts a
+                                     LaTeX file containing AMC questions into
+                                     an XML file suitable for moodle import.
+                                     Only 'question' and 'questionmult'
+                                     environnements are now available.
+                                     ''')
 
-    parser.add_argument("inputfile", nargs='?',
+    parser.add_argument("inputfile",
                         help="Input TeX file (mandatory)")
-    # parser.add_argument("-i", "--input",nargs=1,dest='inputfile',help="Input TeX file (mandatory)",required=False)
     parser.add_argument("-o", "--output", nargs=1,
-                        help="Output XML file (optional)", required=False)
-    parser.add_argument("-k", "--keep",
-                        help="Keep temporary file (useful for debuging) (optional)",
-                        required=False, action="store_true")
-    parser.add_argument("-c", "--catname", nargs=1,
-                        help="Use \element{label} as category tag as a subcategorie root_cat_name (optional)",
+                        help="Output XML file (default inputfile.xml)",
                         required=False)
+    parser.add_argument("-k", "--keep",
+                        help='''Keep temporary file
+                        (useful for debuging, optional)''',
+                        required=False, action="store_true")
+    parser.add_argument("-c", "--catname",  # nargs=1,
+                        help='''Provide root category name (default 'amc').
+                        Note that \\element{label} are used as
+                        subcategory tag.''',
+                        required=False, default='amc')
     parser.add_argument("-p", "--prettify",
                         help="Prettify the XML file using indent tool",
                         required=False, action="store_true")
@@ -59,17 +61,18 @@ def run():
                         help="No use of system temporary directory",
                         required=False, action="store_true")
 
+    # Get input args
     args = parser.parse_args()
 
     if args.inputfile:
         fileIn = args.inputfile
     if args.output:
         fileOut = args.output[0]
+
     keepFlag = args.keep
     indentFlag = args.prettify
     tempDir = not args.notemp
-    if args.catname:
-        catname = args.catname[0]
+    catname = args.catname
 
     # check input file
     fileInOk = False
@@ -92,6 +95,9 @@ def run():
         a2m.amc2moodle(fileInput=fileIn, fileOutput=fileOut,
                        keepFile=keepFlag, catname=catname,
                        indentXML=indentFlag,usetempdir=tempDir)
+    else:
+        # exit with error status
+        sys.exit(1)
 
 
 # Run autonomous
