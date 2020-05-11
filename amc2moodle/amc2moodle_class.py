@@ -108,9 +108,9 @@ class amc2moodle:
         # check required tools
         if not checkTools(show=True):
             sys.exit(1)
-        if fileInput is None:
-            print('ERROR : Input TeX file is missing.')
-            sys.exit(1)
+        # if fileInput is None:  # already chcecked (script + input func)
+        #     print('ERROR : Input TeX file is missing.')
+        #     sys.exit(1)
         else:
             # encapsulate data
             self.keepFlag = keepFlag
@@ -140,6 +140,12 @@ class amc2moodle:
 
         #run the building of the xml file for Moodle
         self.runBuilding()
+
+    def cleanUpTemp(self):
+        """ Clean-up temp directory created by tempfile.TemporaryDirectory().
+        """
+        self.tempdir.cleanup()
+        print(' > Clean-up tempfile.')
 
     def showData(self):
         """ Show loaded parameters.
@@ -232,8 +238,13 @@ class amc2moodle:
             if self.indentXML:
                 self.runXMLindent()
 
+            # clean up temp dir
+            self.cleanUpTemp()
+
             # show end message
             self.endMessage()
+
+
         else:
             print('ERROR during LaTeXML processing.')
             sys.exit(1)
