@@ -264,11 +264,9 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # applique tranformation
     tree = transform_pre(tree)
     if (deb == 1):
-        # print(etree.tostring(tree, pretty_print=True))
         # ecriture
-        xmltemp0 = open(filetemp0, 'w')
-        tree.write(xmltemp0, pretty_print=True)
-        xmltemp0.close()
+        tree.write(filetemp0, pretty_print=True, encoding="utf-8")
+
 
     ###########################################################################
     # Recherche barème par défaut
@@ -455,13 +453,8 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
 
     # on affiche
     if (deb == 1):
-        # print(etree.tostring(tree, pretty_print=True,encoding="utf-8"))
         # Ecriture fichier output intermediaire (grading edit)
-        # ouverture
-        xmltemp =  open(filetemp, 'w')
-        # ecriture
-        tree.write(xmltemp, pretty_print=True, encoding="utf-8")
-        xmltemp.close()
+        tree.write(filetemp, pretty_print=True, encoding="utf-8")
 
 
     ############################################################################

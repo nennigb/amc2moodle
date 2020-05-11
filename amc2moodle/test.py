@@ -104,7 +104,7 @@ class TestSuite(unittest.TestCase):
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
-                       keepFlag=False,
+                       keepFlag=True,
                        catname='test_tikz',
                        deb=0)
         # check it
