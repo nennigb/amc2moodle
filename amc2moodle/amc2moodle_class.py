@@ -244,7 +244,6 @@ class amc2moodle:
             # show end message
             self.endMessage()
 
-
         else:
             print('ERROR during LaTeXML processing.')
             sys.exit(1)

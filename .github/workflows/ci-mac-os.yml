@@ -49,7 +49,7 @@ jobs:
         
 
     - name: Update $PATH
-      run: echo ::add-path::/Library/TeX/texbin  # <--- condabin VS bin
+      run: echo ::add-path::/Library/TeX/texbin
         
     - name: Test latexml
       run: |

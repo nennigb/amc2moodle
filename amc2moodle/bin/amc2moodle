@@ -58,7 +58,8 @@ def run():
                         help="Prettify the XML file using indent tool",
                         required=False, action="store_true")
     parser.add_argument("-n", "--notemp",
-                        help="No use of system temporary directory",
+                        help='''No use of system temporary directory, use
+                                input directory instead.''',
                         required=False, action="store_true")
 
     # Get input args
