@@ -19,7 +19,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-from __future__ import print_function
 import sys
 from lxml import etree
 import base64
@@ -115,8 +114,8 @@ def encodeImg(Ii, pathin, pathout):
 
 
 
-def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
-             workingdir=None, keepFlag=False, incatname=None):
+def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
+              workingdir=None, catname=None, deb=0):
     """ Build Moodle XML file from xml file obtain with LaTeXML.
 
     Call xslt stylesheet and complete the required xml element,
@@ -126,50 +125,54 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
     Remark : The grade are not computed exactly as in amc, see the doc.
 
     TODO Factorize question type
+
+    Parameters
+    ----------
+    filein : string
+        Input XML file provide by LaTeXML.
+    pathin : string
+        Input directory.
+    fileout : string, optional
+        Output moodle XML file. The default is 'out.xml'.
+    pathout : string, optional
+        Output directory. The default is '.'.
+    workingdir : string, optional
+        Allow to define a working directory (temp) different from the output
+        directiory. The default is None.
+    catname : string, optional
+        Set moodle category. The default is None.
+    deb : int, optional
+        Set to 1 to store all intermediate file for debging. The default is 0.
+
+    Returns
+    -------
+    None.
+
     """
 
-    if inputfile is None or inputdir is None or outputfile is None or outputdir is None or workingdir is None:
-        print("Problem with the number of imput args, check calling seq. in amc2moodle.sh .")
-        pathin = 'test'               # path to input xml file
-        filein = 'tex2xml.xml'        # input xml filename
-        pathout = 'test'              # path to output xml file
-        fileout = 'QCM_wo-tikz.xml'   # output xml filename
-        keep = 0                      # keep intermediate file plug in deb...
-        catname = 'QCM_wo-tikz.tex'   # output xml filename
-        catflag = 0                   # output xml filename
-        deb = 0                       # set to 1 to write intermediate xml file and write verbose output
+    # Define catflag [legacy]
+    catflag = catname is not None
 
-    else:  # 1st arg is the program name
-        pathin = inputdir              # path to input xml file
-        filein = inputfile             # input xml filename
-        pathout = outputdir            # path to output xml file
-        fileout = outputfile           # output xml filename
-        keep = keepFlag                # keep intermediate file plug in deb...
-        catname = incatname            # output xml filename
-        catflag = catname is not None  # output xml filename
-        deb = 0                        # set to 1 to write intermediate xml file and write verbose output
-    #define working dir
+    # define working dir
     if workingdir is None:
         wdir = pathin
     else:
         wdir = workingdir
 
-    """
-    ======================================================================
-    #  on définie les valeurs par défaut
-    ======================================================================
-    e=incohérence; b=bonne; m=mauvaise; p planché (on ne descent pas en dessous)
-    Elles peuvent etre spécifier dans le fichier .tex avec
-    \baremeDefautS{e=-0.5,b=1,m=-0.5}
-    \baremeDefautM{e=-0.5,b=0.5,m=-0.25,p=-0.5}
-    ou au niveau de la question
-    """
+
     # TODO to options file
     # Shuffle all answsers
     ShuffleAll = True
     # ajout amc_aucune si obligatoire"
     amc_autocomplete = 1
     amc_aucune = u"aucune de ces réponses n'est correcte"
+    """ Default grade for simple and multiple Question :
+    e=incohérence; b=bonne; m=mauvaise; p planché
+    Elles peuvent etre spécifier dans le fichier .tex avec
+    \baremeDefautS{e=-0.5,b=1,m=-0.5}
+    \baremeDefautM{e=-0.5,b=0.5,m=-0.25,p=-0.5}
+    ou au niveau de la question
+    """
     # Simple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
     amc_bs = {'e': -1, 'b': 1, 'm': -0.5}
     # Multiple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
@@ -200,7 +203,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
     # on parse le fichier xml
     # Elements are lists
     # Elements carry attributes as a dict
-    xml = open(os.path.join(wdir,filein), 'r')
+    xml = open(os.path.join(wdir, filein), 'r')
     tree0 = etree.parse(xml)
 
     # on supprime le namespace [a terme faire autrement]
@@ -236,8 +239,10 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             img_size = '200pt'
             img_dim = 'width'
 
+        # FIXME use os.path
         img_path = os.path.join(pathin,
-                                img_name[0:img_name.rfind('/')]).replace('/./', '/')
+                                img_name[0:img_name.rfind('/')]).replace('/./',
+                                                                         '/')
         # print(img_path)
         name = basename(img_name)
         # print(name, ext, img_dim, align[img_align])
@@ -253,7 +258,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
     # alig <-> class
 
     # remise en forme + html + math + image + tableau
-    xslt_pre =  open(filexslt_pre, 'r')
+    xslt_pre = open(filexslt_pre, 'r')
     xslt_pre_tree = etree.parse(xslt_pre)
     transform_pre = etree.XSLT(xslt_pre_tree)
     # applique tranformation
@@ -276,7 +281,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
         amc_bs = dict(item.split("=") for item in bars[0].text.strip().split(","))
         print("baremeDefautS :", amc_bs)
         if (float(amc_bs['b']) < 1):
-            print("warning the grade the good answser in question will be < 100%, put b=1")
+            print("WARNING : the grade the good answser in question will be < 100%, put b=1")
 
     # on cherche s'il existe un barème par défaut pour question multiple
     barm = tree.xpath("//*[@class='amc_baremeDefautM']")
@@ -286,7 +291,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
         amc_bm = dict(item.split("=") for item in barm[0].text.strip().split(","))
         print("baremeDefautM :", amc_bm)
         if (float(amc_bm['b']) < 1):
-            print("        -> warning the grade of the good answser(s) in questionmult may be < 100%, put b=1")
+            print("WARNING : the grade of the good answser(s) in questionmult may be < 100%, put b=1")
 
 
     ############################################################################
@@ -329,7 +334,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             amc_bl=dict(item.split("=") for item in barl[0].text.strip().split(","))
             print("bareme local :", amc_bl)
             if (float(amc_bl['b']) < 1.):
-                print("        ->warning the grade of the good answser(s) may be < 100%, put b=1")
+                print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")
 
         # inclusion des images dans les questions
         Ilist = Qi.xpath("./questiontext/file")
@@ -386,7 +391,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             amc_bml = dict(item.split("=") for item in barl[0].text.strip().split(","))
             print("bareme local :", amc_bml)
             if (float(amc_bml['b']) < 1):
-                print("        ->warning the grade of the good answser(s) may be < 100%, put b=1")
+                print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")
 
         # inclusion des images dans les questions
         Ilist = Qi.xpath("./questiontext/file")
@@ -473,9 +478,6 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
 
     ############################################################################
     # écriture fichier out
-    # xmlout =  open(fileout, 'w')
-    # result_tree.write(xmlout, pretty_print=True,encoding="utf-8")
-    # xmlout.close()
     result_tree.write(fileout, pretty_print=True, encoding="utf-8")
     if deb == 1:
         print(result_tree)

@@ -83,8 +83,9 @@ class TestSuite(unittest.TestCase):
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
-                       keepFile=1,
-                       catname='test_notikz')
+                       keepFlag=False,
+                       catname='test_notikz',
+                       deb=0)
         # check it
         equiv = check_hash(fileOut, fileRef)
         if equiv:
@@ -103,8 +104,9 @@ class TestSuite(unittest.TestCase):
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
-                       keepFile=1,
-                       catname='test_tikz')
+                       keepFlag=False,
+                       catname='test_tikz',
+                       deb=0)
         # check it
         equiv = check_hash(fileOut, fileRef)
         if equiv:

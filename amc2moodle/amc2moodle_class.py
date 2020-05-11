@@ -67,50 +67,77 @@ def getPathFile(fileIn):
 
 
 class amc2moodle:
-    def __init__(self, fileInput=None, fileOutput=None, keepFile=None,
-                 catname=None, indentXML=False, usetempdir=True):
-        """ Initialized object
+    """ Main class to invoke LaTeX to moodle XML conversion.
+    """
+    def __init__(self, fileInput, fileOutput=None, keepFlag=False,
+                 catname='amc', indentXML=False, usetempdir=True, deb=0):
+        """ Initialize the object.
+
+        Parameters
+        ----------
+        fileInput : string
+            Input LaTeX file containg amc questions. 
+        fileOutput : string, optional
+            Output XML moodle file. The default is `inputfile.xml`.
+        keepFlag : bool, optional
+            If `True` keep temporary file. The default is False.
+        catname : TYPE, optional
+            DSet moodle category. The default is 'amc'.
+        indentXML : bool, optional
+            Run XML indentatation program. The default is False.
+        usetempdir : bool, optional
+            Store all intermediate file in temp directory. The default is True.
+        deb : int, optional
+            Store all intermediate file for debugging.
+
+        Returns
+        -------
+        None.
+
         """
         print('========================')
         print('========================')
         print('=== Start amc2moodle ===')
         print('========================')
         print('========================')
-        # default value # TODO move elsewhere
-        self.output = None
-        self.tempxmlfiledef = 'tex2xml.xml'        
-        self.tempdir = tempfile.TemporaryDirectory()
+        # Set temp XML filename for internal use
+        self.tempxmlfiledef = 'tex2xml.xml'
         self.tempxmlfile = 'tex2xml.xml'
-        self.keepFlag = False
         self.indentXML = indentXML
-        self.catname = None
+
         # check required tools
         if not checkTools(show=True):
-            sys.exit()
+            sys.exit(1)
         if fileInput is None:
-            print('Input TeX file is missing')
-            sys.exit()
+            print('ERROR : Input TeX file is missing.')
+            sys.exit(1)
         else:
-            # load data
+            # encapsulate data
+            self.keepFlag = keepFlag
+            self.catname = catname
             self.input = fileInput
-            if fileOutput is not None:
+            self.deb = deb
+
+            if fileOutput:
                 self.output = fileOutput
             else:
+                # default is input.xml
                 tmp = os.path.splitext(self.input)
                 self.output = tmp[0] + '.xml'
-            if keepFile is not None:
-                self.keepFlag = keepFile
-            if catname is not None:
-                self.catname = catname
+
+            if usetempdir:
+                # temp
+                self.tempdir = tempfile.TemporaryDirectory()
             else:
-                self.catname = self.input
-            if not usetempdir:
+                # input file directory
                 self.tempdir = tempfile.TemporaryDirectory(dir=getPathFile(self.input),
                                                            prefix='amc2moodle')
-            # temporary file
+            # set temporary file
             self.tempxmlfile = os.path.join(self.tempdir.name,
                                             self.tempxmlfiledef)
+            # Show summury of all loaded parameters
             self.showData()
+
         #run the building of the xml file for Moodle
         self.runBuilding()
 
@@ -185,14 +212,13 @@ class amc2moodle:
             # run script
             print(' > Running Python conversion...')
             convert.to_moodle(
-                inputfile=getFilename(self.tempxmlfile),
-                inputdir=getPathFile(self.input),
+                filein=getFilename(self.tempxmlfile),
+                pathin=getPathFile(self.input),
                 workingdir=self.tempdir.name,
-                outputfile=getFilename(self.output),
-                outputdir=getPathFile(self.output),
-                keepFlag=self.keepFlag,
-                incatname=self.catname
-            )
+                fileout=getFilename(self.output),
+                pathout=getPathFile(self.output),
+                catname=self.catname,
+                deb=self.deb)
             # remove temporary file
             if self.keepFlag:
                 # copy all temporary files

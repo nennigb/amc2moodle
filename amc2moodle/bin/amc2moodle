@@ -93,8 +93,8 @@ def run():
     # run conversion
     if fileInOk:
         a2m.amc2moodle(fileInput=fileIn, fileOutput=fileOut,
-                       keepFile=keepFlag, catname=catname,
-                       indentXML=indentFlag,usetempdir=tempDir)
+                       keepFlag=keepFlag, catname=catname,
+                       indentXML=indentFlag, usetempdir=tempDir)
     else:
         # exit with error status
         sys.exit(1)
