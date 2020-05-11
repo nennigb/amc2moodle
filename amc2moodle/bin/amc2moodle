@@ -54,6 +54,12 @@ def run():
                         Note that \\element{label} are used as
                         subcategory tag.''',
                         required=False, default='amc')
+    parser.add_argument("-p", "--prettify",
+                        help="Prettify the XML file using indent tool",
+                        required=False, action="store_true")
+    parser.add_argument("-n", "--notemp",
+                        help="No use of system temporary directory",
+                        required=False, action="store_true")
 
     # Get input args
     args = parser.parse_args()
@@ -64,9 +70,12 @@ def run():
         fileOut = args.output[0]
 
     keepFlag = args.keep
+    indentFlag = args.prettify
+    tempDir = not args.notemp
     catname = args.catname
 
-    # check files existance
+    # check input file
+    fileInOk = False
     if fileIn is not None:
         fileInOk = os.path.exists(fileIn)
 
@@ -84,7 +93,8 @@ def run():
     # run conversion
     if fileInOk:
         a2m.amc2moodle(fileInput=fileIn, fileOutput=fileOut,
-                       keepFile=keepFlag, catname=catname)
+                       keepFile=keepFlag, catname=catname,
+                       indentXML=indentFlag,usetempdir=tempDir)
     else:
         # exit with error status
         sys.exit(1)

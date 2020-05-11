@@ -24,6 +24,8 @@ import sys
 import os
 from importlib import util  # python 3.x
 import shutil
+import tempfile
+from distutils.dir_util import copy_tree
 
 
 def checkTools(show=True):
@@ -72,7 +74,7 @@ def getPathFile(fileIn):
 
 class amc2moodle:
     def __init__(self, fileInput=None, fileOutput=None, keepFile=None,
-                 catname=None):
+                 catname=None,indentXML=False,usetempdir=True):
         """ Initialized object
         """
         print('========================')
@@ -82,9 +84,11 @@ class amc2moodle:
         print('========================')
         # default value # TODO move elsewhere
         self.output = None
-        self.tempxmlfiledef = 'tex2xml.xml'
+        self.tempxmlfiledef = 'tex2xml.xml'        
+        self.tempdir = tempfile.TemporaryDirectory()
         self.tempxmlfile = 'tex2xml.xml'
         self.keepFlag = False
+        self.indentXML = indentXML
         self.catname = None
         # check required tools
         if not checkTools(show=True):
@@ -106,8 +110,11 @@ class amc2moodle:
                 self.catname = catname
             else:
                 self.catname = self.input
+            if not usetempdir:
+                self.tempdir = tempfile.TemporaryDirectory(dir=getPathFile(self.input),
+                        prefix='amc2moodle')
             # temporary file
-            self.tempxmlfile = os.path.join(getPathFile(self.input),
+            self.tempxmlfile = os.path.join(self.tempdir.name,
                                             self.tempxmlfiledef)
             self.showData()
         #run the building of the xml file for Moodle
@@ -119,6 +126,7 @@ class amc2moodle:
         print('====== Parameters ======')
         print(' > path input TeX: %s' % getPathFile(self.input))
         print(' > input TeX file: %s' % getFilename(self.input))
+        print(' > temporary directory: %s' % getPathFile(self.tempdir.name))
         print(' > path output TeX: %s' % getPathFile(self.output))
         print(' > output XML file: %s' % getFilename(self.output))
         print(' > temp XML file: %s' % self.tempxmlfile)
@@ -142,13 +150,14 @@ class amc2moodle:
         """
         # run LaTeXML
         print(' > Running LaTeXML conversion')
-        subprocess.run([
+        runStatus = subprocess.run([
             'latexml',
             '--noparse',
             '--nocomments',
             '--path=%s' % os.path.dirname(__file__),
             '--dest=%s' % self.tempxmlfile,
             self.input])
+        return runStatus.returncode == 0
 
     def runXMLindent(self):
         """ Build the xml file for Moodle quizz.
@@ -156,36 +165,47 @@ class amc2moodle:
         # check for xmlindent
         xmlindentwhich = subprocess.run(['which', 'xmlindent'])
         xmlindentOk = xmlindentwhich.returncode == 0
+        # check for xmllint (Macos)
+        xmllintwhich = subprocess.run(['which', 'xmllint'])
+        xmllintOk = xmllintwhich.returncode == 0
 
         if xmlindentOk:
-            subprocess.run(['xmlindent', self.output,'-o', self.output])
+            print(' > Indenting')
+            subprocess.run(['xmlindent', self.output,'-o', self.output],
+                                    stdout=subprocess.DEVNULL)
+        #
+        if xmllintOk and not xmlindentOk:
+            print(' > Indenting')
+            subprocess.run(['xmllint', self.output,'--format','--output', self.output],
+                                    stdout=subprocess.DEVNULL)
 
     def runBuilding(self):
         """ Build the xml file for Moodle quizz.
         """
         print('====== Build XML =======')
-        self.runLaTeXML()
-        # run script
-        print(' > Running Python conversion')
-        convert.to_moodle(
-            inputfile=getFilename(self.tempxmlfile),
-            inputdir=getPathFile(self.input),
-            outputfile=getFilename(self.output),
-            outputdir=getPathFile(self.input),
-            keepFlag=self.keepFlag,
-            incatname=self.catname
-        )
-        # remove temporary file
-        if not self.keepFlag:
-            print(' > Remove temp file: %s' % self.tempxmlfile)
-            os.remove(self.tempxmlfile)
-        # run XMLindent
-        # self.runXMLindent()
-        # copy file from working dir to outputdir
-        # TODO need to check
-        if getPathFile(self.input) != '.':
-            if os.path.join(getPathFile(self.input),
-                            getFilename(self.output)) != self.output:
-                shutil.copyfile(os.path.join(getPathFile(self.input), getFilename(self.output)),
-                                self.output)
-        self.endMessage()
+        if self.runLaTeXML():
+            # run script
+            print(' > Running Python conversion')
+            convert.to_moodle(
+                inputfile = getFilename(self.tempxmlfile),
+                inputdir = getPathFile(self.input),
+                workingdir = self.tempdir.name,
+                outputfile = getFilename(self.output),
+                outputdir = getPathFile(self.output),
+                keepFlag = self.keepFlag,
+                incatname = self.catname
+            )
+            # remove temporary file
+            if self.keepFlag:
+                #copy all temporary files
+                tempdirSave = tempfile.mkdtemp(prefix='tmp_amc2moodle_',
+                        dir=getPathFile(self.output))
+                #
+                print(' > Save all temp files in: %s' % tempdirSave)
+                copy_tree(self.tempdir.name, tempdirSave)
+            # run XMLindent
+            if self.indentXML:
+                self.runXMLindent()
+            self.endMessage()
+        else:
+            print('ERROR during lateXML processing')

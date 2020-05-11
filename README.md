@@ -1,7 +1,7 @@
 # `amc2moodle`
-![CI-Ubuntu](https://github.com/nennigb/amc2moodle/workflows/CI-Ubuntu/badge.svg)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/nennigb/amc2moodle?include_prereleases) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![CI-Ubuntu](https://github.com/nennigb/amc2moodle/workflows/CI-Ubuntu/badge.svg)  [![Total Downloads](https://img.shields.io/github/downloads/nennigb/amc2moodle/total)](https://github.com/nennigb/amc2moodle/releases)
 
-`amc2moodle`, is **a tool to convert automultiplechoice quizz (v1.0.3-v1.4) to moodle questions (XML format).**
+`amc2moodle`, is **a tool to convert [automultiplechoice](https://www.auto-multiple-choice.net) quizz (v1.0.3-v1.4) to moodle questions (XML format).**
 The automuliplechoice LaTeX format is convenient, and can be used for preparing question and avoiding moodle web gui.
 
 ## How it works
@@ -16,15 +16,17 @@ The question can then be imported in the moodle question bank using category tag
 ### before installing amc2moodle :
 
   -  install python (version >=3.5)
-  -  install`imageMagick`, useful to convert image files (*.eps, *.pdf, ...) into png
+  -  install `imageMagick`, useful to convert image files (*.eps, *.pdf, ...) into png
       - ubuntu : `sudo apt-get install imagemagick`
+      - MacOS: `brew install imagemagick` (see [`ImageMagick` website](https://imagemagick.org/script/download.php) for more details )
   -  install [`LaTeXML`](http://dlmf.nist.gov/LaTeXML) [tested with version 0.8.1] This program does the first step of the conversion into XML
       - ubuntu : `sudo apt-get install latexml`
       - see also [LaTeXML wiki](https://github.com/brucemiller/LaTeXML/wiki/Installation-Guides) or [install notes](https://dlmf.nist.gov/LaTeXML/get.html) that all the dependencies are installed (perl, latex, imagemagick).
   -  install `xmlindent` [optional]. This program can be used to indent well the XML file
       - ubuntu : `sudo apt-get install xmlindent`
+      - MacOS: not necessary. Script will use `xmllint` natively available on MacOS.
 
-For Macos users, most dependencies can be installed with `brew` but `LaTeXML` installation can failed for some version. Please see the steps given in the install script [workflow](.github/workflows).
+For MacOS users, most dependencies can be installed with `brew` but `LaTeXML` installation can failed for some version. Please see the steps given in the install script [workflow](.github/workflows).
 
 
 ### Install with pip
@@ -42,12 +44,12 @@ to install it in editable mode, usefull if git is used.
 
 
 
-Note : for ubuntu users use `pip3` instead of pip for python3.
+Note : for ubuntu users use `pip3` instead of `pip` for python3.
 
 ### Uninstallation
 Run `pip uninstall amc2moodle`.
 
-## Convertion
+## Conversion
 The program can be run in a shell terminal,
 ```
 amc2moodle input_Tex_file.tex -o output_file.xml -c catname

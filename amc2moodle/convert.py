@@ -89,12 +89,16 @@ def encodeImg(Ii, pathin, pathout):
         img_name_in = img_name + '.' + ext
         img_name_out = img_name + ".png"
         # im.write(pathF + img_name)
+        img_path = os.path.join(pathout, img_name_out)
         im = ImageCustom(os.path.join(pathF, img_name_in),
-                         os.path.join(pathF, img_name_out))
+                         img_path)
     else:
         img_name_out = Ii.attrib['name'] + '.' + ext
+        img_path = os.path.join(pathF, img_name_out)
 
-    img_file = open(os.path.join(pathF, img_name_out), "rb")
+    # print(Ii.attrib['ext'])
+    # print(pathF)
+    img_file = open(img_path, "rb")
     Ii.attrib.update({'name': img_name_out, 'path': '/',
                       'encoding': "base64",
                       'pathF': ''})   # remove path question
@@ -112,7 +116,7 @@ def encodeImg(Ii, pathin, pathout):
 
 
 def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
-              keepFlag=False, incatname=None):
+             workingdir=None, keepFlag=False, incatname=None):
     """ Build Moodle XML file from xml file obtain with LaTeXML.
 
     Call xslt stylesheet and complete the required xml element,
@@ -124,7 +128,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
     TODO Factorize question type
     """
 
-    if inputfile is None or inputdir is None or outputfile is None or outputdir is None:
+    if inputfile is None or inputdir is None or outputfile is None or outputdir is None or workingdir is None:
         print("Problem with the number of imput args, check calling seq. in amc2moodle.sh .")
         pathin = 'test'               # path to input xml file
         filein = 'tex2xml.xml'        # input xml filename
@@ -137,13 +141,18 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
 
     else:  # 1st arg is the program name
         pathin = inputdir              # path to input xml file
-        filein = os.path.join(inputdir, inputfile)      # input xml filename
+        filein = inputfile             # input xml filename
         pathout = outputdir            # path to output xml file
-        fileout = os.path.join(outputdir, outputfile)   # output xml filename
+        fileout = outputfile           # output xml filename
         keep = keepFlag                # keep intermediate file plug in deb...
         catname = incatname            # output xml filename
         catflag = catname is not None  # output xml filename
         deb = 0                        # set to 1 to write intermediate xml file and write verbose output
+    #define working dir
+    if workingdir is None:
+        wdir = pathin
+    else:
+        wdir = workingdir
 
     """
     ======================================================================
@@ -169,8 +178,8 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
     moo_defautgrade = 1.
 
     # file out for debug pupose
-    filetemp0 = os.path.join(pathout, "temp0.xml")
-    filetemp = os.path.join(pathout, "temp.xml")
+    filetemp0 = os.path.join(wdir, "temp0.xml")
+    filetemp = os.path.join(wdir, "temp.xml")
 
     # path of the file
 
@@ -191,7 +200,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
     # on parse le fichier xml
     # Elements are lists
     # Elements carry attributes as a dict
-    xml = open(filein, 'r')
+    xml = open(os.path.join(wdir,filein), 'r')
     tree0 = etree.parse(xml)
 
     # on supprime le namespace [a terme faire autrement]
@@ -325,7 +334,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
         # inclusion des images dans les questions
         Ilist = Qi.xpath("./questiontext/file")
         for Ii in Ilist:
-            Ii = encodeImg(Ii, pathin, pathout)
+            Ii = encodeImg(Ii, pathin, wdir)
 
         # bonne cherche dans les child
         Rlist = Qi.xpath("./*[starts-with(@class, 'amc_bonne')]")
@@ -335,7 +344,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             # inclusion des images dans les réponses
             RIlist = Ri.xpath("file")
             for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, pathout)
+                Ii = encodeImg(Ii, pathin, wdir)
 
         # Mauvaise cherche dans les child
         Rlist = Qi.xpath("./*[starts-with(@class, 'amc_mauvaise')]")
@@ -345,7 +354,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             # inclusion des images dans les réponses
             RIlist = Ri.xpath("file")
             for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, pathout)
+                Ii = encodeImg(Ii, pathin, wdir)
 
         # e:incohérente n'a pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
 
@@ -382,7 +391,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
         # inclusion des images dans les questions
         Ilist = Qi.xpath("./questiontext/file")
         for Ii in Ilist:
-            Ii = encodeImg(Ii, pathin, pathout)
+            Ii = encodeImg(Ii, pathin, wdir)
 
         # on compte le nombre de réponse NR
         # Rlistb = Qi.xpath("./text[@class='amc_bonne']")
@@ -421,7 +430,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             frac.text = str(float(amc_bml['b'])*100./NRb)
             RIlist = Ri.xpath("file")
             for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, pathout)
+                Ii = encodeImg(Ii, pathin, wdir)
 
         # Mauvaise cherche dans les Qi childs
         for Ri in Rlistm:
@@ -429,7 +438,7 @@ def to_moodle(inputfile=None, inputdir=None, outputfile=None, outputdir=None,
             frac.text = str(float(amc_bml['m'])*100./NRm)
             RIlist = Ri.xpath("file")
             for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, pathout)
+                Ii = encodeImg(Ii, pathin, wdir)
 
 
         # incohérente pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
