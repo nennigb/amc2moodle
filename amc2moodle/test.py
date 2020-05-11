@@ -89,7 +89,7 @@ class TestSuite(unittest.TestCase):
         # check it
         equiv = check_hash(fileOut, fileRef)
         if equiv:
-            print('> Converted XML is identical to the ref.')
+            print(' > Converted XML is identical to the ref.')
         #self.assertTrue(equiv, 'The converted file is different from the ref.')
 
     def test_tikz(self):
@@ -110,7 +110,7 @@ class TestSuite(unittest.TestCase):
         # check it
         equiv = check_hash(fileOut, fileRef)
         if equiv:
-            print('> Converted XML is identical to the ref.')
+            print(' > Converted XML is identical to the ref.')
         #self.assertTrue(equiv, 'The converted file is different from the ref.')
 
 
