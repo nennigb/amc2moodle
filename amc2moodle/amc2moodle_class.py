@@ -47,13 +47,7 @@ def checkTools(show=True):
     latexmlOk = latexMLwhich.returncode == 0
     if not latexmlOk:
         print ("Please install LaTeXML software (see https://dlmf.nist.gov/LaTeXML/)")
-    # xmlindent
-    xmlindentwhich = subprocess.run(['which', 'xmlindent'],
-                                    stdout=subprocess.DEVNULL)
-    xmlindentOk = xmlindentwhich.returncode == 0
-    # if not xmlindentOk:
-    #     print ("Please install (optional) XML indent software (see http://xmlindent.sourceforge.net/)")
-    #
+
     return wandOk and lxmlOk and latexmlOk
 
 
@@ -74,7 +68,7 @@ def getPathFile(fileIn):
 
 class amc2moodle:
     def __init__(self, fileInput=None, fileOutput=None, keepFile=None,
-                 catname=None,indentXML=False,usetempdir=True):
+                 catname=None, indentXML=False, usetempdir=True):
         """ Initialized object
         """
         print('========================')
@@ -112,7 +106,7 @@ class amc2moodle:
                 self.catname = self.input
             if not usetempdir:
                 self.tempdir = tempfile.TemporaryDirectory(dir=getPathFile(self.input),
-                        prefix='amc2moodle')
+                                                           prefix='amc2moodle')
             # temporary file
             self.tempxmlfile = os.path.join(self.tempdir.name,
                                             self.tempxmlfiledef)
@@ -134,14 +128,16 @@ class amc2moodle:
         print(' > categorie name: %s' % self.catname)
 
     def endMessage(self):
+        """ Show end message explaining moodle inmport procedure.
+        """
         print("""File converted. Check below for errors...
 
             For import into moodle :
             --------------------------------
-            - Go to the course admistration\question bank\import
+            - Go to the course admistration\\question bank\\import
             - Choose 'moodle XML format'
             - In the option chose : 'choose the closest grade if not listed'
-              in the 'General option' since Moodle used tabulated grades 
+              in the 'General option' since Moodle used tabulated grades
               like 1/2, 1/3 etc...
         """)
 
@@ -160,7 +156,7 @@ class amc2moodle:
         return runStatus.returncode == 0
 
     def runXMLindent(self):
-        """ Build the xml file for Moodle quizz.
+        """ Run XML indentation with subprocess.
         """
         # check for xmlindent
         xmlindentwhich = subprocess.run(['which', 'xmlindent'])
@@ -169,43 +165,49 @@ class amc2moodle:
         xmllintwhich = subprocess.run(['which', 'xmllint'])
         xmllintOk = xmllintwhich.returncode == 0
 
+        # linux
         if xmlindentOk:
-            print(' > Indenting')
-            subprocess.run(['xmlindent', self.output,'-o', self.output],
-                                    stdout=subprocess.DEVNULL)
-        #
+            print(' > Indenting XML output...')
+            subprocess.run(['xmlindent', self.output, '-o', self.output],
+                           stdout=subprocess.DEVNULL)
+        # MacOS
         if xmllintOk and not xmlindentOk:
-            print(' > Indenting')
+            print(' > Indenting XML output...')
             subprocess.run(['xmllint', self.output,'--format','--output', self.output],
-                                    stdout=subprocess.DEVNULL)
+                           stdout=subprocess.DEVNULL)
 
     def runBuilding(self):
         """ Build the xml file for Moodle quizz.
         """
         print('====== Build XML =======')
+        print(' > Running LaTeXML pre-processing...')
         if self.runLaTeXML():
             # run script
-            print(' > Running Python conversion')
+            print(' > Running Python conversion...')
             convert.to_moodle(
-                inputfile = getFilename(self.tempxmlfile),
-                inputdir = getPathFile(self.input),
-                workingdir = self.tempdir.name,
-                outputfile = getFilename(self.output),
-                outputdir = getPathFile(self.output),
-                keepFlag = self.keepFlag,
-                incatname = self.catname
+                inputfile=getFilename(self.tempxmlfile),
+                inputdir=getPathFile(self.input),
+                workingdir=self.tempdir.name,
+                outputfile=getFilename(self.output),
+                outputdir=getPathFile(self.output),
+                keepFlag=self.keepFlag,
+                incatname=self.catname
             )
             # remove temporary file
             if self.keepFlag:
-                #copy all temporary files
+                # copy all temporary files
                 tempdirSave = tempfile.mkdtemp(prefix='tmp_amc2moodle_',
-                        dir=getPathFile(self.output))
+                                               dir=getPathFile(self.output))
                 #
                 print(' > Save all temp files in: %s' % tempdirSave)
                 copy_tree(self.tempdir.name, tempdirSave)
+
             # run XMLindent
             if self.indentXML:
                 self.runXMLindent()
+
+            # show end message
             self.endMessage()
         else:
-            print('ERROR during lateXML processing')
+            print('ERROR during LaTeXML processing.')
+            sys.exit(1)
