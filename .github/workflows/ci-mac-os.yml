@@ -18,7 +18,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8]
+        python-version: [3.8]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -30,8 +30,7 @@ jobs:
    
     - name: Install the dependences
       run: |
-        python3 -m pip install --upgrade pip
-        brew update
+        python -m pip install --upgrade pip
         
         # install xml libraries and requirements for lateXML
         brew install cpanm
@@ -39,7 +38,7 @@ jobs:
         cpanm XML::LibXML XML::XSLT
         cpanm XML::LibXSLT --force
         cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI UUID::Tiny
-
+		
         # install imagemagick
         brew install imagemagick
 
@@ -58,10 +57,10 @@ jobs:
     - name: Install amc2moodle
       run: |
         # add -e to have write access for test. TODO : change with temp file
-        pip3 install -e .
+        pip install -e .
     - name: Test amc2moodle
       run: |
-        python3 -m amc2moodle.test
+        python -m amc2moodle.test
     - name: Archive test output (no tikz)
       if: ${{ always() }}
       uses: actions/upload-artifact@v1
