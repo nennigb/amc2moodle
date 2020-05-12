@@ -38,7 +38,7 @@ jobs:
         cpanm XML::LibXML XML::XSLT
         cpanm XML::LibXSLT --force
         cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI UUID::Tiny
-		
+
         # install imagemagick
         brew install imagemagick
 
