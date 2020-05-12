@@ -1,5 +1,5 @@
 # `amc2moodle`
-![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/nennigb/amc2moodle?include_prereleases) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![CI-Ubuntu](https://github.com/nennigb/amc2moodle/workflows/CI-Ubuntu/badge.svg)  [![Total Downloads](https://img.shields.io/github/downloads/nennigb/amc2moodle/total)](https://github.com/nennigb/amc2moodle/releases)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/nennigb/amc2moodle?include_prereleases) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![CI-Ubuntu](https://github.com/nennigb/amc2moodle/workflows/CI-Ubuntu/badge.svg)  ![CI-Mac-OS](https://github.com/nennigb/amc2moodle/workflows/CI-mac-os/badge.svg) [![Total Downloads](https://img.shields.io/github/downloads/nennigb/amc2moodle/total)](https://github.com/nennigb/amc2moodle/releases)
 
 `amc2moodle`, is **a tool to convert [automultiplechoice](https://www.auto-multiple-choice.net) quizz (v1.0.3-v1.4) to moodle questions (XML format).**
 The automuliplechoice LaTeX format is convenient, and can be used for preparing question and avoiding moodle web gui.
