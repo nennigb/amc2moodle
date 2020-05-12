@@ -9,7 +9,7 @@ The first conversion step is to convert the LaTeX file into XML file. This is pe
 Then, other transformation are applied in python with XSLT stylesheet. Most of LaTeX possibilities are supported (equations, tables, graphics, user defined commands).
 The question can then be imported in the moodle question bank using category tags.
 
-> Examples of supported AMC question are provided in the [test](./test/) folder.
+> Examples of supported AMC question are provided in the [test](./amc2moodle/test/) folder.
 
 ## Installation
 
@@ -65,7 +65,7 @@ Then on moodle, go to the course `administration\question bank\import` and choos
 ## Usage
 
 ### What you can do
-Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf)
+Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./amc2moodle/test/QCM.pdf)
 
   -  Convert `question` and `questionmult` environments.
   -  You don't need to remove questionnaires part `\exemplaire` or `\onecopy`. But if this part contains undefined commands, remove/comment it!

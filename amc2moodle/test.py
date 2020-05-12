@@ -76,10 +76,10 @@ class TestSuite(unittest.TestCase):
         """
         # define i/o file
         fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                              "../test/QCM_wo-tikz.tex"))
+                                              "test/QCM_wo-tikz.tex"))
         fileOut = os.path.abspath('./test_notikz.xml')
         fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               "../test/QCM_wo-tikz.xml"))
+                                               "test/QCM_wo-tikz.xml"))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
@@ -97,10 +97,10 @@ class TestSuite(unittest.TestCase):
         """
         # define i/o file
         fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                              "../test/QCM.tex"))
+                                              "test/QCM.tex"))
         fileOut = os.path.abspath('./test_tikz.xml')
         fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               "../test/QCM.xml"))
+                                               "test/QCM.xml"))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,

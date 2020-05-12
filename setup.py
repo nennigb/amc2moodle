@@ -37,7 +37,7 @@ def version():
 
 
 this_version = version()
-print('version:',this_version)
+print('version:', this_version)
 
 
 setup(
@@ -60,7 +60,8 @@ setup(
     ],
     install_requires=[
         'wand>=0.5.9',
-        'lxml>=3.5.0'
+        'lxml>=3.5.0',
+        'wheel>=0.29.0'
     ],
     python_requires='>=3.5'
 )
