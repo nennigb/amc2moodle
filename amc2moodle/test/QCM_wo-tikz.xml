@@ -99,4 +99,20 @@ Among the following cities, which ones are French prefectures?
 
 
 ]]></text></questiontext><answer format="html" fraction="50.0"><text><![CDATA[Poitiers]]></text><fraction>50.0</fraction></answer><answer format="html" fraction="-12.5"><text><![CDATA[Sainte-Menehould]]></text><fraction>-12.5</fraction></answer><answer format="html" fraction="50.0"><text><![CDATA[Avignon]]></text><fraction>50.0</fraction></answer><shuffleanswers>true</shuffleanswers><answer format="html" fraction="-12.5"><text>aucune de ces réponses n'est correcte</text><fraction>-12.5</fraction></answer><defaultgrade>1.0</defaultgrade></question>
+  <question type="category"><category><text>$course$/test_notikz/cat1</text></category></question>
+  <question type="multichoice"><single>true</single><name><text>itemize-enumerate</text></name><questiontext format="html"><text><![CDATA[
+Test for itemize html rendering,
+<ul><li><p>first item</p></li><li><p>Second item blablabla</p></li></ul>
+test for enumerate html rendering,
+<ol><li><p>The first item 
+           \(x^{2}\)    
+     with math</p></li><li><p>The second <b>item </b> with bold</p></li></ol>
+
+
+
+
+]]></text></questiontext><answer format="html" fraction="100.0"><text><![CDATA[1 bullet list and 1 ordered list<br/>Remarks : the tag in item are ignored.]]></text><fraction>100.0</fraction></answer><answer format="html" fraction="-50.0"><text><![CDATA[ <ol><li><p>The first item 
+           \(x^{2}\)    
+    </p></li><li><p>The second <b>item</b></p></li></ol>
+]]></text><fraction>-50.0</fraction></answer><shuffleanswers>true</shuffleanswers><defaultgrade>1.0</defaultgrade></question>
 </quiz>

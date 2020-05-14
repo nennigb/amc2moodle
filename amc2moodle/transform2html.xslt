@@ -299,6 +299,8 @@ Prise en compte des images : 2 étapes une dans question (stockage) et une ici (
 
 <!--- ###########################################################
 Prise en compte itemize and ennumerate
+Remarks : the tag in item[tag] is ignored, it seems not possible 
+to change the bullet in html
 -->
 <xsl:template match="itemize"> 
   <ul>

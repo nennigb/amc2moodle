@@ -168,6 +168,31 @@
   \end{questionmult}
 }
 
+% test for itemize and enumerate
+\element{cat1}{
+\begin{question}{itemize-enumerate}
+Test for itemize html rendering,
+\begin{itemize}
+   \item first item
+   \item Second item blablabla 
+\end{itemize}
+test for enumerate html rendering,
+\begin{enumerate}
+  \item The first item $x^2$ with math
+  \item The second \textbf{item } with bold
+\end{enumerate}
+    \begin{choices}
+      \correctchoice{1 bullet list and 1 ordered list\\ Remarks : the tag in item are ignored.}
+      \wrongchoice{    \begin{enumerate}
+      					\item The first item $x^2$
+      					\item The second \textbf{item}
+				      \end{enumerate}
+    }
+    \end{choices}
+\end{question}
+}
+
+
 % test for tikz 
 \element{tikz}{
   \begin{question}{tikz:Q1}

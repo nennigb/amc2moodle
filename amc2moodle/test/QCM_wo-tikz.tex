@@ -60,18 +60,7 @@
 % simple
 \element{cat1}{
   \begin{question}{Qsimple:img}
-    On souhaite faire passer \textit{exactement}, par $N$ points donnés, un \texttt{polynôme} de degré \textbf{strictement} égal à $N-1$. Pour trouver les coefficients on doit résoudre un \emph{problème}.
-
-Test for itemize
-    \begin{itemize}
-      \item first item
-      \item Second item blablabla 
-    \end{itemize}
-    test for enumerate    
-    \begin{enumerate}
-      \item The first item $x^2$
-      \item The second \textbf{item }
-    \end{enumerate}
+    On souhaite faire passer \textit{exactement}, par $N$ points donnés, un \texttt{polynôme} de degré \textbf{strictement} égal à $N-1$. Pour trouver les coefficients on doit résoudre un \emph{problème}
     %\attachfile{./a.c}
     %\includesounds{./Son/piano2.mp3} % test pour inclure sons
     \begin{center}
@@ -179,6 +168,29 @@ Test for itemize
   \end{questionmult}
 }
 
+% test for itemize and enumerate
+\element{cat1}{
+\begin{question}{itemize-enumerate}
+Test for itemize html rendering,
+\begin{itemize}
+   \item first item
+   \item Second item blablabla 
+\end{itemize}
+test for enumerate html rendering,
+\begin{enumerate}
+  \item The first item $x^2$ with math
+  \item The second \textbf{item } with bold
+\end{enumerate}
+    \begin{choices}
+      \correctchoice{1 bullet list and 1 ordered list\\ Remarks : the tag in item are ignored.}
+      \wrongchoice{    \begin{enumerate}
+      					\item The first item $x^2$
+      					\item The second \textbf{item}
+				      \end{enumerate}
+    }
+    \end{choices}
+\end{question}
+}
 
 % #################################################################
 % C R E A T I O N  D E S  C O P I E S
@@ -215,7 +227,7 @@ Test for itemize
   \copygroup{cat1}{BigGroupe}
   \copygroup{cat2}{BigGroupe}
   \copygroup{english}{BigGroupe}
-  \copygroup{tikz}{BigGroupe}
+%  \copygroup{tikz}{BigGroupe}
   \melangegroupe{BigGroupe}
   \restituegroupe{BigGroupe}
 }

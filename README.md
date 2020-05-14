@@ -73,6 +73,7 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./amc2moodle/t
   -  Include image, in all format supported by `Wand`. `amc2moodle`  will convert it in .png for moodle export. The image will be embedded as text (base64) in the output xml file. The folder is '/' in moodle. The image can be in an another folder than the tex file.
   -  Include Table, with the tabular environment. In the present form, `amc2moodle` put  border around each cell.
   -  Use italic, typerwritter, bold, emphasize...
+  -  Use enumerate and itemize (but without the tag `\item[tag]`) 
   -  Automatically add an answer like ``there is no good answer'' if there is no good answer.
   -  Use user's command defined in the LaTeX file.
   -  Use `\usepackage[utf8]{inputenc}`   for accents
