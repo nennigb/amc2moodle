@@ -323,6 +323,9 @@ to change the bullet in html
 
 <xsl:template match="tag"> 
 </xsl:template>
+<!--- New name in new version of LaTeXML -->
+<xsl:template match="tags"> 
+</xsl:template>
 
 </xsl:stylesheet>
 
