@@ -296,7 +296,36 @@ Prise en compte des images : 2 étapes une dans question (stockage) et une ici (
     </p>
 </xsl:template>
 
+
+<!--- ###########################################################
+Prise en compte itemize and ennumerate
+-->
+<xsl:template match="itemize"> 
+  <ul>
+    <xsl:apply-templates/>
+  </ul> 
+</xsl:template>
+
+<xsl:template match="enumerate"> 
+  <ol>
+    <xsl:apply-templates/>
+  </ol> 
+</xsl:template>
+
+
+<xsl:template match="item"> 
+  <li> 	 
+    <xsl:apply-templates/>
+  </li> 
+</xsl:template>
+
+<xsl:template match="tag"> 
+</xsl:template>
+
 </xsl:stylesheet>
+
+
+
 
 
 
