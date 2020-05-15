@@ -296,7 +296,41 @@ Prise en compte des images : 2 étapes une dans question (stockage) et une ici (
     </p>
 </xsl:template>
 
+
+<!--- ###########################################################
+Prise en compte itemize and ennumerate
+Remarks : the tag in item[tag] is ignored, it seems not possible 
+to change the bullet in html
+-->
+<xsl:template match="itemize"> 
+  <ul>
+    <xsl:apply-templates/>
+  </ul> 
+</xsl:template>
+
+<xsl:template match="enumerate"> 
+  <ol>
+    <xsl:apply-templates/>
+  </ol> 
+</xsl:template>
+
+
+<xsl:template match="item"> 
+  <li> 	 
+    <xsl:apply-templates/>
+  </li> 
+</xsl:template>
+
+<xsl:template match="tag"> 
+</xsl:template>
+<!--- New name in new version of LaTeXML -->
+<xsl:template match="tags"> 
+</xsl:template>
+
 </xsl:stylesheet>
+
+
+
 
 
 
