@@ -1,0 +1,215 @@
+<quiz>    
+    <question type="category">
+        <category>
+            <text>$course$/test_notikz/english</text>
+        </category>
+    </question>
+    <question type="multichoice">
+        <single>false</single>
+        <name>
+            <text>pref</text>
+        </name>
+        <questiontext format="html">
+            <text><![CDATA[ 
+Among the following cities, which ones are French prefectures? <p>a link <a href="https://github.com/nennigb/amc2moodle">here</a></p><p>and <br></p>
+<p style="text-align: center;">centered text</p>
+<p style="text-align: left;">flush left text</p>
+<p style="text-align: right;">flush right text</p>
+<p> there is also <sub>exponent</sub> and <sup>indice</sup> or this <strike>that</strike> </p> 
+<table>
+<caption style="caption-side: bottom">basic table</caption>
+<thead>
+	<tr>
+		<th scope="col">h1</th>
+		<th scope="col">h2</th>
+		<th scope="col">h3</th>
+		</tr>
+	</thead>
+<tbody>
+	<tr>
+		<td>d1</td>
+		<td>d2</td>
+		<td>d3</td>
+	</tr>
+</tbody>
+</table>]]></text>
+        </questiontext>
+        <answer format="html" fraction="50.0">
+            <text><![CDATA[Poitiers]]></text>
+            <fraction>50.0</fraction>
+        </answer>
+        <answer format="html" fraction="-12.5">
+            <text><![CDATA[Sainte-Menehould]]></text>
+            <fraction>-12.5</fraction>
+        </answer>
+        <answer format="html" fraction="50.0">
+            <text><![CDATA[Avignon]]></text>
+            <fraction>50.0</fraction>
+        </answer>
+        <shuffleanswers>true</shuffleanswers>
+        <answer format="html" fraction="-12.5">
+            <text>aucune de ces réponses n'est correcte</text>
+            <fraction>-12.5</fraction>
+        </answer>
+        <defaultgrade>1.0</defaultgrade>
+    </question>
+    <question type="category">
+        <category>
+            <text>$course$/test_notikz/cat1</text>
+        </category>
+    </question>
+    <question type="multichoice">
+        <single>true</single>
+        <name>
+            <text>itemize-enumerate</text>
+        </name>
+        <questiontext format="html">
+            <text><![CDATA[
+Test for itemize html rendering,
+<ul><li><p>first item</p></li><li><p>Second item blablabla</p></li></ul>
+test for enumerate html rendering,
+<ol><li><p>The first item 
+           \(x^{2}\)    
+     with math</p></li>
+     <li><p>The second <b>item </b> with bold</p></li></ol>
+]]></text>
+        </questiontext>
+        <answer format="html" fraction="100.0">
+            <text><![CDATA[1 bullet list and 1 ordered list<br/>Remarks : the tag in item are ignored.]]></text><fraction>100.0</fraction>
+        </answer>
+        <answer format="html" fraction="-50.0">
+            <text><![CDATA[ <ol><li><p>The first item 
+           \(x^{2}\)    
+    </p></li><li><p>The second <b>item</b></p></li></ol>
+]]></text>
+			<fraction>-50.0</fraction>
+        </answer>
+        <shuffleanswers>true</shuffleanswers>
+        <defaultgrade>1.0</defaultgrade>
+    </question>
+    
+    <question type="multichoice">
+    <single>true</single>
+    <name><text>prez</text></name>
+    <questiontext format="html"><text><![CDATA[
+Among the following persons, which one has ever been a President of the French Republic ?
+]]></text></questiontext>
+<answer format="html" fraction="100.0"><text><![CDATA[René Coty]]></text><fraction>100.0</fraction></answer><answer format="html" fraction="-50.0"><text><![CDATA[Alain Prost]]></text><fraction>-50.0</fraction></answer><answer format="html" fraction="-50.0"><text><![CDATA[Marcel Proust]]></text><fraction>-50.0</fraction></answer><answer format="html" fraction="-50.0"><text><![CDATA[with an image <p style="text-align:center; ">
+<p>
+<img style="vertical-align:text-bottom; margin: 0 .5em;" src="@@PLUGINFILE@@/4r.png" width="50pt" options="height=16.0pt"/>
+<img style="vertical-align:text-bottom; margin: 0 .5em;" src="@@PLUGINFILE@@/4r.png" width="50px" options="height=16.0pt"/>
+<img style="vertical-align:text-bottom; margin: 0 .5em;" src="@@PLUGINFILE@@/4r.png" height="32.0pt" />
+</p>
+
+<img style="vertical-align:text-bottom; margin: 0 .5em;" src="@@PLUGINFILE@@/4r.png" height="16.0" />
+<img style="vertical-align:text-bottom; margin: 0 .5em;" src="@@PLUGINFILE@@/4r.png" height="16.0px" />
+</p>]]></text>
+<file align="center" dim="height" encoding="base64" ext="png" name="4r.png" path="/" pathF="" size="16.0pt">iVBORw0KGgoAAAANSUhEUgAAACsAAAAzCAYAAAAO2PE2AAAAh3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjaVY7bDYVACET/qcISeC0s5XiNJnZg+UJWs97zAZMJDMB+nQcsBSGDNu8WZphoaPCaouNAEImRqmcdPF0oFU8bhIew6I46B/XxX5pYt8PV3ZpttnGm8y4knDUPQaVivREzhH/vR/9+LXyBG0fHLEd7vP7vAAAJ6WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNC40LjAtRXhpdjIiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iCiAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgZXhpZjpQaXhlbFhEaW1lbnNpb249IjQzIgogICBleGlmOlBpeGVsWURpbWVuc2lvbj0iNTEiCiAgIHRpZmY6SW1hZ2VXaWR0aD0iMSIKICAgdGlmZjpJbWFnZUhlaWdodD0iNTEiLz4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAKPD94cGFja2V0IGVuZD0idyI/PuJV59YAAAAEc0JJVAgICAh8CGSIAAAEZ0lEQVRo3s2ZXYhVVRTHf/vOnZxGy3GUkjG0ESEbmokQHKLAtC/pk6AChRDJPpyXgoiglx5FiLSi7GVCMIke+rCHBFPpayQFx7laMQYxjqUx2ag4mpON8+/BdafN4Zw5596773Q3bPa69+yzzm8v1l577b2dJGq5OEcj0CRxMuccTzrHfc7R5hzX1hhoM7Ab6ATIA0uBl7wO54HfgBPAEeBb4DuJP6YYtAX4EmgDZtnfmgsaBSmlHgV1g9aAWiRRrQpaBBrwvv2yrogCtCUDbLQeBr0OuhfUEBC0A/R75FsbfdiFoLEygIv1L9BO0IugtjIhZ4KeB52J0d89AWudt1cAG63HQe+DXgCtBN0IysUA1oFWgD6wASfp+0wSrhi6nKMdKACuSnPmInAMqAeusdqY8d0eiTujI/08oHVD1n5J5CIj2FCja8Ns4D838OLbV8CyGoMdB+pzMQ+qYN1fgHVAf7kKcsCspDByMKzPPSJA8FAlem7KJYwksHUXWLsTuFC23ybBfgIhc4G7rb0MHCxXyZxYWIlxYEc42Ns9uRAW1sqn4WCvAxpMHqwK7B7gXDjgG6w9FtxnkbgEfBEOdl5VLUtY2JnWDpQNm0/pUAgHW8xZhoERy2MwT+sFDgF9wFHgpPXfADw2Mdo02H5gzLY/FZbpnvyMTbgD9omkTeshH7YuS1L8U2Wr15hgj2CprWJJdYag0/vtBAVfV08Wi/0I3FyaFfuAr4FvrB2O6TMfuB+4B1gCLAS2A/vt+Vqgw38hk2Vfy27FXwWtKRZEsDnm3YuC+fa8STAU7XMgl8FMQ9ktes528X4augp401tyAZ6KeXczcNzkd2whoWTLdpXmo98LXhFsM2sV/9/qWXYk8s4PggZ79kSS7r4sPlvinqyzeIASKS2efBqYYfLfwGpgFJgLbEnMaXPhYZNKQwS2WF4FDpvcXdzBxJW6LLC5MLBXe/Kf1u4GNpm8HnhgMgWZYPNhYKd58gnLEVabG3cAb6QaLQvs4jCwY578M/AocMpWto8ibhJv2SzRINB+bJ8XDeo9eWtWHQO5lGPHq4D2MJYd9eR/vHi7JquCVJ9tt+OeAOV05PetwHulKEiFXRIuRdzkyc22a2osRYFLg70rDOgOoGdinlyZUK2lKjk/2cSanfFEPKVeFtziTawPy9W1f7IYujYSHMsspyxUtQLbgDvKVXQ2nxAFHPBcGBe43jL+ed4+LCCsZcSLwk2uthBKziRNsPU1eEZ7NhfjAq3Aw7UIG+cG75aYvIxYGpm3uJSnOvcSg/mIVVcBKyfzG2CvbfR7gd64m0fnmGOpVLHeZktWJYPo9+NqM2hoktvFLtD0Ci7jWkzHLtClEmPsOKjRV9Yd02kv6EGQC3zd2QRaBypkhB30bxiXRx5eAD1dzftZD3wZ6OOUG85ddlEjFzl1KYAWTwVoBHoBaCNoOAb2Ld+yj1se8DZo2lSDRqAbQc+CjniwXdG727n/J2QC+Aq79VwuiX8BYST1cckoyOwAAAAASUVORK5CYII=</file>
+<fraction>-50.0</fraction></answer><shuffleanswers>true</shuffleanswers><defaultgrade>1.0</defaultgrade></question>
+    
+<!-- question: 9537  -->
+  <question type="multichoice">
+    <name>
+      <text>table</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Test html table conversion to tex</p><p><br>
+</p><table>
+<caption style="caption-side: bottom">table legend</caption>
+<thead>
+<tr>
+<th scope="col"><br></th>
+<th scope="col">weight</th>
+<th scope="col">width</th>
+<th scope="col">length</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">sys1</th>
+<td>1 kg<br></td>
+<td>0.35 m<br></td>
+<td>1 m<br></td>
+</tr>
+<tr>
+<th scope="row">sys2</th>
+<td>2 kg<br></td>
+<td>-</td>
+<td>1.5 m<br></td>
+</tr>
+</tbody>
+</table>
+<br><br><p></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text><![CDATA[<p>global feedback<br></p>]]></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <correctfeedback format="html">
+      <text>Votre réponse est correcte.</text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+      <text>Votre réponse est partiellement correcte.</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+      <text>Votre réponse est incorrecte.</text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>wrong answer<br></p>]]></text>
+      <feedback format="html">
+        <text><![CDATA[<p>this the feedback of question 1<br></p>]]></text>
+      </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+      <text><![CDATA[<p>the good answer is obviously a weird table<br>
+</p><table>
+<caption style="caption-side: bottom"></caption>
+<thead>
+<tr>
+<th scope="col">stuff1<br></th>
+<th scope="col">stuff2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\(x^2\)<br></td>
+<td>bold <b>text</b><br></td>
+</tr>
+</tbody>
+</table>
+<br><br><p></p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>an other table, more simple<br></p>
+ <table style="width:100%">
+  <tbody><tr>
+    <th>Firstname</th>
+    <th>Lastname</th>
+    <th>Age</th>
+  </tr>
+  <tr>
+    <td>Jill</td>
+    <td>Smith</td>
+    <td>50</td>
+  </tr>
+  <tr>
+    <td>Eve</td>
+    <td>Jackson</td>
+    <td>94</td>
+  </tr>
+</tbody></table>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+  </question>    
+</quiz>
