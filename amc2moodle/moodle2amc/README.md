@@ -1,5 +1,7 @@
 # moodle2amc - Conversion from moodle XML file to LaTeX automultiplechoice file
 
+
+Require auto-multiple-choice install or to place at least the `automultiplechoice.sty` file 
 ## How it works
     0. ordered the category
     1. parse structure with python, to get unambigious xml file easy to parse 
@@ -21,3 +23,5 @@
 ## What you can do
 
 ## What you cannot do
+
+'_' in category name
