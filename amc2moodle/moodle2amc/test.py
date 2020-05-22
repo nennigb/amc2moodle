@@ -51,19 +51,20 @@ class TestSuite(unittest.TestCase):
         quiz = Quiz(fileIn)
         # convert it
         quiz.convert(fileOut, debug=False)
-        # test latex compilation
 
         print('=============== Check output ================')
+        # check it (for convinience but too strict)
+        equiv = check_hash(fileOut, fileRef)
+        if equiv:
+            print('> Converted XML is identical to the reference: OK')
+        # test latex compilation
         status = quiz.compileLatex(fileOut)
         if status.returncode != 0:
             print('> pdflatex encounters Errors, see logs...')
         else:
-            print('> pdflatex compile without Errors... OK')
+            print('> pdflatex compile without Errors: OK')
         self.assertEqual(status.returncode, 0)
-        # check it (for convinience but too strict)
-        equiv = check_hash(fileOut, fileRef)
-        if equiv:
-            print('  -> Converted XML is identical to the ref.')
+
 
 
 

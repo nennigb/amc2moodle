@@ -37,7 +37,8 @@ jobs:
         sudo apt-get install imagemagick
         # move policy file
         sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
-        sudo apt-get install texlive-latex-recommended texlive-pictures
+        # texlive-fonts-recommended (bophook in texlive-latex-extra) required by moodle2amc test
+        sudo apt-get install texlive-latex-recommended texlive-pictures texlive-fonts-recommended texlive-latex-extra
         # add libtext-unidecode-perl to fix bug in deb package : https://github.com/brucemiller/LaTeXML/issues/1022
         sudo apt-get install libtext-unidecode-perl
         sudo apt-get install latexml
@@ -47,30 +48,60 @@ jobs:
       run: |
         # add --strict flag to be more strict in error catching
         latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./amc2moodle/amc2moodle/test/QCM.tex   
+    
     - name: Install amc2moodle
       run: |
         # add -e to have write access for test. TODO : change with temp file
         pip install -e .
+    
     - name: Test amc2moodle
       run: |
         python -m amc2moodle.amc2moodle.test
     - name: Test moodle2amc
       run: |
-        python -m amc2moodle.moodle2amc.test        
-    - name: Archive test output (no tikz)
+        # add automultiplechoice.sty local copy to LaTeX PATH (for this step)
+        export TEXINPUTS=.:./amc2moodle/moodle2amc/test:$TEXINPUTS
+        python -m amc2moodle.moodle2amc.test
+
+    
+    # Store output files
+    # amc2moodle
+    - name: Archive XML test output of amc2moodle (without tikz)
       if: ${{ always() }}
       uses: actions/upload-artifact@v1
       with:
         name: test_notikz_${{ matrix.python-version }}
         path: test_notikz.xml    
-    - name: Archive test output (tikz)
+    
+    - name: Archive XML test output of amc2moodle (with tikz)
       if: ${{ always() }}
       uses: actions/upload-artifact@v1
       with:
         name: test_tikz_${{ matrix.python-version }}
-        path: test_tikz.xml   
-   
+        path: test_tikz.xml
+    # moodle2amc
+    - name: Move latex output
+      if: ${{ always() }}
+      run: |
+        mkdir moodle-bank-exemple-output
+        mv test_moodle-bank-exemple.* moodle-bank-exemple-output/
+
+    - name: Archive LaTeX test output (moodle2amc)
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v1
+      with:
+        name: test_moodle-bank-exemple_${{ matrix.python-version }}
+        path: moodle-bank-exemple-output
+
+#    - name: Archive .
+#      if: ${{ always() }}
+#      uses: actions/upload-artifact@v1
+#      with:
+#        name: all_${{ matrix.python-version }}
+#        path: .
         
+        
+
         
 
     
