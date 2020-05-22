@@ -109,6 +109,7 @@ class Quiz:
         \documentclass[a4paper]{article}
         % -------------------------::== package ==::---------------------------
         \usepackage[utf8]{inputenc}
+        \usepackage[T1]{fontenc}
         \usepackage{alltt}
         \usepackage{multicol}
         \usepackage{amsmath,amssymb}
@@ -123,7 +124,7 @@ class Quiz:
         % -----------------------::== newcommand ==::--------------------------
         \newcommand{\feedback}[1]{}
         \begin{document}
-        """
+        """.replace('        ','')
         header = etree.Element('header')
         header.text = header_text
         return header
@@ -152,13 +153,13 @@ class Quiz:
         }}
 
         \begin{center}
-          \Large{\textsc{AMC quizz generated from moodle questions}}\\
+          \Large{\textsc{An AMC quiz generated from moodle XML questions export}}\\
           \normalsize
         \end{center}
 
         % mélange et catégorie (groupe dans ACM)
         \cleargroup{allquestions}
-        """
+        """.replace('        ','')
         enddocument = "\n\\end{document}"
         copy_group = "\\copygroup{%s}{allquestions}\n"
 
@@ -212,7 +213,7 @@ class Quiz:
             if question.attrib['type'] == 'category':
                 mdl_catname = question.find('category/text').text
                 # create a simpler catname for amc
-                catname = '_'.join(mdl_catname.split('/')[1:])
+                catname = '-'.join(mdl_catname.split('/')[1:])
                 # store name and nothing else to do
                 cat_list.append(catname)
             else:

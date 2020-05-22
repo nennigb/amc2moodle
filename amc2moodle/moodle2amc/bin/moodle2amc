@@ -44,7 +44,8 @@ def run():
                         help="Output XML file (default inputfile.tex)",
                         required=False)
     parser.add_argument("--fig",
-                        help='''figures folder name (default Figures)''',
+                        help='''figures folder name (default Figures not yet
+                        implemented)''',
                         required=False)
     parser.add_argument("--check",
                         help='''Check if LaTeX output compile (optional)''',
@@ -95,7 +96,7 @@ def run():
                 print('> pdflatex encounters Errors...')
                 sys.exit(status.returncode)
             else:
-                print('> pdflatex compile without Errors...')
+                print('> pdflatex compile without Errors... OK')
     else:
         # exit with error status
         sys.exit(1)

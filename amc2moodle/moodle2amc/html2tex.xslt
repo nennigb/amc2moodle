@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-  <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+
+
+<!-- remove html element --> 
+<xsl:template match="html"><xsl:apply-templates/></xsl:template>
+<xsl:template match="body"><xsl:apply-templates/></xsl:template>
   
-<!-- Define PATH to figures-->
-
-<xsl:variable name="figpath" select="'./Figures/'" /> 
-
 <!-- template identité -->
 <xsl:template match="@* | node()">
         <xsl:copy>
@@ -126,9 +127,7 @@
 </xsl:template>
 
 <!-- link -->
-<xsl:template match="a[@href]">
-\href{<xsl:value-of select = "@href"/>}{<xsl:apply-templates/>}
-</xsl:template>
+<xsl:template match="a[@href]">\href{<xsl:value-of select = "@href"/>}{<xsl:apply-templates/>} </xsl:template>
 
 
 <!-- img 
@@ -150,7 +149,7 @@
 				    </xsl:when>
 				    <!-- nothing -->
 				  <xsl:otherwise></xsl:otherwise>
-			 </xsl:choose>]{<xsl:value-of select = "@src"/>}</xsl:template>
+			 </xsl:choose>]{<xsl:value-of select = "@src"/>} </xsl:template>
 
 <xsl:template match="picture"><xsl:apply-templates/></xsl:template>
 
