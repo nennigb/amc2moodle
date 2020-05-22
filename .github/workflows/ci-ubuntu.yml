@@ -46,14 +46,17 @@ jobs:
     - name: Test latexml
       run: |
         # add --strict flag to be more strict in error catching
-        latexml --noparse --nocomment --strict --path=./amc2moodle --dest=./out.xml  ./amc2moodle/test/QCM.tex   
+        latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./amc2moodle/amc2moodle/test/QCM.tex   
     - name: Install amc2moodle
       run: |
         # add -e to have write access for test. TODO : change with temp file
         pip install -e .
     - name: Test amc2moodle
       run: |
-        python -m amc2moodle.test
+        python -m amc2moodle.amc2moodle.test
+    - name: Test moodle2amc
+      run: |
+        python -m amc2moodle.moodle2amc.test        
     - name: Archive test output (no tikz)
       if: ${{ always() }}
       uses: actions/upload-artifact@v1

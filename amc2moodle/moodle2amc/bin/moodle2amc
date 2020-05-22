@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+"""
+    This file is part of amc2moodle, a convertion tool to recast quiz written
+    with the LaTeX format used by automuliplechoice 1.0.3 into the
+    moodle XML quiz format.
+    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import amc2moodle.moodle2amc as mdl2amc
+import argparse
+import os
+import sys
+
+
+def run():
+    """ Read command line input and run mdl2amc conversion.
+    """
+    # Initialize command line parser with argparse
+    # default values
+    fileIn = None
+    fileOut = None
+    debug = False
+    # deal with arguments
+    parser = argparse.ArgumentParser(description='''This program converts a
+                                     XML file containing moodle questions into
+                                     an automultiplechoice LaTeX file.''')
+
+    parser.add_argument("inputfile",
+                        help="Input moodle XML file (mandatory)")
+    parser.add_argument("-o", "--output",
+                        help="Output XML file (default inputfile.tex)",
+                        required=False)
+    parser.add_argument("--fig",
+                        help='''figures folder name (default Figures)''',
+                        required=False)
+    parser.add_argument("--check",
+                        help='''Check if LaTeX output compile (optional)''',
+                        required=False, action="store_true")
+    # parser.add_argument("-c", "--catname",  # nargs=1,
+    #                     help='''Provide root category name (default 'amc').
+    #                     Note that \\element{label} are used as
+    #                     subcategory tag.''',
+    #                     required=False, default='amc')
+
+    # Get input args
+    args = parser.parse_args()
+
+    if args.inputfile:
+        fileIn = args.inputfile
+    if args.output:
+        fileOut = args.output
+
+    # check input file
+    fileInOk = os.path.exists(fileIn)
+
+    if fileInOk:
+        print('Input file: %s - status: %s' % (fileIn, "OK"))
+    else:
+        print('Input file: %s - status: %s' % (fileIn, "does not exist"))
+    if fileOut:
+        fileOutOk = not os.path.exists(fileOut)
+        if fileOutOk:
+            print('Output file: %s - status: Ok' % fileOut)
+        else:
+            print('Output file: %s - status: Already exists (will be overwritten)' % fileOut)
+    else:
+        fileOut = os.path.splitext(fileIn)[0] + '.tex'
+        print('Output file: %s - will be created.' % fileOut)
+
+    # run conversion
+    if fileInOk:
+        print('============ Run conversion ============')
+        # create a quiz
+        quiz = mdl2amc.Quiz(fileIn)
+        # convert it
+        quiz.convert(fileOut, debug)
+        # test latex compilation
+        if args.check:
+            print('============ Check output ==============')
+            status = quiz.compileLatex(fileOut)
+            if status.returncode != 0:
+                print('> pdflatex encounters Errors...')
+                sys.exit(status.returncode)
+            else:
+                print('> pdflatex compile without Errors...')
+    else:
+        # exit with error status
+        sys.exit(1)
+
+
+# Run autonomous
+if __name__ == '__main__':
+    # run with options
+    run()
