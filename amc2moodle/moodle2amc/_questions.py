@@ -27,7 +27,8 @@ import base64
 import os
 from abc import ABC, abstractmethod
 from wand.image import Image
-
+# decode filemame unsed in moodle
+import urllib
 
 
 # list of supported moodle question type for
@@ -159,6 +160,8 @@ class Question(ABC):
         # check that img file are supported by LaTeX
         for img in tree_content.findall('.//img'):
             src = img.attrib['src']
+            # remove percent-encoding with urlib
+            src = urllib.parse.unquote(src)
             path, filename = os.path.split(src)
             basename, ext = os.path.splitext(filename)
             # need to be converted
