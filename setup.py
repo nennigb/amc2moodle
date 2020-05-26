@@ -50,7 +50,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/nennigb/amc2moodle",
     zip_safe=False,
-    packages=['amc2moodle.amc2moodle', 'amc2moodle.moodle2amc'],
+    packages=['amc2moodle','amc2moodle.amc2moodle', 'amc2moodle.moodle2amc'],
     include_package_data=True,
     scripts=['amc2moodle/amc2moodle/bin/amc2moodle',
              'amc2moodle/moodle2amc/bin/moodle2amc'],
