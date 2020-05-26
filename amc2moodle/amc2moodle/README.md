@@ -1,19 +1,32 @@
-# amc2moodle
+# amc2moodle : Conversion from automultiplechoice LaTeX file to moodle XML file.
 
-conversion from automultiplechoice LaTeX format to moodle XML format.
 
 ## How it works
-The first conversion step is to convert the LaTeX file into XML file. This is performed by [LaTeXML](https://dlmf.nist.gov/LaTeXML/) and allow user defined command.
-Then, other transformation are applied in python with XSLT stylesheet. Most of LaTeX possibilities are supported (equations, tables, graphics, user defined commands).
-The question can then be imported in the moodle question bank using category tags.
 
-> Examples of supported AMC question are provided in the [test](./amc2moodle/test/) folder.
+The first conversion step is to convert the LaTeX file into XML file. This is performed by [LaTeXML](https://dlmf.nist.gov/LaTeXML/). Then, other transformations are applied in python with XSLT stylesheet. Most of LaTeX possibilities are supported (equations, tables, graphics, user defined commands). The question can then be imported in the moodle question bank using category tags.
+
+> Examples of supported AMC question are provided in the [test](./test) folder.
 
 
 ## Usage
 
+The conversion can be performed :
+  - by running `amc2moodle` command line tool as detailed [here](../../README.md#conversion), 
+  - or directly from python by importing the package
+```
+# import subpackage
+from amc2moodle.amc2moodle import amc2moodle_class as a2m
+# convert to xml
+a2m.amc2moodle(fileInput=fileIn,
+               fileOutput=fileOut,
+               keepFlag=False,
+               catname='test_notikz',
+               deb=0)
+```
+
 ### What you can do
-Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./amc2moodle/test/QCM.pdf)
+
+Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf)
 
   -  Convert `question` and `questionmult` environments.
   -  You don't need to remove questionnaires part `\exemplaire` or `\onecopy`. But if this part contains undefined commands, remove/comment it!
@@ -31,6 +44,7 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./amc2moodle/t
 
 
 ### What you cannot do
+
   -  Use underscore in question name field !
   -  Use verbatim. This environment is not supported by `automultiplechoice` 1.0.3. Use `alltt` package instead.
   -  Use font size (easy to add)
