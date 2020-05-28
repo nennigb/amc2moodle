@@ -19,7 +19,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-__all__ = ['QuestionMultichoice', 'CreateQuestion']
+__all__ = ['Question', 'QuestionMultichoice', 'CreateQuestion',
+           'SUPPORTED_QUESTION_TYPE']
 
 from lxml import etree
 from xml.sax.saxutils import unescape
@@ -32,8 +33,7 @@ import urllib
 
 
 # list of supported moodle question type for
-SUPPORTED_QUESTION_TYPE = {'multichoice'}
-# possible numerics, open
+SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay'}
 
 # possible to use several grading strategy
 GRADING_STRATEGY = 'std'  # good/wrong no specific grading
@@ -48,7 +48,9 @@ LATEX_IMG_OUT = '.png'
 # output latex File
 LATEX_FILEOUT = 'out.tex'
 
-
+# labels for choices in AMCOpen
+CORRECT_LABEL = 'OK'
+WRONG_LABEL = 'F'
 
 class Question(ABC):
     """ Define an absract class for all supported questions.
@@ -58,6 +60,7 @@ class Question(ABC):
     _transform = etree.XSLT(etree.parse(_xslt_html2tex))
     figpath = FIGURES_PATH
 
+    # possible numerics, open
     def __init__(self, q):
         """ Init class from an etree Element.
         """
@@ -288,8 +291,56 @@ class QuestionMultichoice(Question):
             amc_choices.append(amc_ans)
 
         return amc_choices
+
+
+
+class QuestionEssay(Question):
+    """ Essai choice question (AMCopen)
+    """
+
+    def __init__(self, q):
+        """ Init class from an etree Element.
+        """
+        super().__init__(q)
+        self.q = q
+        self.qtype = 'essai'
+
+    def gettype(self,):
+        """ Determine the amc question type.
+        """
+        amcqtype = 'question'
+
+        return amcqtype
+
+    def answers(self):
+        """ Create and parse answers.
+        """
+        nlines = self.q.find('responsefieldlines').text
+        amc_open = etree.Element('open', attrib={'nlines': str(nlines)})
+        # loop over all answers
+
+        if self.gStrategy == 'std':
+            # Create 2 possible answers 0, or 100%
+            # perhaps create an options for more details, but perhaps more
+            # simple to fix that directly in amc
+            amc_good = etree.Element('correctchoice', attrib={'label': CORRECT_LABEL})
+            etree.SubElement(amc_good, "text").text = CORRECT_LABEL
+
+            amc_wrong = etree.Element('wrongchoice', attrib={'label': WRONG_LABEL})
+            etree.SubElement(amc_wrong, "text").text = WRONG_LABEL
+            # answers are embedded into open element, for parsing the box
+            amc_open.append(amc_good)
+            amc_open.append(amc_wrong)
+        else:
+            raise NotImplementedError()
+
+        # print(etree.tostring(amc_open).decode())
+        return amc_open
+
+
 # dict of all available question
-Q_FACTORY = {'multichoice': QuestionMultichoice}
+Q_FACTORY = {'multichoice': QuestionMultichoice,
+             'essay': QuestionEssay}
 
 def CreateQuestion(qtype, question):
     """ Factory function for creating the Questions* objects.

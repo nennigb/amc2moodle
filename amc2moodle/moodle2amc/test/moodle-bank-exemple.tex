@@ -18,7 +18,16 @@
 \begin{document}
 
 % -----------------------------------------------------------------------------
-\element{Défaut-moodle2amc}{
+\element{Défaut pour BN1-moodle2amc}{
+  \begin{question}{Essai}\label{q:Essai}   
+    Explain in few words the aim of this course.
+% It is possible to add more granularity with partially correct answer using \wrongchoice[P]{p}\scoring{0.5}
+\AMCOpen{lines=3}{    \correctchoice[OK]{OK}    \wrongchoice[F]{F}}
+  \end{question}
+}
+
+% -----------------------------------------------------------------------------
+\element{Défaut pour BN1-moodle2amc}{
   \begin{question}{html layout}\label{q:html layout}   
     a link \href{https://github.com/nennigb/amc2moodle}{here } and an image \includegraphics[]{./Figures/4.png} and an equation \( \int_{2\pi} x^2 \mathrm{d} x \)
 \begin{center}
@@ -30,20 +39,14 @@ flush left text
 \end{flushright}
 In moodle editor, there is also \textsubscript{exponent} and \textsuperscript{indice} and \sout{that}and svg file \includegraphics[width=100px]{./Figures/dessin.png} 
   \begin{choices}
-	 
-    \correctchoice{This is the good \underline{underlined} answer.}
- 
-    \wrongchoice{This is one \textit{italic} wrong answer.}
- 
-    \wrongchoice{This a wrong \textbf{bold} answer.}
-
+	    \correctchoice{This is the good \underline{underlined} answer.}    \wrongchoice{This is one \textit{italic} wrong answer.}    \wrongchoice{This a wrong \textbf{bold} answer.}
   \end{choices}
 
   \end{question}
 }
 
 % -----------------------------------------------------------------------------
-\element{Défaut-moodle2amc}{
+\element{Défaut pour BN1-moodle2amc}{
   \begin{question}{table}\label{q:table}   
     Test html table conversion to tex        
 \begin{center}
@@ -61,10 +64,7 @@ sys2 & 2 kg & - & 1.5 m\\
 \end{center}
  
   \begin{choices}
-	 
-    \wrongchoice{wrong answer}
- 
-    \correctchoice{the good answer is obviously a weird table        
+	    \wrongchoice{wrong answer}    \correctchoice{the good answer is obviously a weird table        
 \begin{center}
 	
   \begin{tabular}{cc}
@@ -77,9 +77,7 @@ sys2 & 2 kg & - & 1.5 m\\
   \end{tabular}\\
  
 \end{center}
- }
- 
-    \wrongchoice{an other table, more simple         
+ }    \wrongchoice{an other table, more simple         
 \begin{center}
 	
   \begin{tabular}{ccc}
@@ -93,7 +91,6 @@ sys2 & 2 kg & - & 1.5 m\\
  
 \end{center}
  }
-
   \end{choices}
 
   \end{question}
@@ -123,7 +120,7 @@ Nom et prénom :
 
 % mélange et catégorie (groupe dans ACM)
 \cleargroup{allquestions}
-\copygroup{Défaut-moodle2amc}{allquestions}
+\copygroup{Défaut pour BN1-moodle2amc}{allquestions}
 \melangegroupe{allquestions}
 \restituegroupe{allquestions}
 }

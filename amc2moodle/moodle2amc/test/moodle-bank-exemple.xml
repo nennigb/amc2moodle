@@ -3,9 +3,36 @@
 <!-- question: 0  -->
   <question type="category">
     <category>
-        <text>$course$/Défaut/moodle2amc</text>
+        <text>$course$/Défaut pour BN1/moodle2amc</text>
 
     </category>
+  </question>
+
+<!-- question: 10022  -->
+  <question type="essay">
+    <name>
+      <text>Essai</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Explain in few words the aim of this course.<br>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>3</responsefieldlines>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text></text>
+    </responsetemplate>
   </question>
 
 <!-- question: 9549  -->

@@ -52,12 +52,22 @@
   \end{choices}
 </xsl:template>
 
+<xsl:template match="open">
+% It is possible to add more granularity with partially correct answer using \wrongchoice[P]{p}\scoring{0.5}
+\AMCOpen{lines=<xsl:value-of select = "@nlines"/>}{<xsl:apply-templates />}</xsl:template>
+
 <xsl:template match="correctchoice"> 
-    \correctchoice{<xsl:value-of select = "text"/>}
+    <xsl:choose>
+        <xsl:when test="@label">    \correctchoice[<xsl:value-of select = "@label"/>]{<xsl:value-of select = "text"/>}</xsl:when>
+        <xsl:otherwise>    \correctchoice{<xsl:value-of select = "text"/>}</xsl:otherwise>
+    </xsl:choose>    
 </xsl:template>
   
 <xsl:template match="wrongchoice"> 
-    \wrongchoice{<xsl:value-of select = "text"/>}
+    <xsl:choose>
+        <xsl:when test="@label">    \wrongchoice[<xsl:value-of select = "@label"/>]{<xsl:value-of select = "text"/>}</xsl:when>
+        <xsl:otherwise>    \wrongchoice{<xsl:value-of select = "text"/>}</xsl:otherwise>
+    </xsl:choose>    
 </xsl:template>
 
 <!-- template for header/footer -->

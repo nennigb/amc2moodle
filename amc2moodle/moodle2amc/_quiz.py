@@ -26,11 +26,6 @@ import os
 from ._questions import *
 
 
-# list of supported moodle question type for
-SUPPORTED_QUESTION_TYPE = {'multichoice'}
-# possible numerics, open
-
-
 # output latex File
 LATEX_FILEOUT = 'out.tex'
 # xslt file
