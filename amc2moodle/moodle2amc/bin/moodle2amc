@@ -19,48 +19,42 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from amc2moodle import amc2moodle_class as a2m
+import amc2moodle.moodle2amc as mdl2amc
 import argparse
 import os
 import sys
 
 
 def run():
-    """ Read command line input and run amc2mooodle conversion.
+    """ Read command line input and run mdl2amc conversion.
     """
     # Initialize command line parser with argparse
     # default values
     fileIn = None
     fileOut = None
+    debug = False
     # deal with arguments
     parser = argparse.ArgumentParser(description='''This program converts a
-                                     LaTeX file containing AMC questions into
-                                     an XML file suitable for moodle import.
-                                     Only 'question' and 'questionmult'
-                                     environnements are now available.
-                                     ''')
+                                     XML file containing moodle questions into
+                                     an automultiplechoice LaTeX file.''')
 
     parser.add_argument("inputfile",
-                        help="Input TeX file (mandatory)")
-    parser.add_argument("-o", "--output", nargs=1,
-                        help="Output XML file (default inputfile.xml)",
+                        help="Input moodle XML file (mandatory)")
+    parser.add_argument("-o", "--output",
+                        help="Output XML file (default inputfile.tex)",
                         required=False)
-    parser.add_argument("-k", "--keep",
-                        help='''Keep temporary file
-                        (useful for debuging, optional)''',
+    parser.add_argument("--fig",
+                        help='''figures folder name (default Figures not yet
+                        implemented)''',
+                        required=False)
+    parser.add_argument("--check",
+                        help='''Check if LaTeX output compile (optional)''',
                         required=False, action="store_true")
-    parser.add_argument("-c", "--catname",  # nargs=1,
-                        help='''Provide root category name (default 'amc').
-                        Note that \\element{label} are used as
-                        subcategory tag.''',
-                        required=False, default='amc')
-    parser.add_argument("-p", "--prettify",
-                        help="Prettify the XML file using indent tool",
-                        required=False, action="store_true")
-    parser.add_argument("-n", "--notemp",
-                        help='''No use of system temporary directory, use
-                                input directory instead.''',
-                        required=False, action="store_true")
+    # parser.add_argument("-c", "--catname",  # nargs=1,
+    #                     help='''Provide root category name (default 'amc').
+    #                     Note that \\element{label} are used as
+    #                     subcategory tag.''',
+    #                     required=False, default='amc')
 
     # Get input args
     args = parser.parse_args()
@@ -68,17 +62,10 @@ def run():
     if args.inputfile:
         fileIn = args.inputfile
     if args.output:
-        fileOut = args.output[0]
-
-    keepFlag = args.keep
-    indentFlag = args.prettify
-    tempDir = not args.notemp
-    catname = args.catname
+        fileOut = args.output
 
     # check input file
-    fileInOk = False
-    if fileIn is not None:
-        fileInOk = os.path.exists(fileIn)
+    fileInOk = os.path.exists(fileIn)
 
     if fileInOk:
         print('Input file: %s - status: %s' % (fileIn, "OK"))
@@ -90,12 +77,26 @@ def run():
             print('Output file: %s - status: Ok' % fileOut)
         else:
             print('Output file: %s - status: Already exists (will be overwritten)' % fileOut)
+    else:
+        fileOut = os.path.splitext(fileIn)[0] + '.tex'
+        print('Output file: %s - will be created.' % fileOut)
 
     # run conversion
     if fileInOk:
-        a2m.amc2moodle(fileInput=fileIn, fileOutput=fileOut,
-                       keepFlag=keepFlag, catname=catname,
-                       indentXML=indentFlag, usetempdir=tempDir)
+        print('============ Run conversion ============')
+        # create a quiz
+        quiz = mdl2amc.Quiz(fileIn)
+        # convert it
+        quiz.convert(fileOut, debug)
+        # test latex compilation
+        if args.check:
+            print('============ Check output ==============')
+            status = quiz.compileLatex(fileOut)
+            if status.returncode != 0:
+                print('> pdflatex encounters Errors...')
+                sys.exit(status.returncode)
+            else:
+                print('> pdflatex compile without Errors... OK')
     else:
         # exit with error status
         sys.exit(1)

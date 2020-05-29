@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+"""
+    This file is part of amc2moodle, a convertion tool to recast quiz written
+    with the LaTeX format used by automuliplechoice 1.0.3 into the
+    moodle XML quiz format.
+    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+from amc2moodle.amc2moodle import amc2moodle_class as a2m
+import argparse
+import os
+import sys
+
+
+def run():
+    """ Read command line input and run amc2mooodle conversion.
+    """
+    # Initialize command line parser with argparse
+    # default values
+    fileIn = None
+    fileOut = None
+    # deal with arguments
+    parser = argparse.ArgumentParser(description='''This program converts a
+                                     LaTeX file containing AMC questions into
+                                     an XML file suitable for moodle import.
+                                     Only 'question' and 'questionmult'
+                                     environnements are now available.
+                                     ''')
+
+    parser.add_argument("inputfile",
+                        help="Input TeX file (mandatory)")
+    parser.add_argument("-o", "--output", nargs=1,
+                        help="Output XML file (default inputfile.xml)",
+                        required=False)
+    parser.add_argument("-k", "--keep",
+                        help='''Keep temporary file
+                        (useful for debuging, optional)''',
+                        required=False, action="store_true")
+    parser.add_argument("-c", "--catname",  # nargs=1,
+                        help='''Provide root category name (default 'amc').
+                        Note that \\element{label} are used as
+                        subcategory tag.''',
+                        required=False, default='amc')
+    parser.add_argument("-p", "--prettify",
+                        help="Prettify the XML file using indent tool",
+                        required=False, action="store_true")
+    parser.add_argument("-n", "--notemp",
+                        help='''No use of system temporary directory, use
+                                input directory instead.''',
+                        required=False, action="store_true")
+
+    # Get input args
+    args = parser.parse_args()
+
+    if args.inputfile:
+        fileIn = args.inputfile
+    if args.output:
+        fileOut = args.output[0]
+
+    keepFlag = args.keep
+    indentFlag = args.prettify
+    tempDir = not args.notemp
+    catname = args.catname
+
+    # check input file
+    fileInOk = False
+    if fileIn is not None:
+        fileInOk = os.path.exists(fileIn)
+
+    if fileInOk:
+        print('Input file: %s - status: %s' % (fileIn, "OK"))
+    else:
+        print('Input file: %s - status: %s' % (fileIn, "does not exist"))
+    if fileOut:
+        fileOutOk = not os.path.exists(fileOut)
+        if fileOutOk:
+            print('Output file: %s - status: Ok' % fileOut)
+        else:
+            print('Output file: %s - status: Already exists (will be overwritten)' % fileOut)
+
+    # run conversion
+    if fileInOk:
+        a2m.amc2moodle(fileInput=fileIn, fileOutput=fileOut,
+                       keepFlag=keepFlag, catname=catname,
+                       indentXML=indentFlag, usetempdir=tempDir)
+    else:
+        # exit with error status
+        sys.exit(1)
+
+
+# Run autonomous
+if __name__ == '__main__':
+    # run with options
+    run()

@@ -19,7 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from amc2moodle import amc2moodle_class as a2m
+from amc2moodle.amc2moodle import amc2moodle_class as a2m
 import os
 import hashlib
 import unittest

@@ -1,0 +1,47 @@
+# moodle2amc : Conversion from moodle XML to auto-multiple-choice LaTeX file
+
+## How it works
+
+The conversion is split into three steps:
+
+  1. Parse moodle XML and recast it to an intermediate XML tree closer to AMC structure, done by `Quiz` class;
+  2. Parse each questions, with `QuestionX` class;
+     - Extract images files and convert them to image format supported by `pdflatex`
+     - Convert all CDATA html fields to LaTeX with xslt style sheet (`html2tex.xslt`)
+  3. Convert the global structure into LaTeX with xslt style sheet (`struc2tex.xslt`)
+
+> Examples of supported Moodle question types are provided in the [test](./test) folder.
+
+## Usage
+
+The conversion can be performed 
+  - by running `moodle2amc` command line tool as detailed [here](../../README.md#conversion), 
+  - or directly from python by importing the package : 
+  
+```
+from amc2moodle.moodle2amc import Quiz
+
+# create a quiz instance, from fileIn (xml file)
+quiz = Quiz(fileIn)
+# convert it, and store out in fileOut (tex file)
+quiz.convert(fileOut)
+```
+
+### What you can do
+
+  - Convert **Multichoices** moodle question, with single or multiple answers
+  - Convert **Essay** moodle question into `\AMCOpen`
+  - Convert basic html text formating, image, LaTeX equation, embbeded svg and basic table to LaTeX
+  - Recover moodle category in your latex file. The _category_ names are map into _groups_, defined with the environnements `\element{}{}`. In AMC _groups_ can be used to pick or randomize questions just like in moodle.
+  - Use the output latex file into AMC to finalize your exam or use the joined `automultiplechoice.sty` file to compile AMC draft file
+  - Extract all figures imbedded in the moodle XML file or from the moodle question bank.
+  - Tested on moodle 3.x
+
+
+### What you cannot do
+
+  - Connect AMC to moodle database. Whereas [moodle-mod-automultiplechoice plugin](https://github.com/UGA-DAPI/moodle-mod-automultiplechoice) which is an interface to use AMC within Moodle, `moodle2amc` just convert a moodle XML file obtained after moodle question bank export into AMC LaTeX format. 
+
+### Grading strategy
+
+Currently, the moodle scroring, set for each answer, are not conserved after the conversion and the scoring has to be defined in AMC, only _good/wrong_ answers environnements are used. It is possible to modify that for next version. 

@@ -1,0 +1,127 @@
+\documentclass[a4paper]{article}
+% -------------------------::== package ==::---------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{alltt}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb}
+\usepackage{color}
+\usepackage{graphicx}
+% Mandatory for conversion
+\usepackage[francais,bloc,completemulti]{automultiplechoice}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{ulem} % strike text
+
+% -----------------------::== newcommand ==::--------------------------
+\newcommand{\feedback}[1]{}
+\begin{document}
+
+% -----------------------------------------------------------------------------
+\element{Défaut pour BN1-moodle2amc}{
+  \begin{question}{Essai}\label{q:Essai}   
+    Explain in few words the aim of this course.
+% It is possible to add more granularity with partially correct answer using \wrongchoice[P]{p}\scoring{0.5}
+\AMCOpen{lines=3}{    \correctchoice[OK]{OK}    \wrongchoice[F]{F}}
+  \end{question}
+}
+
+% -----------------------------------------------------------------------------
+\element{Défaut pour BN1-moodle2amc}{
+  \begin{question}{html layout}\label{q:html layout}   
+    a link \href{https://github.com/nennigb/amc2moodle}{here } and an image \includegraphics[]{./Figures/4.png} and an equation \( \int_{2\pi} x^2 \mathrm{d} x \)
+\begin{center}
+    centered text
+\end{center}
+flush left text
+\begin{flushright}
+    flush right text
+\end{flushright}
+In moodle editor, there is also \textsubscript{exponent} and \textsuperscript{indice} and \sout{that}and svg file \includegraphics[width=100px]{./Figures/dessin.png} 
+  \begin{choices}
+	    \correctchoice{This is the good \underline{underlined} answer.}    \wrongchoice{This is one \textit{italic} wrong answer.}    \wrongchoice{This a wrong \textbf{bold} answer.}
+  \end{choices}
+
+  \end{question}
+}
+
+% -----------------------------------------------------------------------------
+\element{Défaut pour BN1-moodle2amc}{
+  \begin{question}{table}\label{q:table}   
+    Test html table conversion to tex        
+\begin{center}
+	
+  \begin{tabular}{cccc}
+  \hline
+   & weight & width & length\\   
+  \hline
+sys1 & 1 kg & 0.35 m & 1 m\\   
+sys2 & 2 kg & - & 1.5 m\\   
+  \hline
+	
+  \end{tabular}\\
+ table legend
+\end{center}
+ 
+  \begin{choices}
+	    \wrongchoice{wrong answer}    \correctchoice{the good answer is obviously a weird table        
+\begin{center}
+	
+  \begin{tabular}{cc}
+  \hline
+  stuff1 & stuff2\\   
+  \hline
+\(x^2\) & bold \textbf{text}\\   
+  \hline
+	
+  \end{tabular}\\
+ 
+\end{center}
+ }    \wrongchoice{an other table, more simple         
+\begin{center}
+	
+  \begin{tabular}{ccc}
+  \hline
+    Firstname & Lastname & Age\\   
+  Jill & Smith & 50\\   
+  Eve & Jackson & 94\\   
+  \hline
+	
+  \end{tabular}\\
+ 
+\end{center}
+ }
+  \end{choices}
+
+  \end{question}
+}
+
+% ============================================================================
+\exemplaire{1}{    	% nombre de sujet différent
+
+% Replace with your Header
+\vspace*{.5cm}
+\begin{minipage}{.4\linewidth}
+    \centering\large\bf Test
+\end{minipage}
+\champnom{\fbox{
+    \begin{minipage}{.5\linewidth}
+Nom et prénom :
+
+\vspace*{.5cm}\dotfill
+\vspace*{1mm}
+    \end{minipage}
+}}
+
+\begin{center}
+  \Large{\textsc{An AMC quiz generated from moodle XML questions export}}\\
+  \normalsize
+\end{center}
+
+% mélange et catégorie (groupe dans ACM)
+\cleargroup{allquestions}
+\copygroup{Défaut pour BN1-moodle2amc}{allquestions}
+\melangegroupe{allquestions}
+\restituegroupe{allquestions}
+}
+\end{document}
