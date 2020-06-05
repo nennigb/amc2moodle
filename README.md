@@ -33,6 +33,12 @@ For MacOS users, most dependencies can be installed with `brew` but `LaTeXML` in
 
 Run
 ```
+pip install amc2moodle
+``` 
+pip will download automatically the required files.
+
+or if you have download the sources, run
+```
 pip install .
 ``` 
 in the root folder (where `setup.py` is). This will automatically install other dependencies ie `lxml`, `Wand`.
@@ -67,7 +73,7 @@ Help and options can be obtained using
 ```
 moodle2amc -h
 ```
-Then the output LaTeX cn be edited and included for creating amc exams. Examples of the `moodle2amc` possibilities are given [here](./amc2moodle/moodle2amc/test/moodle-bank-exemple.pdf)
+Then the output LaTeX can be edited and included for creating amc exams. Examples of the `moodle2amc` possibilities are given [here](./amc2moodle/moodle2amc/test/moodle-bank-exemple.pdf)
 
 
 
