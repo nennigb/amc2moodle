@@ -1,0 +1,12 @@
+package LaTeXML::Package::pool;  # to put new subs & variables in common pool
+use LaTeXML::Package;            # to load these definitions
+use strict;                      # good style
+use warnings;
+
+
+# Add Undigested option to keep thing as it is
+# in python need 'unescape' !
+DefConstructor('\ce Undigested', "<ltx:note class='mhchem' role='ce' >#1</ltx:note>");
+
+
+1;
