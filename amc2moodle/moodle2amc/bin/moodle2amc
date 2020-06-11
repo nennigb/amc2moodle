@@ -19,6 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import amc2moodle as amdlpkg
 import amc2moodle.moodle2amc as mdl2amc
 import argparse
 import os
@@ -34,7 +35,8 @@ def run():
     fileOut = None
     debug = False
     # deal with arguments
-    parser = argparse.ArgumentParser(description='''This program converts a
+    parser = argparse.ArgumentParser(prog="moodle2amc",
+                                     description='''This program converts a
                                      XML file containing moodle questions into
                                      an automultiplechoice LaTeX file.''')
 
@@ -50,6 +52,10 @@ def run():
     parser.add_argument("--check",
                         help='''Check if LaTeX output compile (optional)''',
                         required=False, action="store_true")
+    parser.add_argument("--version",
+                        help='''Show the current version of moodle2amc''',
+                        action="version",
+                        version="%(prog)s v{version}".format(version=amdlpkg.__version__))
     # parser.add_argument("-c", "--catname",  # nargs=1,
     #                     help='''Provide root category name (default 'amc').
     #                     Note that \\element{label} are used as
