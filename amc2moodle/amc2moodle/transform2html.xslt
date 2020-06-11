@@ -56,6 +56,7 @@
 </xsl:template>
 
 
+
 <!-- #############################################################
 
 Changement de l'organisation des questions
@@ -159,34 +160,24 @@ A faire : <center> </center>,  small caps, sf, sl, sc
 ############################################################# -->
 
 <xsl:template match="emph">
-    <em>
-        <xsl:value-of select="text()"/>     
-    </em>
+    <em><xsl:apply-templates/></em>
 </xsl:template>
 
 <xsl:template match="text[@font='bold']">
-    <b>
-        <xsl:value-of select="text()"/>     
-    </b>
+    <b><xsl:apply-templates/></b>
 </xsl:template>
 
 <!-- plus valable en html 5, mais ca semble dans l'éditeur moodle  -->
 <xsl:template match="text[@framed='underline']">
-    <u>
-        <xsl:value-of select="text()"/>     
-    </u>
+    <u><xsl:apply-templates/></u>
 </xsl:template>
 
 <xsl:template match="text[@font='italic']">
-    <i>
-        <xsl:value-of select="text()"/>     
-    </i>
+    <i><xsl:apply-templates/></i>
 </xsl:template>
 
 <xsl:template match="text[@font='typewriter']">
-    <tt>
-        <xsl:value-of select="text()"/>     
-    </tt>
+    <tt><xsl:apply-templates/></tt>
 </xsl:template>
 
 
@@ -326,6 +317,17 @@ to change the bullet in html
 <!--- New name in new version of LaTeXML -->
 <xsl:template match="tags"> 
 </xsl:template>
+
+<!--- ###########################################################
+       Include Here new template for supported package 
+- mhchem through mathjax
+-->
+
+<!--mhchem-->
+<!-- called outside math env only since raw tex are used in Math mode-->
+<xsl:template match="note[@class='mhchem']">\(\<xsl:value-of select="@role"/>{<xsl:apply-templates/>}\)</xsl:template>
+
+
 
 </xsl:stylesheet>
 
