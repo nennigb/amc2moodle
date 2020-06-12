@@ -163,6 +163,11 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # TODO to options file
     # Shuffle all answsers
     ShuffleAll = True
+    # Moodle supports multiple ways to number answers, but
+    # usually AMC users expect no numbering.
+    # Choose one of '123', 'abc', 'iii', 'none', 'ABCD'.
+    answerNumberingFormat = 'none'
+
     # ajout amc_aucune si obligatoire"
     amc_autocomplete = 1
     amc_aucune = u"aucune de ces réponses n'est correcte"
@@ -316,18 +321,13 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # calcul nombre de questions total
     Qtot = len(Qlist)
     for Qi in Qlist:
-        # apply shuffling
-        shuffleanswers = etree.SubElement(Qi, "shuffleanswers")
-        if ShuffleAll is True:
-            shuffleanswers.text = 'true'
-        else:
-            shuffleanswers.text = 'false'
-
+        wantshuffle = ShuffleAll
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
-        if optlist:
-            options = optlist[0].text.strip().split(",")
-            if 'o' in options:
-                shuffleanswers.text = 'false'
+        if optlist and 'o' in optlist[0].text.strip().split(","):
+            wantshuffle = False
+
+        etree.SubElement(Qi, "shuffleanswers").text = 'true' if wantshuffle else 'false'
+        etree.SubElement(Qi, "answernumbering").text = answerNumberingFormat
 
         # est qu'il y a une bareme local cherche dans les child
         # barl = Qi.xpath("./text[@class='amc_bareme']")
@@ -379,18 +379,13 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # calcul nombre de question au total
     Qtot += len(Qlist)
     for Qi in Qlist:
-        # apply shuffleing
-        shuffleanswers = etree.SubElement(Qi, "shuffleanswers")
-        if ShuffleAll is True:
-            shuffleanswers.text = 'true'
-        else:
-            shuffleanswers.text = 'false'
-
+        wantshuffle = ShuffleAll
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
-        if optlist:
-            options = optlist[0].text.strip().split(",")
-            if 'o' in options:
-                shuffleanswers.text = 'false'
+        if optlist and 'o' in optlist[0].text.strip().split(","):
+            wantshuffle = False
+
+        etree.SubElement(Qi, "shuffleanswers").text = 'true' if wantshuffle else 'false'
+        etree.SubElement(Qi, "answernumbering").text = answerNumberingFormat
 
         # est qu'il y a une bareme local cherche dans les child
         # barl = Qi.xpath("./text[@class='amc_bareme']")
