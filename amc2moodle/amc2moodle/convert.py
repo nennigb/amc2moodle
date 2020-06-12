@@ -321,6 +321,9 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # calcul nombre de questions total
     Qtot = len(Qlist)
     for Qi in Qlist:
+        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
+        etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
+
         wantshuffle = ShuffleAll
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
         if optlist and 'o' in optlist[0].text.strip().split(","):
@@ -328,6 +331,9 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
 
         etree.SubElement(Qi, "shuffleanswers").text = 'true' if wantshuffle else 'false'
         etree.SubElement(Qi, "answernumbering").text = answerNumberingFormat
+
+        if Qi.xpath("./note[@class='amc_numeric_choices']"):
+            print("WARNING: \\AMCnumericChoices{} not supported in \\begin{question}")
 
         # est qu'il y a une bareme local cherche dans les child
         # barl = Qi.xpath("./text[@class='amc_bareme']")
@@ -368,10 +374,6 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
 
         # e:incohérente n'a pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
 
-        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
-        Dgrade = etree.SubElement(Qi, "defaultgrade")
-        Dgrade.text = str(moo_defautgrade)
-
     # Question multiple
     # ==========================================================================
     # Qlist = tree.xpath("//text[@class='amc_questionmult']")
@@ -379,6 +381,15 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # calcul nombre de question au total
     Qtot += len(Qlist)
     for Qi in Qlist:
+        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
+        etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
+
+        # \AMCnumericChoices are handled like questionmult, except that
+        # shuffling, answer numbering, and processing of different answers is
+        # not necessary.  Also we have no support for grading option right now.
+        if Qi.xpath("./note[@class='amc_numeric_choices']"):
+            continue;
+
         wantshuffle = ShuffleAll
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
         if optlist and 'o' in optlist[0].text.strip().split(","):
@@ -455,9 +466,6 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
 
         # incohérente pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
 
-        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
-        Dgrade = etree.SubElement(Qi, "defaultgrade")
-        Dgrade.text = str(moo_defautgrade)
 
 
     # on affiche

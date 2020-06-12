@@ -37,6 +37,7 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use enumerate and itemize (but without the tag `\item[tag]`)
   -  Automatically add an answer like *there is no good answer* if there is no good answer.
   -  Like in auto-multiple-choice, all answers are Shuffled by default, you can keep answers ordered by using `\begin{choices}[o]` or `\begin{responses}[o]`.
+  -  Use `\AMCnumericChoices` to create numerical question. (This only works with plain numbers, not computed results, and approximate answers are not supported.)
   -  Use user's command defined in the LaTeX file.
   -  Use `\usepackage[utf8]{inputenc}`   for accents
   -  Use packages that are supported by `LaTeXML`. See the list [here](http://dlmf.nist.gov/LaTeXML/manual/included.bindings). Instead you need to add a binding to LaTeXML.
@@ -69,7 +70,7 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use command like `\raggedright`, text align is not fully supported. This add align information into the `class` attribute of `\elem{note}` and the string matching break down. Note that `\raggedright` is bypassed.
   -  Usage of `multicol` is bypassed. But it should be possible to use it elsewhere (create newcommand).
   -  Translate equation into mathml, but it can be easily changed
-  -  Use AMC numeric, or open question
+  -  Use AMC numeric with computed results, or open question
   -  Only the main commands of the package `automultiplechoice.sty` are supported in french. The English keywords support is on-going. The list of supported keywords can be seen in `automultiplechoice.sty.ltxml`
   -  You cannot remove the add of "None of these answers are correct" choice at the end of each multiple question.
 

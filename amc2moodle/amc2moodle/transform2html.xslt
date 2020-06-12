@@ -79,8 +79,8 @@ Changement de l'organisation des questions
                 <xsl:value-of select="text()"/>
          </bareme>
         </xsl:for-each>
-        <!-- options de \begin{choices} -->
-        <xsl:for-each select="note[@class='amc_choices_options']">
+        <!-- options for \begin{choices} and support for \AMCnumericChoices -->
+        <xsl:for-each select="note[@class='amc_choices_options' or @class='amc_numeric_choices']">
           <xsl:copy-of select="."/>
         </xsl:for-each>
         <!-- mise en forme html, équation, tableau -->
@@ -127,7 +127,7 @@ Changement de l'organisation des questions
                       <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
                    </xsl:copy>
 
-                   <!-- prise en comte des images en 2 étapes stockage et placement
+                   <!-- prise en compte des images en 2 étapes stockage et placement
                     boucle pour trouver les fichiers graphiques contenus dans la question-->
                     <xsl:for-each select=".//graphics">
                           <file> <!-- question-->

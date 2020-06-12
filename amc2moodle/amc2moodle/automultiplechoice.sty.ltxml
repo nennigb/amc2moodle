@@ -60,6 +60,8 @@ DefConstructor('\includesounds{}',"<ltx:graphics graphic='#1' options='sound'></
 DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'>#body</ltx:note>");
 # question multiple
 DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'>#body</ltx:note>");# ajouter un test pour si aucune réponse correcte
+# questionmultx is the same as questionmult, except it does not display \multiSymbole
+DefEnvironment('{questionmultx}{}',"<ltx:note class='amc_questionmult' role='#1'>#body</ltx:note>");
 # Dans le cas où la question posée est juste informative et ne doit pas contribuer à la note de l'étudiant, on utilisera la commande \QuestionIndicative, comme dans l'exemple suivant :
 DefConstructor('\QuestionIndicative',"<ltx:note class='amc_bareme'>e=0,b=0,m=0</ltx:note>"); # pas testé
 
@@ -81,6 +83,8 @@ DefConstructor('\correctchoice{}',"<ltx:note class='amc_bonne'>#1</ltx:note>"); 
 
 DefConstructor('\mauvaise{}','<ltx:note class="amc_mauvaise">#1</ltx:note>');
 DefConstructor('\wrongchoice{}','<ltx:note class="amc_mauvaise">#1</ltx:note>');
+
+DefConstructor('\AMCnumericChoices{}{}', '<ltx:note class="amc_numeric_choices" options="#2">#1</ltx:note>');
 
 # ===================================================================
 # MISE EN FORME PAPIER
