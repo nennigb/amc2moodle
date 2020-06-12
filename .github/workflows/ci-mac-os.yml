@@ -52,6 +52,7 @@ jobs:
       
     - name: Add fonts (required by moodle2amc tests)
       run: |
+        sudo tlmgr update --self
         sudo tlmgr install collection-fontsrecommended bophook
         
     - name: Test latexml

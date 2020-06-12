@@ -7,6 +7,7 @@
 <?latexml package="color"?>
 <?latexml package="graphicx"?>
 <?latexml package="automultiplechoice" options="francais,bloc,completemulti"?>
+<?latexml package="mhchem"?>
 <?latexml package="tikz"?>
 <?latexml RelaxNGSchema="LaTeXML"?>
 <quiz>
@@ -127,4 +128,20 @@ Among the following shape, where is the circle
 ]]></text></questiontext><answer format="html" fraction="100.0"><text><![CDATA[<picture id="pic1" tex="\lxSVG@pgfsys@insertpicture{\hbox to 0.0pt{\colorlet{pgfstrokecolor}{.}%&#10;\pgfsys@invoke{\lxSVG@pgfsys@begingroup@{stroke={#000000}} }\pgfsys@invoke{%&#10;\lxSVG@pgfsys@begingroup@{fill={#000000}} }\pgfsys@invoke{%&#10;\lxSVG@pgfsys@begingroup@{stroke-width={0.4pt}} }\nullfont\hbox to 0.0pt{&#10;{}{}{{{}}&#10;{}{}{}{}{}{}{}{}}{}\pgfsys@invoke{\lxSVG@pgfsys@drawunclippedpath@{M 78.74 78.%&#10;74 M 118.11 78.74 C 118.11 100.48 100.48 118.11 78.74 118.11 C 57 118.11 39.37%&#10; 100.48 39.37 78.74 C 39.37 57 57 39.37 78.74 39.37 C 100.48 39.37 118.11 57 1%&#10;18.11 78.74 Z M 78.74 78.74}{fill:none} }&#10;{}{}{}\hss}\pgfsys@invoke{\lxSVG@pgfsys@endgroup@ }\pgfsys@invoke{%&#10;\lxSVG@pgfsys@endgroup@ }\pgfsys@invoke{\lxSVG@pgfsys@endgroup@ }\hss}}"><svg height="84.83" version="1.1" viewBox="36.33 36.33 84.83 84.83" width="84.83"><g transform="matrix(1 0 0 -1 0 157.49)"><g stroke="#000000"><g fill="#000000"><g stroke-width="0.4pt"><path d="M 78.74 78.74 M 118.11 78.74 C 118.11 100.48 100.48 118.11 78.74 118.11 C 57 118.11 39.37 100.48 39.37 78.74 C 39.37 57 57 39.37 78.74 39.37 C 100.48 39.37 118.11 57 118.11 78.74 Z M 78.74 78.74" style="fill:none"/></g></g></g></g></svg></picture>]]></text><fraction>100.0</fraction></answer><answer format="html" fraction="-50.0"><text><![CDATA[<picture id="pic2" tex="\lxSVG@pgfsys@insertpicture{\hbox to 0.0pt{\colorlet{pgfstrokecolor}{.}%&#10;\pgfsys@invoke{\lxSVG@pgfsys@begingroup@{stroke={#000000}} }\pgfsys@invoke{%&#10;\lxSVG@pgfsys@begingroup@{fill={#000000}} }\pgfsys@invoke{%&#10;\lxSVG@pgfsys@begingroup@{stroke-width={0.4pt}} }\nullfont\hbox to 0.0pt{&#10;{}{}&#10;{}{}{}{}{}{}\colorlet{pgffillcolor}{blue!40!white}\pgfsys@invoke{%&#10;\lxSVG@pgfsys@begingroup@{fill={#9999FF}} }\colorlet{pgfstrokecolor}{black}%&#10;\pgfsys@invoke{\lxSVG@pgfsys@begingroup@{stroke={#000000}} }{}\pgfsys@invoke{%&#10;\lxSVG@pgfsys@drawunclippedpath@{M 0 0 M 0 0 L 0 78.74 L 78.74 78.74 L 78.74 0%&#10; Z M 78.74 78.74}{} }\pgfsys@invoke{\lxSVG@pgfsys@endgroup@ }\pgfsys@invoke{%&#10;\lxSVG@pgfsys@endgroup@ }&#10;{}{}{}{}{{}{}{}{{}{}{}}}{}\pgfsys@invoke{\lxSVG@pgfsys@drawunclippedpath@{M 0 %&#10;0 C 39.37 0 69.88 61.02 78.74 78.74}{fill:none} }&#10;{}{}{}\hss}\pgfsys@invoke{\lxSVG@pgfsys@endgroup@ }\pgfsys@invoke{%&#10;\lxSVG@pgfsys@endgroup@ }\pgfsys@invoke{\lxSVG@pgfsys@endgroup@ }\hss}}"><svg height="84.83" version="1.1" viewBox="-3.04 -3.04 84.83 84.83" width="84.83"><g transform="matrix(1 0 0 -1 0 78.75)"><g stroke="#000000"><g fill="#000000"><g stroke-width="0.4pt"><g fill="#9999FF"><g stroke="#000000"><path d="M 0 0 M 0 0 L 0 78.74 L 78.74 78.74 L 78.74 0 Z M 78.74 78.74"/></g></g><path d="M 0 0 C 39.37 0 69.88 61.02 78.74 78.74" style="fill:none"/></g></g></g></g></svg></picture>]]></text><fraction>-50.0</fraction></answer><answer format="html" fraction="-50.0"><text><![CDATA[
            \(\triangle\)    
     ]]></text><fraction>-50.0</fraction></answer><shuffleanswers>true</shuffleanswers><defaultgrade>1.0</defaultgrade></question>
+  <question type="category"><category><text>$course$/test_tikz/mhchem</text></category></question>
+  <question type="multichoice"><single>true</single><name><text>mathjax-mhchem</text></name><questiontext format="html"><text><![CDATA[
+Here is a test for <tt>mhchem</tt>-LaTeXpackage. This package is not yet supported by LaTeXML, thus the rendering is delegated to <tt>mathjax</tt>. To use it, you need to add <tt>mhchem</tt> in the <tt>mathjax</tt> moodle plugin (ask to admin, see details in README file).
+A complicated chemical equation \(\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}\), the same written in math mode : <i>\(\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}\)</i>, combine with other math operator 
+           \(K=\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}\)    
+     and finally placed in the equation environment
+
+    $$\begin{equation}
+           K=\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}
+    \end{equation}$$
+    
+
+
+
+
+]]></text></questiontext><answer format="html" fraction="100.0"><text><![CDATA[a simpler one \(\ce{CO2 + C -&gt; 2 CO}\).]]></text><fraction>100.0</fraction></answer><answer format="html" fraction="-50.0"><text><![CDATA[Wrong Choice! ]]></text><fraction>-50.0</fraction></answer><shuffleanswers>true</shuffleanswers><defaultgrade>1.0</defaultgrade></question>
 </quiz>

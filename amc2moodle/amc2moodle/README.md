@@ -36,11 +36,27 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use italic, typerwritter, bold, emphasize...
   -  Use enumerate and itemize (but without the tag `\item[tag]`) 
   -  Automatically add an answer like ``there is no good answer'' if there is no good answer.
+  -  All answers are Shuffled by default, you can keep the answer initial order by setting `ShuffleAll = False` in `grading.py`
   -  Use user's command defined in the LaTeX file.
   -  Use `\usepackage[utf8]{inputenc}`   for accents
   -  Use packages that are supported by `LaTeXML`. See the list [here](http://dlmf.nist.gov/LaTeXML/manual/included.bindings). Instead you need to add a binding to LaTeXML.
   -  Use `tikz`. `LaTeXML` generates `svg` content, embedded in the question or answer html text.
-  -  All answers are Shuffled by default, you can keep the answer initial order by setting `ShuffleAll = False` in `grading.py`
+  -  Use `mhchem` package for chemical equation. Because this package is not yet supported by LaTeXML, the rendering is delegated to \texttt{mathjax}. To use it, your moodle admin need to add `mhchem` to the TeX \texttt{mathjax} package list :
+	  ```
+	  # !! useful for mhchem only !!
+	  # In Administration > Site administration > Plugins > Filters > Mathjax > Local Mathjax installation, edit the Mathjax configuration and add
+	  TeX: {extensions: ["AMSmath.js","AMSsymbols.js","mhchem.js","noErrors.js","noUndefined.js"]}  
+	  ```
+	  like here (see [moodle doc](https://docs.moodle.org/38/en/Chemistry_notation_using_mhchem#via_MathJax))
+	  ```
+	  MathJax.Hub.Config({
+		config: ["Accessible.js", "Safe.js"],
+		...,
+		TeX: {extensions: ["AMSmath.js","AMSsymbols.js","mhchem.js","noErrors.js","noUndefined.js"]}
+	  });
+
+	  ```
+
 
 
 ### What you cannot do

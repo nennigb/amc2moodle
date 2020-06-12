@@ -14,7 +14,7 @@
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage[francais,bloc,completemulti]{automultiplechoice}     % Mandatory for conversion
-%\usepackage{attachfile}
+\usepackage{mhchem} % needed for chemical equations
 \usepackage{tikz}
 
 % exemple de commande utilisateur
@@ -211,6 +211,24 @@ test for enumerate html rendering,
   \end{question}
 }
 
+% test for mhchem support with mathjax
+\element{mhchem}{
+\begin{question}{mathjax-mhchem}
+Here is a test for \texttt{mhchem}-\LaTeX package. This package is not yet supported by LaTeXML, thus the rendering is delegated to \texttt{mathjax}. To use it, you need to add \texttt{mhchem} in the \texttt{mathjax} moodle plugin (ask to admin, see details in README file).
+
+
+A complicated chemical equation \ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}, the same written in math mode : $\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}$, combine with other math operator $K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}$ and finally placed in the equation environment
+\begin{equation*}
+K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}
+\end{equation*}
+% the answers
+    \begin{choices}
+      \correctchoice{a simpler one \ce{CO2 + C -> 2 CO}.}
+      \wrongchoice{Wrong Choice! }
+    \end{choices}
+\end{question}
+}
+
 % #################################################################
 % C R E A T I O N  D E S  C O P I E S
 % #################################################################
@@ -247,6 +265,8 @@ test for enumerate html rendering,
   \copygroup{cat2}{BigGroupe}
   \copygroup{english}{BigGroupe}
   \copygroup{tikz}{BigGroupe}
+  \copygroup{mhchem}{BigGroupe}
+  
   \melangegroupe{BigGroupe}
   \restituegroupe{BigGroupe}
 }

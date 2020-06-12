@@ -18,7 +18,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import amc2moodle as amdlpkg
 from amc2moodle.amc2moodle import amc2moodle_class as a2m
 import argparse
 import os
@@ -61,6 +61,10 @@ def run():
                         help='''No use of system temporary directory, use
                                 input directory instead.''',
                         required=False, action="store_true")
+    parser.add_argument("--version",
+                        help='''Show the current version of moodle2amc''',
+                        action="version",
+                        version="%(prog)s v{version}".format(version=amdlpkg.__version__))
 
     # Get input args
     args = parser.parse_args()
