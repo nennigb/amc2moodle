@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
     This file is part of amc2moodle, a convertion tool to recast quiz written
-    with the LaTeX format used by automuliplechoice 1.0.3 into the 
+    with the LaTeX format used by automuliplechoice 1.0.3 into the
     moodle XML quiz format.
-    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr 
+    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
-    
-    
+
+
+
     - Permet de finaliser la mise en forme et renommer certain éléments
     - suppresion de certains élément (bareme, title etc...)
-    - a terme cette fichier devrait être intégré complètement à la partie python pour plus de clartée   
+    - a terme cette fichier devrait être intégré complètement à la partie python pour plus de clartée
 -->
 
 
@@ -37,32 +37,32 @@
 </xsl:template>
 
 <!-- template element racine -->
- <xsl:template match="document"> 
+ <xsl:template match="document">
  <quiz>
        <xsl:apply-templates/>
- </quiz>       
+ </quiz>
  </xsl:template>
 
 <!-- template bonne réponse-->
-  <xsl:template match="note[starts-with(@class, 'amc_bonne')]"> 
+  <xsl:template match="note[starts-with(@class, 'amc_bonne')]">
     <answer format="html">
-      <xsl:attribute name="fraction"><xsl:value-of select="fraction"/></xsl:attribute>     
+      <xsl:attribute name="fraction"><xsl:value-of select="fraction"/></xsl:attribute>
         <!-- <xsl:apply-templates/> -->
         <xsl:apply-templates/>
     </answer>
   </xsl:template>
 
-<!-- template mauvaise réponse -->  
-  <xsl:template match="note[starts-with(@class, 'amc_mauvaise')]"> 
+<!-- template mauvaise réponse -->
+  <xsl:template match="note[starts-with(@class, 'amc_mauvaise')]">
    <answer format="html">
       <xsl:attribute name="fraction"><xsl:value-of select="fraction"/></xsl:attribute>
        <!-- <xsl:apply-templates/> -->
        <xsl:apply-templates/>
     </answer>
   </xsl:template>
-  
-  
-  
+
+
+
 
 <!-- template Question, questionmult-->
 <xsl:template match="note[starts-with(@class, 'amc_question')]">
@@ -72,7 +72,7 @@
 	</xsl:if>
 	<xsl:if test="@class='amc_questionmult'">
 		<single>false</single>  <!-- plusieurs cases à cocher -->
-	</xsl:if>	
+	</xsl:if>
 		<!-- move vers 2html
 		<name>
 		    <text>
@@ -85,7 +85,7 @@
 
 
 <!-- template netoyage champ globaux mise en forme-->
-<xsl:template match="para"> 
+<xsl:template match="para">
     <xsl:apply-templates/>
 </xsl:template>
 
@@ -111,14 +111,17 @@
 
 
 <!-- Remove amc_bareme* elements -DefaultS -DefaultM-->
-<xsl:template match="text[starts-with(@class, 'amc_bareme')]"> 
+<xsl:template match="text[starts-with(@class, 'amc_bareme')]">
 </xsl:template>
 
-<xsl:template match="bareme"> 
+<xsl:template match="bareme">
+</xsl:template>
+
+<xsl:template match="note[@class='amc_choices_options']">
 </xsl:template>
 
 <!-- template defaultgrade -->
-<xsl:template match="defaultgrade"> 
+<xsl:template match="defaultgrade">
     <defaultgrade>
 			<xsl:value-of select="text()"/>
 	</defaultgrade>
@@ -126,16 +129,16 @@
 
 
 <!--création de commentaires sur les champ inutiles pour moodle et trasmis via latexml -->
-<xsl:template match="resource"> 
+<xsl:template match="resource">
 </xsl:template>
 
-<xsl:template match="title"> 
+<xsl:template match="title">
     <xsl:comment>
        <xsl:apply-templates/>
     </xsl:comment>
 </xsl:template>
 
-<xsl:template match="creator"> 
+<xsl:template match="creator">
    <xsl:comment>
         <xsl:apply-templates/>
     </xsl:comment>

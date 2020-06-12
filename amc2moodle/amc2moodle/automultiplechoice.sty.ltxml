@@ -7,7 +7,7 @@ use warnings;
 # comment ajouter des tags?
 # comment imposer de neester les environenements?
 # ici pas de mise en forme, jsute des changement de case.
-# \usepackage[francais,bloc,completemulti]{automultiplechoice}  
+# \usepackage[francais,bloc,completemulti]{automultiplechoice}
 
 DefMacro('\@ifundefined{}{}{}','');
 
@@ -52,7 +52,7 @@ DefConstructor('\element{}{}',"<ltx:note class='amc_categorie'>#1</ltx:note>#2")
 #DefConstructor('\includesounds{}',"<ltx:ressource src='#1' type='mp3'>");   # on cree les categories
 #DefConstructor('\includesounds{}',"<ltx:text class='sound'>#1</ltx:text>");   # on cree les categories
 DefConstructor('\includesounds{}',"<ltx:graphics graphic='#1' options='sound'></ltx:graphics>");   # on cree les categories
- 
+
 
 # ===================================================================
 # QUESTIONS
@@ -70,11 +70,11 @@ DefEnvironment('{examcopy}[]',"");   # alternative to onecopy, # on supprime la 
 # ===================================================================
 # REPONSE
 # Pas exploité, simple copie
-DefEnvironment('{reponses}','#body'); #FR
-DefEnvironment('{choices}','#body');  #EN
+DefEnvironment('{reponses}[]', "?#1(<ltx:note class='amc_choices_options'>#1</ltx:note>)#body");
+DefEnvironment('{choices}[]', "?#1(<ltx:note class='amc_choices_options'>#1</ltx:note>)#body");
 
-DefEnvironment('{reponseshoriz}','#body');
-DefEnvironment('{choiceshoriz}','#body');
+DefEnvironment('{reponseshoriz}[]', "?#1(<ltx:note class='amc_choices_options'>#1</ltx:note>)#body");
+DefEnvironment('{choiceshoriz}[]', "?#1(<ltx:note class='amc_choices_options'>#1</ltx:note>)#body");
 
 DefConstructor('\bonne{}',"<ltx:note class='amc_bonne'>#1</ltx:note>"); # possible child bareme
 DefConstructor('\correctchoice{}',"<ltx:note class='amc_bonne'>#1</ltx:note>"); # possible child bareme
@@ -110,15 +110,15 @@ DefConstructor('\champnom{}',"");         # copy
 DefConstructor('\namefield{}',"");         # copy
 
 
-DefConstructor('\AMCrandomseed{}',"");         
-DefConstructor('\setdefaultgroupmode{}',"");   
-DefConstructor('\AMCaddpagesto{}',"");  
+DefConstructor('\AMCrandomseed{}',"");
+DefConstructor('\setdefaultgroupmode{}',"");
+DefConstructor('\AMCaddpagesto{}',"");
 
-DefConstructor('\setgroupmode{}{}',"");        
-DefConstructor('\setdefaultgroupmode{}',"");   
+DefConstructor('\setgroupmode{}{}',"");
+DefConstructor('\setdefaultgroupmode{}',"");
 
 
-# define some length already defined in automultiplechoice.sty  
+# define some length already defined in automultiplechoice.sty
 DefMacro('\AMCinterIrep', '\newdimen\AMCinterIrep'); #% entre les réponses
 DefMacro('\AMCinterBrep', '\newdimen\AMCinterBrep'); #% entre les blocs de réponses
 DefMacro('\AMCinterIquest', '\newdimen\AMCinterIquest');

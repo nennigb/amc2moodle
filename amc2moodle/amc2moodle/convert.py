@@ -142,7 +142,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     catname : string, optional
         Set moodle category. The default is None.
     deb : int, optional
-        Set to 1 to store all intermediate file for debging. The default is 0.
+        Set to 1 to store all intermediate files for debugging. The default is 0.
 
     Returns
     -------
@@ -167,8 +167,8 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     amc_autocomplete = 1
     amc_aucune = u"aucune de ces réponses n'est correcte"
     """ Default grade for simple and multiple Question :
-    e=incohérence; b=bonne; m=mauvaise; p planché
-    Elles peuvent etre spécifier dans le fichier .tex avec
+    e=incohérence; b=bonne; m=mauvaise; p=plancher
+    Elles peuvent etre spécifiées dans le fichier .tex avec
     \baremeDefautS{e=-0.5,b=1,m=-0.5}
     \baremeDefautM{e=-0.5,b=0.5,m=-0.25,p=-0.5}
     ou au niveau de la question
@@ -180,7 +180,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # valeur par défaut de la note de la question
     moo_defautgrade = 1.
 
-    # file out for debug pupose
+    # file out for debug purpose
     filetemp0 = os.path.join(wdir, "temp0.xml")
     filetemp = os.path.join(wdir, "temp.xml")
 
@@ -210,7 +210,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     xslt_ns = open(filexslt_ns, 'r')
     xslt_ns_tree = etree.parse(xslt_ns)
     transform_ns = etree.XSLT(xslt_ns_tree)
-    # applique tranformation
+    # applique transformation
     tree = transform_ns(tree0)
     # on modifie les element graphic pour gérer les chemins, le taille et la mise en forme.
     # <graphics candidates="schema_interpL.png" graphic="schema_interpL.png" options="width=216.81pt" xml:id="g1" class="ltx_centering"/>
@@ -223,7 +223,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     for Ii in Ilist:
         img_name = Ii.attrib['graphic']
         ext = img_name.split('.')[-1]
-        # not all attrib are mandatory... check if they exist before use it
+        # not all attrib are mandatory... check if they exist before using them
         # try for class
         if 'class' in Ii.attrib:
             img_align = Ii.attrib['class']
@@ -261,7 +261,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     xslt_pre = open(filexslt_pre, 'r')
     xslt_pre_tree = etree.parse(xslt_pre)
     transform_pre = etree.XSLT(xslt_pre_tree)
-    # applique tranformation
+    # applique transformation
     tree = transform_pre(tree)
     if (deb == 1):
         # ecriture
@@ -306,22 +306,29 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     ###########################################################################
     # Application du barème dans chaque question
     # + vérf barème locale : attribut amc_bareme
-    # on suppose que le bareme est au même niveau que des element amc_bonne
+    # on suppose que le bareme est au même niveau que des elements amc_bonne
     # ou amc_mauvaise
 
     # Question simple
     # =========================================================================
     #Qlist = tree.xpath("//text[@class='amc_question']")
     Qlist = tree.xpath("//*[@class='amc_question']")
-    # calcul nombre de question totale
+    # calcul nombre de questions total
     Qtot = len(Qlist)
     for Qi in Qlist:
-        # apply shuffleing
+        # apply shuffling
         shuffleanswers = etree.SubElement(Qi, "shuffleanswers")
         if ShuffleAll is True:
             shuffleanswers.text = 'true'
         else:
             shuffleanswers.text = 'false'
+
+        optlist = Qi.xpath("./note[@class='amc_choices_options']")
+        if optlist:
+            options = optlist[0].text.strip().split(",")
+            if 'o' in options:
+                shuffleanswers.text = 'false'
+
         # est qu'il y a une bareme local cherche dans les child
         # barl = Qi.xpath("./text[@class='amc_bareme']")
         barl = Qi.xpath("bareme")
@@ -378,6 +385,13 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
             shuffleanswers.text = 'true'
         else:
             shuffleanswers.text = 'false'
+
+        optlist = Qi.xpath("./note[@class='amc_choices_options']")
+        if optlist:
+            options = optlist[0].text.strip().split(",")
+            if 'o' in options:
+                shuffleanswers.text = 'false'
+
         # est qu'il y a une bareme local cherche dans les child
         # barl = Qi.xpath("./text[@class='amc_bareme']")
         # barl = Qi.xpath("./*[@class='amc_bareme']")

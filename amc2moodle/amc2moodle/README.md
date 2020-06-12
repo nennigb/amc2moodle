@@ -1,4 +1,4 @@
-# amc2moodle : Conversion from automultiplechoice LaTeX file to moodle XML file.
+# amc2moodle: Conversion from automultiplechoice LaTeX file to moodle XML file.
 
 
 ## How it works
@@ -10,8 +10,8 @@ The first conversion step is to convert the LaTeX file into XML file. This is pe
 
 ## Usage
 
-The conversion can be performed :
-  - by running `amc2moodle` command line tool as detailed [here](../../README.md#conversion), 
+The conversion can be performed:
+  - by running `amc2moodle` command line tool as detailed [here](../../README.md#conversion),
   - or directly from python by importing the package
 ```
 # import subpackage
@@ -33,19 +33,19 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Put in-line equations like $x^2$ or use equation environment (or $$ delimiters). For the moment eqnarray  or the amsmath environments multline, align are not supported. The choice have been made to keep equation in tex and use mathjax filter of moodle for rendering. In my opinion, it is better for modifying question after importation.
   -  Include image, in all format supported by `Wand`. `amc2moodle`  will convert it in .png for moodle export. The image will be embedded as text (base64) in the output xml file. The folder is '/' in moodle. The image can be in an another folder than the tex file.
   -  Include Table, with the tabular environment. In the present form, `amc2moodle` put  border around each cell.
-  -  Use italic, typerwritter, bold, emphasize...
-  -  Use enumerate and itemize (but without the tag `\item[tag]`) 
-  -  Automatically add an answer like ``there is no good answer'' if there is no good answer.
-  -  All answers are Shuffled by default, you can keep the answer initial order by setting `ShuffleAll = False` in `grading.py`
+  -  Use italic, typewriter, bold, emphasize...
+  -  Use enumerate and itemize (but without the tag `\item[tag]`)
+  -  Automatically add an answer like *there is no good answer* if there is no good answer.
+  -  Like in auto-multiple-choice, all answers are Shuffled by default, you can keep answers ordered by using `\begin{choices}[o]` or `\begin{responses}[o]`.
   -  Use user's command defined in the LaTeX file.
   -  Use `\usepackage[utf8]{inputenc}`   for accents
   -  Use packages that are supported by `LaTeXML`. See the list [here](http://dlmf.nist.gov/LaTeXML/manual/included.bindings). Instead you need to add a binding to LaTeXML.
   -  Use `tikz`. `LaTeXML` generates `svg` content, embedded in the question or answer html text.
-  -  Use `mhchem` package for chemical equation. Because this package is not yet supported by LaTeXML, the rendering is delegated to \texttt{mathjax}. To use it, your moodle admin need to add `mhchem` to the TeX \texttt{mathjax} package list :
+  -  Use `mhchem` package for chemical equation. Because this package is not yet supported by LaTeXML, the rendering is delegated to `mathjax`. To use it, your moodle admin need to add `mhchem` to the TeX extensions of `mathjax`:
 	  ```
 	  # !! useful for mhchem only !!
 	  # In Administration > Site administration > Plugins > Filters > Mathjax > Local Mathjax installation, edit the Mathjax configuration and add
-	  TeX: {extensions: ["AMSmath.js","AMSsymbols.js","mhchem.js","noErrors.js","noUndefined.js"]}  
+	  TeX: {extensions: ["AMSmath.js","AMSsymbols.js","mhchem.js","noErrors.js","noUndefined.js"]}
 	  ```
 	  like here (see [moodle doc](https://docs.moodle.org/38/en/Chemistry_notation_using_mhchem#via_MathJax))
 	  ```
@@ -70,21 +70,21 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Usage of `multicol` is bypassed. But it should be possible to use it elsewhere (create newcommand).
   -  Translate equation into mathml, but it can be easily changed
   -  Use AMC numeric, or open question
-  -  Only the main commands of the package `automultiplechoice.sty` are supported in french. The english keywords support is on-going. The list of supported keywords can be seen in `automultiplechoice.sty.ltxml`
+  -  Only the main commands of the package `automultiplechoice.sty` are supported in french. The English keywords support is on-going. The list of supported keywords can be seen in `automultiplechoice.sty.ltxml`
   -  You cannot remove the add of "None of these answers are correct" choice at the end of each multiple question.
 
- 
+
 ### Grading strategy
 In moodle 3, the grading strategy is different from AMC, especially, for questions with multiple answers. In this case, AMC affects a grade for each checked good answer and each non-checked wrong answer. The total grade of the question depend on the number of choice.
 
-In Moodle, only checked item leads to a grade, positive or negative. The grading is compute in the xxx.py script.
-The defaut grading parameter are set in xxx.py script to
+In Moodle, only checked item leads to a grade, positive or negative. The grading is computed in the `convert.py` script.
+The default grading parameters are set in the `convert.py` script to
 ```
-# Multiple :: e :incohérence, b: bonne,  m: mauvaise,  p: planché
-amc_bs = {'e':-1,'b':1,'m':-0.5}              
-amc_bm = {'e':-1,'b':1,'m':-0.5, 'p':-1}   
-# defaut question grade in moodle
-moo_defautgrade = 1.                       
+# Multiple :: e :incohérence, b: bonne,  m: mauvaise,  p: plancher
+amc_bs = {'e':-1,'b':1,'m':-0.5}
+amc_bm = {'e':-1,'b':1,'m':-0.5, 'p':-1}
+# default question grade in moodle
+moo_defautgrade = 1.
 ```
 This value can be changed (as in AMC) with the tex command
 ```
@@ -92,11 +92,11 @@ This value can be changed (as in AMC) with the tex command
 \baremeDefautM{e=-0.5,b=1,m=-0.25,p=-0.5} % never put b<1,
 ```
 or at the question level with the tex command `\bareme`.
-The gade $g_i$ in % is then computed as
+The grade $g_i$ in % is then computed as
 $g_i = 100  c_i / N_i$ where $i$ stand for the good or the wrong answer. Here, $N_i$ is the total number of the good or the wrong answer and $c_i$ the coefficient (m, b, ...). It important to set b=1 to get 100% if all the good answers are found. The e parameter is not used here, because it is not possible to tick 2 answers in moodle for one-answer-question. The only case where incoherent can be used is if the ``_there isn't any correct answer_'' answer is ticked with another question but it is not implemented.
 For instance if `m=-0.5` and `b=1`, a student who ticks all the wrong answers get -0.5, a student who ticks all the good answer get  1 and student who ticks all the boxes get 0.5.
 
-Another difference is that moodle 3 use tabulated grade like : 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10 and their multiple. **If your grade are not conform to that you must use : 'Nearest grade if not listed' in import option in the moodle question bank**. But check at least that the sum of good answer give 100% !
+Another difference is that moodle 3 use tabulated grades like: 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10 and their multiple. **If your grade are not conform to that you must use: 'Nearest grade if not listed' in import option in the moodle question bank**. But check at least that the sum of good answer give 100% !
 
 
 
