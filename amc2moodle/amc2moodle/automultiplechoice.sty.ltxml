@@ -57,11 +57,11 @@ DefConstructor('\includesounds{}',"<ltx:graphics graphic='#1' options='sound'></
 # ===================================================================
 # QUESTIONS
 # question simple
-DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'>#body</ltx:note>");
+DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>");
 # question multiple
-DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'>#body</ltx:note>");# ajouter un test pour si aucune réponse correcte
+DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>");
 # questionmultx is the same as questionmult, except it does not display \multiSymbole
-DefEnvironment('{questionmultx}{}',"<ltx:note class='amc_questionmult' role='#1'>#body</ltx:note>");
+DefEnvironment('{questionmultx}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>");
 # Dans le cas où la question posée est juste informative et ne doit pas contribuer à la note de l'étudiant, on utilisera la commande \QuestionIndicative, comme dans l'exemple suivant :
 DefConstructor('\QuestionIndicative',"<ltx:note class='amc_bareme'>e=0,b=0,m=0</ltx:note>"); # pas testé
 

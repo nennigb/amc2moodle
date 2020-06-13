@@ -332,7 +332,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
         etree.SubElement(Qi, "shuffleanswers").text = 'true' if wantshuffle else 'false'
         etree.SubElement(Qi, "answernumbering").text = answerNumberingFormat
 
-        if Qi.xpath("./note[@class='amc_numeric_choices']"):
+        if Qi.xpath(".//note[@class='amc_numeric_choices']"):
             print("WARNING: \\AMCnumericChoices{} not supported in \\begin{question}")
 
         # est qu'il y a une bareme local cherche dans les child
@@ -387,7 +387,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
         # \AMCnumericChoices are handled like questionmult, except that
         # shuffling, answer numbering, and processing of different answers is
         # not necessary.  Also we have no support for grading option right now.
-        if Qi.xpath("./note[@class='amc_numeric_choices']"):
+        if Qi.xpath(".//note[@class='amc_numeric_choices']"):
             continue;
 
         wantshuffle = ShuffleAll

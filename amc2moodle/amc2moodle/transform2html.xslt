@@ -118,7 +118,7 @@ Changement de l'organisation des questions
        <!-- On recopie les réponses
        <xsl:template match="note[@class='amc_mauvaise']">
        on boucle sur les réponses <xsl:for-each select="//note[@class='amc_mauvaise']">-->
-        <xsl:for-each select="note[starts-with(@class, 'amc_bonne')] | note[starts-with(@class, 'amc_mauvaise')]">
+        <xsl:for-each select=".//note[starts-with(@class, 'amc_bonne') or starts-with(@class, 'amc_mauvaise')]">
               <note>
               <xsl:attribute name="class"><xsl:value-of select="@class"/></xsl:attribute>
                    <xsl:copy>

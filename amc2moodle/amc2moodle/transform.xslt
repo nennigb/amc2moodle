@@ -62,10 +62,8 @@
   </xsl:template>
 
 
-
-
 <!-- template Question, questionmult-->
-<xsl:template match="note[starts-with(@class, 'amc_question') and not(note[@class='amc_numeric_choices'])]">
+<xsl:template match="note[starts-with(@class, 'amc_question') and not(.//note[@class='amc_numeric_choices'])]">
 	<question type="multichoice">
 	<xsl:if test="@class='amc_question'">
 		<single>true</single>  <!-- une seule case à cocher -->
@@ -77,11 +75,11 @@
 	</question>
 </xsl:template>
 <!-- \AMCnumericChoices -->
-<xsl:template match="note[@class='amc_questionmult' and note[@class='amc_numeric_choices']]">
+<xsl:template match="note[@class='amc_questionmult' and .//note[@class='amc_numeric_choices']]">
 	<question type="numerical">
           <answer fraction="100">
             <text>
-              <xsl:value-of select="note[@class='amc_numeric_choices']"/>
+              <xsl:value-of select=".//note[@class='amc_numeric_choices']"/>
             </text>
           </answer>
 	  <xsl:apply-templates />
@@ -90,7 +88,7 @@
 
 
 <!-- template netoyage champ globaux mise en forme-->
-<xsl:template match="para">
+<xsl:template match="para|inline-para">
     <xsl:apply-templates/>
 </xsl:template>
 
