@@ -80,7 +80,7 @@ class Quiz:
 
         """
         # convert : convert(to str) converttofile
-        amc, cat_list = self._reshape()
+        amc, cat_dict = self._reshape()
         if debug:
             print(etree.tostring(amc, pretty_print=True,
                                  encoding='utf8').decode('utf-8'))
@@ -124,7 +124,7 @@ class Quiz:
         header.text = header_text
         return header
 
-    def _latex_footer(sel, cat_list):
+    def _latex_footer(sel, cat_dict):
         """ Define LaTeX footer to populate a amc test from the question bank.
         """
         # store copy operation for all category
@@ -158,9 +158,10 @@ class Quiz:
         enddocument = "\n\\end{document}"
         copy_group = "\\copygroup{%s}{allquestions}\n"
 
-        # iterate over cat_list
-        for cat in cat_list:
-            group_list.append(copy_group % cat)
+        # iterate over category
+        for cat, number in cat_dict.items():
+            if number > 0:
+                group_list.append(copy_group % cat)
 
         melange = "\\melangegroupe{allquestions}\n" + \
                   "\\restituegroupe{allquestions}"
@@ -190,7 +191,9 @@ class Quiz:
         root = self.mdl
         # initial default value for the category name
         catname = 'moodle'
-        cat_list = []
+        # store existing category in dict, Key=catname, value is the number of
+        # question in this category
+        cat_dict = dict()
 
         # create new etree that will contains new xml suitable for amc.
         # the roots node is document as for a tex file
@@ -209,13 +212,22 @@ class Quiz:
                 mdl_catname = question.find('category/text').text
                 # create a simpler catname for amc
                 catname = '-'.join(mdl_catname.split('/')[1:])
-                # store name and nothing else to do
-                cat_list.append(catname)
+                # sanitize catname (remove %)
+                catname = catname.replace('%', 'perc ')
+                # store name and say no question in it for now
+                cat_dict.update({catname: 0})
             else:
                 # Standard question
                 qname = question.find('name/text').text
                 if qtype in SUPPORTED_QUESTION_TYPE:
                         print("> Reshape question '{}' of type '{}'.".format(qname, qtype))
+                        # if no encounter category name before this question,
+                        # add the defaut catname in the cat_dict
+                        if not(cat_dict):
+                            print(cat_dict)
+                            cat_dict.update({catname: 0})
+                        # there is one more question in the catname categogy
+                        cat_dict[catname] += 1
                         amc_q = CreateQuestion(qtype, question).transform(catname)
                         amc.append(amc_q)
                 else:
@@ -224,10 +236,10 @@ class Quiz:
         print('  done')
 
         # add footer
-        footer = self._latex_footer(cat_list)
+        footer = self._latex_footer(cat_dict)
         amc.append(footer)
 
-        return amc, cat_list
+        return amc, cat_dict
 
     @staticmethod
     def texRendering(amc):
