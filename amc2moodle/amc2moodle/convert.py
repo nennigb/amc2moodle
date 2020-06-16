@@ -244,11 +244,8 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
             img_size = '200pt'
             img_dim = 'width'
 
-        # FIXME use os.path
-        img_path = os.path.join(pathin,
-                                img_name[0:img_name.rfind('/')]).replace('/./',
-                                                                         '/')
-        # print(img_path)
+        img_path = os.path.dirname(os.path.normpath(os.path.join(pathin, img_name)))
+
         name = basename(img_name)
         # print(name, ext, img_dim, align[img_align])
         Ii.attrib.update({'ext':ext, 'dim': img_dim, 'size': img_size,
@@ -324,6 +321,11 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
         # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
         etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
 
+        # inclusion des images dans les questions & réponses
+        Ilist = Qi.xpath(".//file")
+        for Ii in Ilist:
+            Ii = encodeImg(Ii, pathin, wdir)
+
         wantshuffle = ShuffleAll
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
         if optlist and 'o' in optlist[0].text.strip().split(","):
@@ -347,30 +349,17 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
             if (float(amc_bl['b']) < 1.):
                 print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")
 
-        # inclusion des images dans les questions
-        Ilist = Qi.xpath("./questiontext/file")
-        for Ii in Ilist:
-            Ii = encodeImg(Ii, pathin, wdir)
-
         # bonne cherche dans les child
         Rlist = Qi.xpath("./*[starts-with(@class, 'amc_bonne')]")
         for Ri in Rlist:
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bl['b'])*100.)
-            # inclusion des images dans les réponses
-            RIlist = Ri.xpath("file")
-            for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, wdir)
 
         # Mauvaise cherche dans les child
         Rlist = Qi.xpath("./*[starts-with(@class, 'amc_mauvaise')]")
         for Ri in Rlist:
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bl['m'])*100.)
-            # inclusion des images dans les réponses
-            RIlist = Ri.xpath("file")
-            for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, wdir)
 
         # e:incohérente n'a pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
 
@@ -383,6 +372,10 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     for Qi in Qlist:
         # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
         etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
+
+        # inclusion des images dans les questions et reponses
+        for Ii in Qi.xpath(".//file"):
+            Ii = encodeImg(Ii, pathin, wdir)
 
         # \AMCnumericChoices are handled like questionmult, except that
         # shuffling, answer numbering, and processing of different answers is
@@ -410,11 +403,6 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
             print("bareme local :", amc_bml)
             if (float(amc_bml['b']) < 1):
                 print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")
-
-        # inclusion des images dans les questions
-        Ilist = Qi.xpath("./questiontext/file")
-        for Ii in Ilist:
-            Ii = encodeImg(Ii, pathin, wdir)
 
         # on compte le nombre de réponse NR
         # Rlistb = Qi.xpath("./text[@class='amc_bonne']")
@@ -451,18 +439,11 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
         for Ri in Rlistb:
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bml['b'])*100./NRb)
-            RIlist = Ri.xpath("file")
-            for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, wdir)
 
         # Mauvaise cherche dans les Qi childs
         for Ri in Rlistm:
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bml['m'])*100./NRm)
-            RIlist = Ri.xpath("file")
-            for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, wdir)
-
 
         # incohérente pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
 
