@@ -95,6 +95,10 @@ class Quiz:
         with open(texfile, 'w') as f:
             f.write(tex_str)
 
+        # print ouput message
+        self.output_msg()
+
+
     # TODO create a class quiz to encapsulate that
     def _latex_header(self):
         """ Define LaTeX header and newcommand.
@@ -224,7 +228,6 @@ class Quiz:
                         # if no encounter category name before this question,
                         # add the defaut catname in the cat_dict
                         if not(cat_dict):
-                            print(cat_dict)
                             cat_dict.update({catname: 0})
                         # there is one more question in the catname categogy
                         cat_dict[catname] += 1
@@ -275,3 +278,17 @@ class Quiz:
         status = subprocess.run(command.split(),
                                 stdout=subprocess.DEVNULL)
         return status
+
+    @staticmethod
+    def output_msg():
+        """ Print ouput message.
+        """
+
+        msg = "\nThe conversion is complete. Try to compile the tex file...\n" + \
+              "In case of trouble, you may need to check for :\n" + \
+              u"  - unicode character like euro € currency symbol  \n" + \
+              "  - latex special character like '{', '_', '&', ... \n" + \
+              "  - strange html tags \n" +\
+              "  - ..."
+        print(msg)
+
