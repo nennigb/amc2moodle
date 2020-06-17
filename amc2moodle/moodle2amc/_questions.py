@@ -114,6 +114,7 @@ class Question(ABC):
         """
         # remove manually CDATA from the string
         cdata_content = (cdata_content.replace('<text><![CDATA[', '<text>')
+                         .replace('%', '\%')
                          .replace(']]></text>', '</text>')
                          .replace('\n', '')
                          .replace('<br>', ''))
