@@ -142,7 +142,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     catname : string, optional
         Set moodle category. The default is None.
     deb : int, optional
-        Set to 1 to store all intermediate file for debging. The default is 0.
+        Set to 1 to store all intermediate files for debugging. The default is 0.
 
     Returns
     -------
@@ -163,12 +163,17 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # TODO to options file
     # Shuffle all answsers
     ShuffleAll = True
+    # Moodle supports multiple ways to number answers, but
+    # usually AMC users expect no numbering.
+    # Choose one of '123', 'abc', 'iii', 'none', 'ABCD'.
+    answerNumberingFormat = 'none'
+
     # ajout amc_aucune si obligatoire"
     amc_autocomplete = 1
     amc_aucune = u"aucune de ces réponses n'est correcte"
     """ Default grade for simple and multiple Question :
-    e=incohérence; b=bonne; m=mauvaise; p planché
-    Elles peuvent etre spécifier dans le fichier .tex avec
+    e=incohérence; b=bonne; m=mauvaise; p=plancher
+    Elles peuvent etre spécifiées dans le fichier .tex avec
     \baremeDefautS{e=-0.5,b=1,m=-0.5}
     \baremeDefautM{e=-0.5,b=0.5,m=-0.25,p=-0.5}
     ou au niveau de la question
@@ -180,7 +185,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # valeur par défaut de la note de la question
     moo_defautgrade = 1.
 
-    # file out for debug pupose
+    # file out for debug purpose
     filetemp0 = os.path.join(wdir, "temp0.xml")
     filetemp = os.path.join(wdir, "temp.xml")
 
@@ -210,7 +215,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     xslt_ns = open(filexslt_ns, 'r')
     xslt_ns_tree = etree.parse(xslt_ns)
     transform_ns = etree.XSLT(xslt_ns_tree)
-    # applique tranformation
+    # applique transformation
     tree = transform_ns(tree0)
     # on modifie les element graphic pour gérer les chemins, le taille et la mise en forme.
     # <graphics candidates="schema_interpL.png" graphic="schema_interpL.png" options="width=216.81pt" xml:id="g1" class="ltx_centering"/>
@@ -223,7 +228,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     for Ii in Ilist:
         img_name = Ii.attrib['graphic']
         ext = img_name.split('.')[-1]
-        # not all attrib are mandatory... check if they exist before use it
+        # not all attrib are mandatory... check if they exist before using them
         # try for class
         if 'class' in Ii.attrib:
             img_align = Ii.attrib['class']
@@ -239,11 +244,8 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
             img_size = '200pt'
             img_dim = 'width'
 
-        # FIXME use os.path
-        img_path = os.path.join(pathin,
-                                img_name[0:img_name.rfind('/')]).replace('/./',
-                                                                         '/')
-        # print(img_path)
+        img_path = os.path.dirname(os.path.normpath(os.path.join(pathin, img_name)))
+
         name = basename(img_name)
         # print(name, ext, img_dim, align[img_align])
         Ii.attrib.update({'ext':ext, 'dim': img_dim, 'size': img_size,
@@ -261,7 +263,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     xslt_pre = open(filexslt_pre, 'r')
     xslt_pre_tree = etree.parse(xslt_pre)
     transform_pre = etree.XSLT(xslt_pre_tree)
-    # applique tranformation
+    # applique transformation
     tree = transform_pre(tree)
     if (deb == 1):
         # ecriture
@@ -306,22 +308,35 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     ###########################################################################
     # Application du barème dans chaque question
     # + vérf barème locale : attribut amc_bareme
-    # on suppose que le bareme est au même niveau que des element amc_bonne
+    # on suppose que le bareme est au même niveau que des elements amc_bonne
     # ou amc_mauvaise
 
     # Question simple
     # =========================================================================
     #Qlist = tree.xpath("//text[@class='amc_question']")
     Qlist = tree.xpath("//*[@class='amc_question']")
-    # calcul nombre de question totale
+    # calcul nombre de questions total
     Qtot = len(Qlist)
     for Qi in Qlist:
-        # apply shuffleing
-        shuffleanswers = etree.SubElement(Qi, "shuffleanswers")
-        if ShuffleAll is True:
-            shuffleanswers.text = 'true'
-        else:
-            shuffleanswers.text = 'false'
+        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
+        etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
+
+        # inclusion des images dans les questions & réponses
+        Ilist = Qi.xpath(".//file")
+        for Ii in Ilist:
+            Ii = encodeImg(Ii, pathin, wdir)
+
+        wantshuffle = ShuffleAll
+        optlist = Qi.xpath("./note[@class='amc_choices_options']")
+        if optlist and 'o' in optlist[0].text.strip().split(","):
+            wantshuffle = False
+
+        etree.SubElement(Qi, "shuffleanswers").text = 'true' if wantshuffle else 'false'
+        etree.SubElement(Qi, "answernumbering").text = answerNumberingFormat
+
+        if Qi.xpath(".//note[@class='amc_numeric_choices']"):
+            print("WARNING: \\AMCnumericChoices{} not supported in \\begin{question}")
+
         # est qu'il y a une bareme local cherche dans les child
         # barl = Qi.xpath("./text[@class='amc_bareme']")
         barl = Qi.xpath("bareme")
@@ -334,36 +349,19 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
             if (float(amc_bl['b']) < 1.):
                 print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")
 
-        # inclusion des images dans les questions
-        Ilist = Qi.xpath("./questiontext/file")
-        for Ii in Ilist:
-            Ii = encodeImg(Ii, pathin, wdir)
-
         # bonne cherche dans les child
         Rlist = Qi.xpath("./*[starts-with(@class, 'amc_bonne')]")
         for Ri in Rlist:
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bl['b'])*100.)
-            # inclusion des images dans les réponses
-            RIlist = Ri.xpath("file")
-            for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, wdir)
 
         # Mauvaise cherche dans les child
         Rlist = Qi.xpath("./*[starts-with(@class, 'amc_mauvaise')]")
         for Ri in Rlist:
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bl['m'])*100.)
-            # inclusion des images dans les réponses
-            RIlist = Ri.xpath("file")
-            for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, wdir)
 
         # e:incohérente n'a pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
-
-        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
-        Dgrade = etree.SubElement(Qi, "defaultgrade")
-        Dgrade.text = str(moo_defautgrade)
 
     # Question multiple
     # ==========================================================================
@@ -372,12 +370,27 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # calcul nombre de question au total
     Qtot += len(Qlist)
     for Qi in Qlist:
-        # apply shuffleing
-        shuffleanswers = etree.SubElement(Qi, "shuffleanswers")
-        if ShuffleAll is True:
-            shuffleanswers.text = 'true'
-        else:
-            shuffleanswers.text = 'false'
+        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
+        etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
+
+        # inclusion des images dans les questions et reponses
+        for Ii in Qi.xpath(".//file"):
+            Ii = encodeImg(Ii, pathin, wdir)
+
+        # \AMCnumericChoices are handled like questionmult, except that
+        # shuffling, answer numbering, and processing of different answers is
+        # not necessary.  Also we have no support for grading option right now.
+        if Qi.xpath(".//note[@class='amc_numeric_choices']"):
+            continue;
+
+        wantshuffle = ShuffleAll
+        optlist = Qi.xpath("./note[@class='amc_choices_options']")
+        if optlist and 'o' in optlist[0].text.strip().split(","):
+            wantshuffle = False
+
+        etree.SubElement(Qi, "shuffleanswers").text = 'true' if wantshuffle else 'false'
+        etree.SubElement(Qi, "answernumbering").text = answerNumberingFormat
+
         # est qu'il y a une bareme local cherche dans les child
         # barl = Qi.xpath("./text[@class='amc_bareme']")
         # barl = Qi.xpath("./*[@class='amc_bareme']")
@@ -390,11 +403,6 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
             print("bareme local :", amc_bml)
             if (float(amc_bml['b']) < 1):
                 print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")
-
-        # inclusion des images dans les questions
-        Ilist = Qi.xpath("./questiontext/file")
-        for Ii in Ilist:
-            Ii = encodeImg(Ii, pathin, wdir)
 
         # on compte le nombre de réponse NR
         # Rlistb = Qi.xpath("./text[@class='amc_bonne']")
@@ -431,24 +439,14 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
         for Ri in Rlistb:
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bml['b'])*100./NRb)
-            RIlist = Ri.xpath("file")
-            for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, wdir)
 
         # Mauvaise cherche dans les Qi childs
         for Ri in Rlistm:
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bml['m'])*100./NRm)
-            RIlist = Ri.xpath("file")
-            for Ii in RIlist:
-                Ii = encodeImg(Ii, pathin, wdir)
-
 
         # incohérente pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
 
-        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
-        Dgrade = etree.SubElement(Qi, "defaultgrade")
-        Dgrade.text = str(moo_defautgrade)
 
 
     # on affiche

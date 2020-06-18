@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 
     This file is part of amc2moodle, a convertion tool to recast quiz written
-    with the LaTeX format used by automuliplechoice 1.0.3 into the 
+    with the LaTeX format used by automuliplechoice 1.0.3 into the
     moodle XML quiz format.
-    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr 
+    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:output method="xml" indent="yes"/>
-<!-- Remove all namespace attribut 
+<!-- Remove all namespace attribut
 <xsl:template match="/|comment()|processing-instruction()">
     <xsl:copy>
       <xsl:apply-templates/>
@@ -71,18 +71,22 @@ Changement de l'organisation des questions
 		    <text>
 			    <xsl:value-of select="@role"/>
 			</text>
-		</name>	
-        
+		</name>
+
         <!-- barème local -->
        <xsl:for-each select="text[@class='amc_bareme']">
           <bareme>
-                <xsl:value-of select="text()"/>     
+                <xsl:value-of select="text()"/>
          </bareme>
-        </xsl:for-each> 
+        </xsl:for-each>
+        <!-- options for \begin{choices} and support for \AMCnumericChoices -->
+        <xsl:for-each select="note[@class='amc_choices_options' or @class='amc_numeric_choices']">
+          <xsl:copy-of select="."/>
+        </xsl:for-each>
         <!-- mise en forme html, équation, tableau -->
         <questiontext format="html">
-        
-        
+
+
         <!-- prise en comte des images en 2 étapes stockage et placement
         boucle pour trouver les fichiers graphiques contenus dans la question (et les reponses!!)-->
         <xsl:for-each select=".//graphics">
@@ -102,28 +106,28 @@ Changement de l'organisation des questions
                   </file>
                </xsl:if>
           </xsl:for-each>
-        
-        
-            <xsl:copy>         
+
+
+            <xsl:copy>
                <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>
                    <xsl:apply-templates />
                <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
             </xsl:copy>
         </questiontext>
 
-       <!-- On recopie les réponses 
-       <xsl:template match="note[@class='amc_mauvaise']"> 
+       <!-- On recopie les réponses
+       <xsl:template match="note[@class='amc_mauvaise']">
        on boucle sur les réponses <xsl:for-each select="//note[@class='amc_mauvaise']">-->
-        <xsl:for-each select="note[starts-with(@class, 'amc_bonne')] | note[starts-with(@class, 'amc_mauvaise')]">
-              <note> 
+        <xsl:for-each select=".//note[starts-with(@class, 'amc_bonne') or starts-with(@class, 'amc_mauvaise')]">
+              <note>
               <xsl:attribute name="class"><xsl:value-of select="@class"/></xsl:attribute>
-                   <xsl:copy>         
+                   <xsl:copy>
                       <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>
-                        <xsl:apply-templates/>   
+                        <xsl:apply-templates/>
                       <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
                    </xsl:copy>
-                   
-                   <!-- prise en comte des images en 2 étapes stockage et placement
+
+                   <!-- prise en compte des images en 2 étapes stockage et placement
                     boucle pour trouver les fichiers graphiques contenus dans la question-->
                     <xsl:for-each select=".//graphics">
                           <file> <!-- question-->
@@ -139,10 +143,10 @@ Changement de l'organisation des questions
                             <xsl:apply-templates/>
                          </file>
                       </xsl:for-each>
-                    
-              </note>              
-       </xsl:for-each>        
-          
+
+              </note>
+       </xsl:for-each>
+
   </note>
 </xsl:template>
 
@@ -156,7 +160,7 @@ bold
 italic
 underline
 typewriter
-A faire : <center> </center>,  small caps, sf, sl, sc 
+A faire : <center> </center>,  small caps, sf, sl, sc
 ############################################################# -->
 
 <xsl:template match="emph">
@@ -187,7 +191,7 @@ A faire : <center> </center>,  small caps, sf, sl, sc
 <!-- Text in a <pre> element is displayed in a fixed-width font (usually Courier), and it preserves both spaces and line breaks. -->
 <xsl:template match="verbatim">
    <p>
-    <pre>       
+    <pre>
         <xsl:apply-templates/>
     </pre>
    </p>
@@ -196,7 +200,7 @@ A faire : <center> </center>,  small caps, sf, sl, sc
 
 <xsl:template match="break">
     <br>
-        <xsl:value-of select="text()"/>     
+        <xsl:value-of select="text()"/>
     </br>
 </xsl:template>
 
@@ -210,31 +214,25 @@ equation
 
 ############################################################# -->
 <!-- Pas trop mal, mais provoque des platage. L'avantage de xslt est que c'est récursif!-->
-<xsl:template match="Math"> 
+<xsl:template match="Math">
     <xsl:if test="@mode='inline'">
-           \(<xsl:value-of select="@tex"/>\)    
+           \(<xsl:value-of select="@tex"/>\)
     </xsl:if>
     <xsl:if test="@mode='display'">
     $$\begin{equation}
            <xsl:value-of select="@tex"/>
     \end{equation}$$
-    </xsl:if>		
+    </xsl:if>
 </xsl:template>
 
 <!--On ne fait rien sur ces éléments, ils sont traités ailleurs-->
-<xsl:template match="equation"> 
+<xsl:template match="equation">
        <xsl:apply-templates/>
 </xsl:template>
-<!--traité au niveau  de la question, pour les remonter d'un cran-->
-<xsl:template match="note[starts-with(@class, 'amc_mauvaise')]"> 
+<!--traités au niveau de la question, pour les remonter d'un cran-->
+<xsl:template match="note[@class='amc_mauvaise' or @class='amc_bonne' or @class='amc_choices_options']">
 </xsl:template>
-
-<!--traité au niveau  de la question, pour les remonter d'un cran-->
-<xsl:template match="note[starts-with(@class, 'amc_bonne')]"> 
-</xsl:template>
-
-<!--traité au niveau  de la question, pour les remonter d'un cran-->
-<xsl:template match="text[@class='amc_bareme']"> 
+<xsl:template match="text[@class='amc_bareme']">
 </xsl:template>
 
 
@@ -248,7 +246,7 @@ the table is centered horizontally in the page, possible use attibute class="ltx
 
 ############################################################# -->
 
-<xsl:template match="tabular"> 
+<xsl:template match="tabular">
     <table border='1' align='center'>
        <xsl:apply-templates/>
     </table>
@@ -258,22 +256,22 @@ the table is centered horizontally in the page, possible use attibute class="ltx
 <!-- #############################################################
 
 Prise en compte des images : 2 étapes une dans question (stockage) et une ici (inclusion dans le CDATA)
- latexml produit : <graphics candidates="tinymonk.png" graphic="tinymonk.png" options="width=43.362pt" xml:id="g1"/> 
+ latexml produit : <graphics candidates="tinymonk.png" graphic="tinymonk.png" options="width=43.362pt" xml:id="g1"/>
  <file name="gmsh.png" path="/" encoding="base64"> ...
  moodle: <img src="@@PLUGINFILE@@/tinymonk.png" alt="description de l'image" width="100" height="107" style="vertical-align:text-bottom; margin: 0 .5em;" class="img-responsive">
  <p style="text-align: center;"><img src="http://192.168.110.28/moodle/draftfile.php/5/user/draft/46006595/monk%20%283%29.png" alt="" role="presentation" style=""><br></p>
  ltx_centering ltx_align_right
 ############################################################# -->
 
-<xsl:template match="graphics"> 
+<xsl:template match="graphics">
     <p>
     <xsl:attribute name="style">text-align:<xsl:value-of select="@align"/>; </xsl:attribute>
 <!--        <img style="vertical-align:text-bottom; margin: 0 .5em;" class="img-responsive"> -->
-          <img style="vertical-align:text-bottom; margin: 0 .5em;" > 
+          <img style="vertical-align:text-bottom; margin: 0 .5em;" >
             <xsl:attribute name="src">@@PLUGINFILE@@/<xsl:value-of select="@name"/>.png</xsl:attribute>
-            <xsl:attribute name="{@dim}"><xsl:value-of select="@size"/></xsl:attribute>             
-            <xsl:attribute name="options"><xsl:value-of select="@options"/></xsl:attribute> 
-<!--            attribut inutilisé dans le rendu, mais utile pour l'encodage de l'image (math quetsion)  
+            <xsl:attribute name="{@dim}"><xsl:value-of select="@size"/></xsl:attribute>
+            <xsl:attribute name="options"><xsl:value-of select="@options"/></xsl:attribute>
+<!--            attribut inutilisé dans le rendu, mais utile pour l'encodage de l'image (math quetsion)
             <xsl:attribute name="alt"><xsl:value-of select="@graphic"/></xsl:attribute>
             <xsl:attribute name="pathF"><xsl:value-of select="@pathF"/></xsl:attribute>
             <xsl:attribute name="ext"><xsl:value-of select="@ext"/></xsl:attribute>
@@ -290,36 +288,36 @@ Prise en compte des images : 2 étapes une dans question (stockage) et une ici (
 
 <!--- ###########################################################
 Prise en compte itemize and ennumerate
-Remarks : the tag in item[tag] is ignored, it seems not possible 
+Remarks : the tag in item[tag] is ignored, it seems not possible
 to change the bullet in html
 -->
-<xsl:template match="itemize"> 
+<xsl:template match="itemize">
   <ul>
     <xsl:apply-templates/>
-  </ul> 
+  </ul>
 </xsl:template>
 
-<xsl:template match="enumerate"> 
+<xsl:template match="enumerate">
   <ol>
     <xsl:apply-templates/>
-  </ol> 
+  </ol>
 </xsl:template>
 
 
-<xsl:template match="item"> 
-  <li> 	 
+<xsl:template match="item">
+  <li>
     <xsl:apply-templates/>
-  </li> 
+  </li>
 </xsl:template>
 
-<xsl:template match="tag"> 
+<xsl:template match="tag">
 </xsl:template>
 <!--- New name in new version of LaTeXML -->
-<xsl:template match="tags"> 
+<xsl:template match="tags">
 </xsl:template>
 
 <!--- ###########################################################
-       Include Here new template for supported package 
+       Include Here new template for supported package
 - mhchem through mathjax
 -->
 
