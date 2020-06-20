@@ -64,6 +64,7 @@ Changement de l'organisation des questions
 - encapsulage du text de la question
 
 ############################################################# -->
+
 <xsl:template match="note[starts-with(@class, 'amc_question')]">
   <note>
   <xsl:attribute name="class"><xsl:value-of select="@class"/></xsl:attribute>
@@ -201,12 +202,9 @@ A faire : <center> </center>,  small caps, sf, sl, sc
    </p>
 </xsl:template>
 
-
-<xsl:template match="break">
-    <br>
-        <xsl:value-of select="text()"/>
-    </br>
-</xsl:template>
+<!-- bare <br> is html and not xml. We need xml because of etree parsing setup. 
+Single <br/> does the trick  -->
+<xsl:template match="break"><br/></xsl:template>
 
 
 
