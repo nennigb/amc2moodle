@@ -79,8 +79,12 @@ Changement de l'organisation des questions
                 <xsl:value-of select="text()"/>
          </bareme>
         </xsl:for-each>
-        <!-- options for \begin{choices} and support for \AMCnumericChoices -->
-        <xsl:for-each select="note[@class='amc_choices_options' or @class='amc_numeric_choices']">
+        <!-- Support for options in \begin{choices} -->
+        <xsl:for-each select=".//note[@class='amc_choices_options']">
+          <xsl:copy-of select="."/>
+        </xsl:for-each>
+        <!-- Support for \AMCnumericChoices         -->
+        <xsl:for-each select=".//note[@class='amc_numeric_choices']">
           <xsl:copy-of select="."/>
         </xsl:for-each>
         <!-- mise en forme html, équation, tableau -->
