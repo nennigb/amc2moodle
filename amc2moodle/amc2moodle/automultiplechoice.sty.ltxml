@@ -84,7 +84,7 @@ DefConstructor('\correctchoice{}',"<ltx:note class='amc_bonne'>#1</ltx:note>"); 
 DefConstructor('\mauvaise{}','<ltx:note class="amc_mauvaise">#1</ltx:note>');
 DefConstructor('\wrongchoice{}','<ltx:note class="amc_mauvaise">#1</ltx:note>');
 
-DefConstructor('\AMCnumericChoices{}{}', '<ltx:note class="amc_numeric_choices" options="#2">#1</ltx:note>');
+DefConstructor('\AMCnumericChoices{}{}', '<ltx:note class="amc_numeric_choices" role="#2">#1</ltx:note>');
 
 # ===================================================================
 # MISE EN FORME PAPIER
