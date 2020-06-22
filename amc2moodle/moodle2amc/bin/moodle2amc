@@ -35,8 +35,7 @@ def run():
     fileOut = None
     debug = False
     # deal with arguments
-    parser = argparse.ArgumentParser(prog="moodle2amc",
-                                     description='''This program converts a
+    parser = argparse.ArgumentParser(description='''This program converts a
                                      XML file containing moodle questions into
                                      an automultiplechoice LaTeX file.''')
 
