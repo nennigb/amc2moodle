@@ -162,11 +162,14 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
 
     # TODO to options file
     # Shuffle all answsers
-    ShuffleAll = True
+    shuffleAll = True
     # Moodle supports multiple ways to number answers, but
     # usually AMC users expect no numbering.
-    # Choose one of '123', 'abc', 'iii', 'none', 'ABCD'.
-    answerNumberingFormat = 'none'
+
+    # How choices are numbered in moodle.
+    # Moodle default is'abc' (keep it for uniformity).
+    # Else choose one in supported tag {'123', 'abc', 'iii', 'none', 'ABCD'}.
+    answerNumberingFormat = 'abc'
 
     # ajout amc_aucune si obligatoire"
     amc_autocomplete = 1
@@ -211,7 +214,8 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     xml = open(os.path.join(wdir, filein), 'r')
     tree0 = etree.parse(xml)
 
-    # on supprime le namespace [a terme faire autrement]
+    # on supprime le namespace
+    # TODO a terme faire autrement
     xslt_ns = open(filexslt_ns, 'r')
     xslt_ns_tree = etree.parse(xslt_ns)
     transform_ns = etree.XSLT(xslt_ns_tree)
@@ -326,14 +330,18 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
         for Ii in Ilist:
             Ii = encodeImg(Ii, pathin, wdir)
 
-        wantshuffle = ShuffleAll
+        # check local shuffle policy
+        Qiwantshuffle = shuffleAll
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
         if optlist and 'o' in optlist[0].text.strip().split(","):
-            wantshuffle = False
+            Qiwantshuffle = False
+            print("Keep choices order in question '{}'.".format(Qi.find('name/text').text))
+        etree.SubElement(Qi, "shuffleanswers").text = str(Qiwantshuffle).lower()
 
-        etree.SubElement(Qi, "shuffleanswers").text = 'true' if wantshuffle else 'false'
+        # store local answernumbering policy
         etree.SubElement(Qi, "answernumbering").text = answerNumberingFormat
 
+        # FIXME
         if Qi.xpath(".//note[@class='amc_numeric_choices']"):
             print("WARNING: \\AMCnumericChoices{} not supported in \\begin{question}")
 
@@ -377,18 +385,22 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
         for Ii in Qi.xpath(".//file"):
             Ii = encodeImg(Ii, pathin, wdir)
 
+        # FIXME need a specific process for each question
         # \AMCnumericChoices are handled like questionmult, except that
         # shuffling, answer numbering, and processing of different answers is
         # not necessary.  Also we have no support for grading option right now.
         if Qi.xpath(".//note[@class='amc_numeric_choices']"):
             continue;
 
-        wantshuffle = ShuffleAll
+        # check local shuffle policy
+        Qiwantshuffle = shuffleAll
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
         if optlist and 'o' in optlist[0].text.strip().split(","):
-            wantshuffle = False
+            Qiwantshuffle = False
+            print("Keep choices order in question '{}'.".format(Qi.find('name/text').text))
+        etree.SubElement(Qi, "shuffleanswers").text = str(Qiwantshuffle).lower()
 
-        etree.SubElement(Qi, "shuffleanswers").text = 'true' if wantshuffle else 'false'
+        # store local answernumbering policy
         etree.SubElement(Qi, "answernumbering").text = answerNumberingFormat
 
         # est qu'il y a une bareme local cherche dans les child
@@ -481,5 +493,6 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     xml.close()
 
     print('\n')
-    print(' > shuffleanswers is ' + str(ShuffleAll))
-    print(" > " + str(Qtot) + " questions converted...")
+    print(" > global 'shuffleanswers' is {}.".format(shuffleAll))
+    print(" > global 'answerNumberingFormat' is '{}'.".format(answerNumberingFormat))
+    print(" > {} questions converted...".format(Qtot))
