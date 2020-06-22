@@ -74,7 +74,8 @@
 		<xsl:apply-templates />
 	</question>
 </xsl:template>
-<!-- \AMCnumericChoices -->
+
+<!-- \AMCnumericChoices yields to numerical question type -->
 <xsl:template match="note[@class='amc_questionmult' and .//note[@class='amc_numeric_choices']]">
 	<question type="numerical">
           <answer fraction="100">
@@ -120,7 +121,10 @@
 <xsl:template match="bareme">
 </xsl:template>
 
-<xsl:template match="note[@class='amc_choices_options' or @class='amc_numeric_choices']">
+<xsl:template match="note[@class='amc_choices_options']">
+</xsl:template>
+
+<xsl:template match="note[@class='amc_numeric_choices']">
 </xsl:template>
 
 <!-- template defaultgrade -->
