@@ -5,6 +5,7 @@ include amc2moodle/amc2moodle/*.xslt
 include amc2moodle/amc2moodle/*sty.ltxml
 include amc2moodle/amc2moodle/test/Figures/*
 include amc2moodle/amc2moodle/test/Figures/other/*
+include amc2moodle/amc2moodle/test/4.png
 include amc2moodle/amc2moodle/test/QCM.pdf
 include amc2moodle/amc2moodle/test/QCM.tex
 include amc2moodle/amc2moodle/test/QCM.xml
