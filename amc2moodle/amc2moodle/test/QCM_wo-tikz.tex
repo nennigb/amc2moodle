@@ -1,5 +1,5 @@
 \documentclass[a4paper]{article}
-%review 
+%review
 
 
 %#########################################################################
@@ -35,7 +35,7 @@
 \begin{document}
 
 %
-% B A R E M E 
+% B A R E M E
 % e=incohérence; b=bonne; m=mauvaise; p planché (on ne descent pas en dessous)
 \baremeDefautS{e=-0.5,b=1,m=-0.5}% never put b<1,
 \baremeDefautM{e=-0.5,b=1,m=-0.25,p=-0.5}% never put b<1, with amc2moodle m correspond to the grade if all the wrong answers are ticked, b correspond to the grade if all the good answers are ticked
@@ -48,12 +48,12 @@
 %reponses : environnement
 %bonne  : commande
 %mauvaise : commande
-% B A R E M E 
+% B A R E M E
 % e=incohérence; b=bonne; m=mauvaise; p planché (on ne descent pas en dessous)
 %\baremeDefautS{e=-0.5,b=1,m=-0.5}
 %\baremeDefautM{e=-0.5,b=0.5,m=-0.25,p=-0.5}
 % ajouter aucune de ces réponses n'est correcte
-%\usepackage[francais,bloc,completemulti]{automultiplechoice}  
+%\usepackage[francais,bloc,completemulti]{automultiplechoice}
 
 %===================================================================
 % simple
@@ -88,7 +88,7 @@
 \element{cat1}{
   \begin{questionmult}{Qmult:Aucune}  \bareme{e=-0.5,b=1,m=-1.,p=-0.5} % never put b<1,
     Quel fruit possède un noyau?
-    \begin{reponseshoriz}
+    \begin{reponseshoriz}[o] % keep answers order
       \mauvaise{La pomme}
       \mauvaise{La tomate}
       \mauvaise{le Kiwi}
@@ -105,7 +105,7 @@
       \begin{tabular}{ccc}
         \hline
         12                       & 2                                                    & $2^3$ \\
-        \multicolumn{2}{c}{Deux} & \includegraphics[height=16pt]{./Figures/other/4.png}         \\
+        \multicolumn{2}{c}{Deux} & \includegraphics[height=16pt]{4.png}         \\
         \hline
       \end{tabular}
     \end{center}
@@ -120,8 +120,8 @@
         %        \begin{verbatim}%L'environnement verbatim pose en effet des problèmes avec AMC
         %            int s=0
         %            for(int i;i=0; i<4){
-        %            	   s++
-        %            } 	               
+        %                  s++
+        %            }
         %        \end{verbatim}
       }
       \bonne{$\abs{-10-2}$ (math inline and newcommand)}
@@ -136,7 +136,7 @@
       %    \mauvaise{Avec une autre équation utilisant \texttt{aligned} amsmath environnemnt
       %            \begin{equation}\left\{\begin{aligned}\displaystyle t_{0}&amp;\displaystyle=1/\sqrt{3}\\&#10;\displaystyle t_{i+1}&amp;\displaystyle=\frac{\sqrt{t_{i}^{2}+1}-1}{t_{i}}\end{aligned}\right..
       %            \end{equation}
-      %    }        
+      %    }
     \end{reponses}
   \end{questionmult}
 }
@@ -173,7 +173,7 @@
 Test for itemize html rendering,
 \begin{itemize}
    \item first item
-   \item Second item blablabla 
+   \item Second item blablabla
 \end{itemize}
 test for enumerate html rendering,
 \begin{enumerate}
@@ -181,11 +181,12 @@ test for enumerate html rendering,
   \item The second \textbf{item } with bold
 \end{enumerate}
     \begin{choices}
-      \correctchoice{1 bullet list and 1 ordered list\\ Remarks : the tag in item are ignored.}
-      \wrongchoice{    \begin{enumerate}
-      					\item The first item $x^2$
-      					\item The second \textbf{item}
-				      \end{enumerate}
+      \correctchoice{1 bullet list and 1 ordered list\\ Remarks: tags in item are ignored.}
+      \wrongchoice{
+        \begin{enumerate}
+        \item The first item $x^2$
+        \item The second \textbf{item}
+        \end{enumerate}
     }
     \end{choices}
 \end{question}
@@ -211,12 +212,23 @@ K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}
 \end{question}
 }
 
+\element{num}{
+\begin{questionmultx}{with-int}
+Combien de fois le programme suivant affiche-t-il \texttt{"x"} ?
+
+\texttt{for (int i = 4; i < 24; ++i)\\
+\hspace*{1em}for (int j = i + 2; j - 1 > 0; -{}-j)\\
+\hspace*{2em}puts("x");}
+
+\AMCnumericChoices{290}{digits=3,sign=false,scoreexact=2,scoreapprox=1,approx=10}
+\end{questionmultx}}
+
 % #################################################################
 % C R E A T I O N  D E S  C O P I E S
 % #################################################################
-\exemplaire{1}{    	% nombre de sujet différent
+\exemplaire{1}{        % nombre de sujet différent
 
-  %debut de l'en-tête des copies :    
+  %debut de l'en-tête des copies :
 
   \vspace*{.5cm}
   \begin{minipage}{.4\linewidth}
@@ -232,7 +244,7 @@ K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}
     }}
 
   \begin{flushleft}
-    Certaine question peuvent sembler étrange, c'est le but !
+    Certaines questions peuvent sembler étranges, c'est le but !
     \begin{center}
       \Large{\textsc{QCM using AMC Latex Format}}\\
       \normalsize
@@ -247,7 +259,8 @@ K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}
   \copygroup{cat2}{BigGroupe}
   \copygroup{english}{BigGroupe}
   \copygroup{mhchem}{BigGroupe}
-  
+  \copygroup{num}{BigGroupe}
+
   \melangegroupe{BigGroupe}
   \restituegroupe{BigGroupe}
 }
