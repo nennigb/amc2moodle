@@ -20,10 +20,46 @@
 
 """
 import sys
+from abc import ABC, abstractmethod
 from lxml import etree
 import base64
 import os
 from wand.image import Image as wandImage
+from xml.sax.saxutils import unescape
+
+# Define default and global
+SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric')
+
+# set defaut relative tolerance for float in numerical question to 1%
+DEFAULT_NUMERIC_TOL = 1e-2
+# TODO to options file
+# Shuffle all answsers
+shuffleAll = True
+# Moodle supports multiple ways to number answers, but
+# usually AMC users expect no numbering.
+
+# How choices are numbered in moodle.
+# Moodle default is'abc' (keep it for uniformity).
+# Else choose one in supported tag {'123', 'abc', 'iii', 'none', 'ABCD'}.
+answerNumberingFormat = 'abc'
+
+# ajout amc_aucune si obligatoire"
+amc_autocomplete = 1
+amc_aucune = u"aucune de ces réponses n'est correcte"
+""" Default grade for simple and multiple Question :
+e=incohérence; b=bonne; m=mauvaise; p=plancher
+Elles peuvent etre spécifiées dans le fichier .tex avec
+\baremeDefautS{e=-0.5,b=1,m=-0.5}
+\baremeDefautM{e=-0.5,b=0.5,m=-0.25,p=-0.5}
+ou au niveau de la question
+"""
+# Simple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
+amc_bs = {'e': -1, 'b': 1, 'm': -0.5}
+# Multiple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
+amc_bm = {'e': -1, 'b': 1, 'm': -0.5, 'p': -1}
+# valeur par défaut de la note de la question
+moo_defautgrade = 1.
+
 
 # ======================================================================
 # Image processing utilities
@@ -113,239 +149,88 @@ def encodeImg(Ii, pathin, pathout):
     img_file.close()
 
 
-
-def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
-              workingdir=None, catname=None, deb=0):
-    """ Build Moodle XML file from xml file obtain with LaTeXML.
-
-    Call xslt stylesheet and complete the required xml element,
-    Compute the grade according to the amc way
-    Convert non png img into png and embedded them in the output_file
-
-    Remark : The grade are not computed exactly as in amc, see the doc.
-
-    TODO Factorize question type
-
-    Parameters
-    ----------
-    filein : string
-        Input XML file provide by LaTeXML.
-    pathin : string
-        Input directory.
-    fileout : string, optional
-        Output moodle XML file. The default is 'out.xml'.
-    pathout : string, optional
-        Output directory. The default is '.'.
-    workingdir : string, optional
-        Allow to define a working directory (temp) different from the output
-        directiory. The default is None.
-    catname : string, optional
-        Set moodle category. The default is None.
-    deb : int, optional
-        Set to 1 to store all intermediate files for debugging. The default is 0.
-
-    Returns
-    -------
-    None.
-
+class AMCQuestion(ABC):
+    """ Abstract class for all questions.
     """
 
-    # Define catflag [legacy]
-    catflag = catname is not None
+    def __init__(self, Qi):
+        """ Init class from an etree Element amc_question*.
+        """
+        self.Qi = Qi
+        self.name = Qi.find('name/text').text
 
-    # define working dir
-    if workingdir is None:
-        wdir = pathin
-    else:
-        wdir = workingdir
+    def __repr__(self):
+        """ Change string representation.
+        """
+        rep = ("Instance of {} containing the question '{}'."
+               .format(self.__class__.__name__, self.name))
+        return rep
 
+    def __str__(self):
+        """ Change string representation to print the tree.
+        """
+        rep = self.__repr__()
+        s = unescape(etree.tostring(self.Qi, pretty_print=True,
+                                    encoding='utf8').decode('utf8'))
+        return '\n'.join((rep, s))
 
-    # TODO to options file
-    # Shuffle all answsers
-    shuffleAll = True
-    # Moodle supports multiple ways to number answers, but
-    # usually AMC users expect no numbering.
-
-    # How choices are numbered in moodle.
-    # Moodle default is'abc' (keep it for uniformity).
-    # Else choose one in supported tag {'123', 'abc', 'iii', 'none', 'ABCD'}.
-    answerNumberingFormat = 'abc'
-
-    # ajout amc_aucune si obligatoire"
-    amc_autocomplete = 1
-    amc_aucune = u"aucune de ces réponses n'est correcte"
-    """ Default grade for simple and multiple Question :
-    e=incohérence; b=bonne; m=mauvaise; p=plancher
-    Elles peuvent etre spécifiées dans le fichier .tex avec
-    \baremeDefautS{e=-0.5,b=1,m=-0.5}
-    \baremeDefautM{e=-0.5,b=0.5,m=-0.25,p=-0.5}
-    ou au niveau de la question
-    """
-    # Simple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
-    amc_bs = {'e': -1, 'b': 1, 'm': -0.5}
-    # Multiple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
-    amc_bm = {'e': -1, 'b': 1, 'm': -0.5, 'p': -1}
-    # valeur par défaut de la note de la question
-    moo_defautgrade = 1.
-
-    # file out for debug purpose
-    filetemp0 = os.path.join(wdir, "temp0.xml")
-    filetemp = os.path.join(wdir, "temp.xml")
-
-    # path of the file
-
-    # path to xslt stylesheet
-    # TODO use pkgutils
-    # 1. remove namespace
-    filexslt_ns = os.path.join(os.path.dirname(__file__),
-                               "transform_ns.xslt")
-    # 2. convert to html, tab, figure, equations
-    filexslt_pre = os.path.join(os.path.dirname(__file__),
-                                "transform2html.xslt")
-    # 3. remane element and finish the job
-    filexslt = os.path.join(os.path.dirname(__file__),
-                            "transform.xslt")
-
-    ##########################################################################
-    # Pré traitement
-    # on parse le fichier xml
-    # Elements are lists
-    # Elements carry attributes as a dict
-    xml = open(os.path.join(wdir, filein), 'r')
-    tree0 = etree.parse(xml)
-
-    # on supprime le namespace
-    # TODO a terme faire autrement
-    xslt_ns = open(filexslt_ns, 'r')
-    xslt_ns_tree = etree.parse(xslt_ns)
-    transform_ns = etree.XSLT(xslt_ns_tree)
-    # applique transformation
-    tree = transform_ns(tree0)
-    # on modifie les element graphic pour gérer les chemins, le taille et la mise en forme.
-    # <graphics candidates="schema_interpL.png" graphic="schema_interpL.png" options="width=216.81pt" xml:id="g1" class="ltx_centering"/>
-    Ilist = tree.xpath(".//graphics")  # que sur attributs ici
-    # conversion des notations d'alignement
-    align = {'ltx_align_right': 'right', 'ltx_align_left': 'left',
-             'ltx_centering': 'center'}
-    # ext extension, path:chemin img, dim [width/height],size, dimension en point
-
-    for Ii in Ilist:
-        img_name = Ii.attrib['graphic']
-        ext = img_name.split('.')[-1]
-        # not all attrib are mandatory... check if they exist before using them
-        # try for class
-        if 'class' in Ii.attrib:
-            img_align = Ii.attrib['class']
-        else:
-            img_align = 'ltx_centering'  # default value center !
-        # try for option
-        if 'options' in Ii.attrib:
-            img_options = Ii.attrib['options']
-            img_size = img_options.split('=')[-1]  # il reste pt, mais cela ne semble pas poser de pb
-            img_dim = img_options.split('=')[0]
-        else:
-            img_options = ''
-            img_size = '200pt'
-            img_dim = 'width'
-
-        img_path = os.path.dirname(os.path.normpath(os.path.join(pathin, img_name)))
-
-        name = basename(img_name)
-        # print(name, ext, img_dim, align[img_align])
-        Ii.attrib.update({'ext':ext, 'dim': img_dim, 'size': img_size,
-                          'pathF': img_path, 'align': align[img_align],
-                          'name': name})
-
-    # path
-    # ext
-    # dim = width or height
-    # size :
-    # width options="height=216.81pt"
-    # alig <-> class
-
-    # remise en forme + html + math + image + tableau
-    xslt_pre = open(filexslt_pre, 'r')
-    xslt_pre_tree = etree.parse(xslt_pre)
-    transform_pre = etree.XSLT(xslt_pre_tree)
-    # applique transformation
-    tree = transform_pre(tree)
-    if (deb == 1):
-        # ecriture
-        tree.write(filetemp0, pretty_print=True, encoding="utf-8")
-
-
-    ###########################################################################
-    # Recherche barème par défaut
-    # attribut amc_baremeDefautS et amc_baremeDefautM
-    # on cherche s'il existe un barème par défaut pour question simple
-    bars = tree.xpath("//*[@class='amc_baremeDefautS']")  # que sur attributs ici
-    # bar[0].text contient la chaine de caractère
-    if len(bars) > 0:
-        # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
-        amc_bs = dict(item.split("=") for item in bars[0].text.strip().split(","))
-        print("baremeDefautS :", amc_bs)
-        if (float(amc_bs['b']) < 1):
-            print("WARNING : the grade the good answser in question will be < 100%, put b=1")
-
-    # on cherche s'il existe un barème par défaut pour question multiple
-    barm = tree.xpath("//*[@class='amc_baremeDefautM']")
-    # bar[0].text contient la chaine de caractère
-    if len(barm) > 0:
-        # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
-        amc_bm = dict(item.split("=") for item in barm[0].text.strip().split(","))
-        print("baremeDefautM :", amc_bm)
-        if (float(amc_bm['b']) < 1):
-            print("WARNING : the grade of the good answser(s) in questionmult may be < 100%, put b=1")
-
-
-    ############################################################################
-    # Prise en compte des catégories
-    # <text>$course$/filein/amc_element_tag</text>
-    Clist = tree.xpath("//*[@class='amc_categorie']")
-    for Ci in Clist:
-        if (catflag == 1):
-            Ci.text = "$course$/"+catname.split('.')[0] + "/" + Ci.text
-        else:
-            Ci.text = "$course$/"+catname.split('.')[0]
-
-
-    ###########################################################################
-    # Application du barème dans chaque question
-    # + vérf barème locale : attribut amc_bareme
-    # on suppose que le bareme est au même niveau que des elements amc_bonne
-    # ou amc_mauvaise
-
-    # Question simple
-    # =========================================================================
-    #Qlist = tree.xpath("//text[@class='amc_question']")
-    Qlist = tree.xpath("//*[@class='amc_question']")
-    # calcul nombre de questions total
-    Qtot = len(Qlist)
-    for Qi in Qlist:
-        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
-        etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
-
+    def _encodeImg(self):
+        """ Encode all images present in the question (question and answers).
+        """
         # inclusion des images dans les questions & réponses
-        Ilist = Qi.xpath(".//file")
+        Ilist = self.Qi.xpath(".//file")
         for Ii in Ilist:
             Ii = encodeImg(Ii, pathin, wdir)
 
+    @abstractmethod
+    def _scoring(self):
+        pass
+
+    @abstractmethod
+    def _options(self):
+        pass
+
+    def convert(self):
+        """ Run all questions convertion steps.
+        """
+        print(" * processing {} question '{}'...".format(self.__class__.__name__, self.name))
+        self._encodeImg()
+        self._options()
+        self._scoring()
+
+
+
+
+class AMCQuestionSimple(AMCQuestion):
+    """ Multiple choice question with single good answer.
+    """
+
+    def _options(self):
+        """ Manage options at question levels.
+        """
+        Qi = self.Qi
         # check local shuffle policy
         Qiwantshuffle = shuffleAll
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
         if optlist and 'o' in optlist[0].text.strip().split(","):
             Qiwantshuffle = False
-            print("Keep choices order in question '{}'.".format(Qi.find('name/text').text))
+            print("   Keep choices order in question '{}'.".format(self.name))
         etree.SubElement(Qi, "shuffleanswers").text = str(Qiwantshuffle).lower()
 
         # store local answernumbering policy
         etree.SubElement(Qi, "answernumbering").text = answerNumberingFormat
 
-        # FIXME
-        if Qi.xpath(".//note[@class='amc_numeric_choices']"):
-            print("WARNING: \\AMCnumericChoices{} not supported in \\begin{question}")
-
+    def _scoring(self):
+        """ Compute the scoring.
+        """
+        Qi = self.Qi
+        # specific part scoring part
+        # add  <defaultgrade>1.0000000</defaultgrade>
+        etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
+        # add <single>true</single>
+        etree.SubElement(Qi, "single").text = 'true'
         # est qu'il y a une bareme local cherche dans les child
+        # e:incohérente is pointless in moodle since it is not possible to chose several answer
         # barl = Qi.xpath("./text[@class='amc_bareme']")
         barl = Qi.xpath("bareme")
         # Par défaut on a le bareme global
@@ -369,40 +254,20 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bl['m'])*100.)
 
-        # e:incohérente n'a pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
 
-    # Question multiple
-    # ==========================================================================
-    # Qlist = tree.xpath("//text[@class='amc_questionmult']")
-    Qlist = tree.xpath("//*[@class='amc_questionmult']")
-    # calcul nombre de question au total
-    Qtot += len(Qlist)
-    for Qi in Qlist:
-        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
-        etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
+class AMCQuestionMult(AMCQuestionSimple):
+    """ Multiple choice question with multiple good answers.
+    """
+    # def __init__(self, q):
+    #     """ Init class from an etree Element.
+    #     """
+    #     super().__init__(q)
+    #     self.qtype = 'multiplechoice'
 
-        # inclusion des images dans les questions et reponses
-        for Ii in Qi.xpath(".//file"):
-            Ii = encodeImg(Ii, pathin, wdir)
-
-        # FIXME need a specific process for each question
-        # \AMCnumericChoices are handled like questionmult, except that
-        # shuffling, answer numbering, and processing of different answers is
-        # not necessary.  Also we have no support for grading option right now.
-        if Qi.xpath(".//note[@class='amc_numeric_choices']"):
-            continue;
-
-        # check local shuffle policy
-        Qiwantshuffle = shuffleAll
-        optlist = Qi.xpath("./note[@class='amc_choices_options']")
-        if optlist and 'o' in optlist[0].text.strip().split(","):
-            Qiwantshuffle = False
-            print("Keep choices order in question '{}'.".format(Qi.find('name/text').text))
-        etree.SubElement(Qi, "shuffleanswers").text = str(Qiwantshuffle).lower()
-
-        # store local answernumbering policy
-        etree.SubElement(Qi, "answernumbering").text = answerNumberingFormat
-
+    def _scoring(self):
+        """ Compute the scoring.
+        """
+        Qi = self.Qi
         # est qu'il y a une bareme local cherche dans les child
         # barl = Qi.xpath("./text[@class='amc_bareme']")
         # barl = Qi.xpath("./*[@class='amc_bareme']")
@@ -457,7 +322,337 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bml['m'])*100./NRm)
 
-        # incohérente pas trop de sens en ligne car on ne peut pas cocher plusieurs cases.
+
+
+class AMCQuestionNumeric(AMCQuestion):
+    """ Convert amc numeric question into moodle numeric questions.
+
+    Remarks
+    -------
+    Exponential, base notation are not yet supported.
+    """
+
+    def _options(self):
+        pass
+
+    @staticmethod
+    def _addanswer(Qi, fraction, target, tol):
+        """ Add numeric answer from fraction, tageted value and tolerance.
+        """
+        answer = etree.SubElement(Qi, "answer", attrib={'fraction': str(fraction),
+                                                        'format': "moodle_auto_format"})
+        etree.SubElement(answer, "text").text = str(target)
+        etree.SubElement(answer, "tolerance").text = str(tol)
+
+    def _scoring(self):
+        """ Compute the scoring.
+        """
+        Qi = self.Qi
+        num_choices = Qi.find(".//note[@class='amc_numeric_choices']")
+        opts_string = num_choices.attrib['role'].split(',')
+        # define the default parameters used by AMC
+        opts = {'exact': 0, 'approx': 0, 'decimals': 0,
+                'scoreapprox': 1, 'scoreexact': 2}
+        # update it with the picked values
+        for pair in opts_string:
+            key, val = pair.split('=')
+            opts.update({key: val})
+
+        # Define the tolerance
+        # Par exemple, si decimals=2, si la bonne valeur est 3,14 et si la
+        # valeur saisie est 3,2 alors la différence entière calculée
+        # est 320-314=6, de sorte que les points scoreapprox ne sont acquis que
+        # si approx vaut 6 ou plus.
+        target = float(num_choices.text)
+
+        dec = int(opts['decimals'])
+        tol = float(opts['exact']) / 10**dec
+
+        # if no tolerance specified and float answer, add default tol
+        if not(target.is_integer()) and tol == 0:
+            tol = DEFAULT_NUMERIC_TOL * target
+
+        # good answers [x-tol; x+tol] -> scoreexact/scoreexact
+        self._addanswer(Qi, 100, target , tol)
+
+        # if approx, create partially good answers
+        if float(opts['approx']) > 0:
+            tola = float(opts['approx']) / 10**dec
+            if tol > tola:
+                print("Warning the 'approx' bound is tighter than the 'exact' bound")
+            scoreapprox = float(100*opts['scoreapprox'])/float(opts['scoreexact'])
+            # [x + tol, x + tola] -> scoreexact/scoreexact
+            self._addanswer(Qi, scoreapprox, target + tol + (tola-tol)/2, (tola-tol)/2)
+            # [x - tola, x - tol] -> scoreapprox/scoreexact
+            self._addanswer(Qi, scoreapprox, target - tol - (tola-tol)/2, (tola-tol)/2)
+
+
+# dict of all available question
+Q_FACTORY = {'amc_questionmult': AMCQuestionMult,
+             'amc_question': AMCQuestionSimple,
+             'amc_questionnumeric': AMCQuestionNumeric}
+
+
+def CreateQuestion(qtype, Qi):
+    """ Factory function for creating the Questions* objects.
+
+    Parameters
+    ----------
+    qtype : string
+        the moodle name of the question type.
+    Qi : etree.Element
+        The XML tree of the considered question.
+
+    Returns
+    -------
+    Instance of concrete Questions class.
+
+    """
+
+    try:
+        return Q_FACTORY[qtype](Qi)   # *args,**kwargs)
+    except:
+        raise KeyError(" 'qtype' argument should be in {}".format(Q_FACTORY.keys()))
+
+
+class AMCQuiz(ABC):
+    # possible numerics, open
+    def __init__(self):
+        """ Init class from an etree Element.
+        """
+        # store total number of question
+        self.Qtot = 0
+
+    def __repr__(self):
+        """ Change string representation.
+        """
+        rep = ("Instance of {} containing the question '{}'."
+               .format(self.__class__.__name__, self.name))
+        return rep
+
+    def __str__(self):
+        """ Change string representation to print the tree.
+        """
+        rep = self.__repr__()
+        s = unescape(etree.tostring(self.q, pretty_print=True,
+                                    encoding='utf8').decode('utf8'))
+        return '\n'.join((rep, s))
+
+    def _scoring(self):
+        """ Find and convert default scoring
+        """
+
+    def _category(self):
+        """ Find and convert category
+        """
+
+    def _ConvertQuestions(self):
+        """ Find and convert questions
+        """
+        for qtype in SUPPORTED_Q_TYPE:
+          Qlist = self.tree.xpath("//*[@class='%s']" % qtype)
+          for Qi in Qlist:
+              thisq = AMCQuestionSimple(Qi)
+              thisq.convert()
+        self.Qtot += len(Qlist)
+
+
+def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
+              workingdir=None, catname=None, deb=0):
+    """ Build Moodle XML file from xml file obtain with LaTeXML.
+
+    Call xslt stylesheet and complete the required xml element,
+    Compute the grade according to the amc way
+    Convert non png img into png and embedded them in the output_file
+
+    Remark : The grade are not computed exactly as in amc, see the doc.
+
+    TODO Factorize question type
+
+    Parameters
+    ----------
+    filein : string
+        Input XML file provide by LaTeXML.
+    pathin : string
+        Input directory.
+    fileout : string, optional
+        Output moodle XML file. The default is 'out.xml'.
+    pathout : string, optional
+        Output directory. The default is '.'.
+    workingdir : string, optional
+        Allow to define a working directory (temp) different from the output
+        directiory. The default is None.
+    catname : string, optional
+        Set moodle category. The default is None.
+    deb : int, optional
+        Set to 1 to store all intermediate files for debugging. The default is 0.
+
+    Returns
+    -------
+    None.
+
+    """
+
+    # Define catflag [legacy]
+    catflag = catname is not None
+
+    # define working dir
+    if workingdir is None:
+        wdir = pathin
+    else:
+        wdir = workingdir
+
+
+
+
+    # path of the file
+    # file out for debug purpose
+    filetemp0 = os.path.join(wdir, "temp0.xml")
+    filetemp1 = os.path.join(wdir, "temp1.xml")
+    filetemp2 = os.path.join(wdir, "temp2.xml")
+    filetemp = os.path.join(wdir, "temp.xml")
+
+    # path to xslt stylesheet
+    # TODO use pkgutils
+    # 1. remove namespace
+    filexslt_ns = os.path.join(os.path.dirname(__file__),
+                               "transform_ns.xslt")
+    # 2. rename AMC question to their moodle counter part
+    filexslt_qtype = os.path.join(os.path.dirname(__file__),
+                               "transform_qtype.xslt")
+    # 3. convert to html, tab, figure, equations
+    filexslt_pre = os.path.join(os.path.dirname(__file__),
+                                "transform2html.xslt")
+    # 4. remane element and finish the job
+    filexslt = os.path.join(os.path.dirname(__file__),
+                            "transform.xslt")
+
+    ##########################################################################
+    # Pré traitement
+    # on parse le fichier xml
+    # Elements are lists
+    # Elements carry attributes as a dict
+    xml = open(os.path.join(wdir, filein), 'r')
+    tree0 = etree.parse(xml)
+
+    # on supprime le namespace
+    # TODO a terme faire autrement
+    xslt_ns = open(filexslt_ns, 'r')
+    xslt_ns_tree = etree.parse(xslt_ns)
+    transform_ns = etree.XSLT(xslt_ns_tree)
+    # applique transformation
+    tree = transform_ns(tree0)
+
+    # rename generic AMC question into more specific type
+    transform_qtype = etree.XSLT(etree.parse(filexslt_qtype))
+    # apply transform
+    tree = transform_qtype(tree)
+    if (deb == 1):
+        # ecriture
+        tree.write(filetemp1, pretty_print=True, encoding="utf-8")
+
+
+    # TODO recast into AMCQuiz or question levels -> Graphics. Need probably to be done before 2html
+    # on modifie les element graphic pour gérer les chemins, le taille et la mise en forme.
+    # <graphics candidates="schema_interpL.png" graphic="schema_interpL.png" options="width=216.81pt" xml:id="g1" class="ltx_centering"/>
+    Ilist = tree.xpath(".//graphics")  # que sur attributs ici
+    # conversion des notations d'alignement
+    align = {'ltx_align_right': 'right', 'ltx_align_left': 'left',
+             'ltx_centering': 'center'}
+    # ext extension, path:chemin img, dim [width/height],size, dimension en point
+
+    for Ii in Ilist:
+        img_name = Ii.attrib['graphic']
+        ext = img_name.split('.')[-1]
+        # not all attrib are mandatory... check if they exist before using them
+        # try for class
+        if 'class' in Ii.attrib:
+            img_align = Ii.attrib['class']
+        else:
+            img_align = 'ltx_centering'  # default value center !
+        # try for option
+        if 'options' in Ii.attrib:
+            img_options = Ii.attrib['options']
+            img_size = img_options.split('=')[-1]  # il reste pt, mais cela ne semble pas poser de pb
+            img_dim = img_options.split('=')[0]
+        else:
+            img_options = ''
+            img_size = '200pt'  # TODO default, define elsewhere
+            img_dim = 'width'
+
+        img_path = os.path.dirname(os.path.normpath(os.path.join(pathin, img_name)))
+
+        name = basename(img_name)
+        # print(name, ext, img_dim, align[img_align])
+        Ii.attrib.update({'ext':ext, 'dim': img_dim, 'size': img_size,
+                          'pathF': img_path, 'align': align[img_align],
+                          'name': name})
+
+
+    # remise en forme + html + math + image + tableau
+    xslt_pre = open(filexslt_pre, 'r')
+    xslt_pre_tree = etree.parse(xslt_pre)
+    transform_pre = etree.XSLT(xslt_pre_tree)
+    # applique transformation
+    tree = transform_pre(tree)
+    if (deb == 1):
+        # ecriture
+        tree.write(filetemp2, pretty_print=True, encoding="utf-8")
+
+
+    ###########################################################################
+    # Recherche barème par défaut
+    #TODO move to AMCquiz
+    # attribut amc_baremeDefautS et amc_baremeDefautM
+    # on cherche s'il existe un barème par défaut pour question simple
+    bars = tree.xpath("//*[@class='amc_baremeDefautS']")  # que sur attributs ici
+    # bar[0].text contient la chaine de caractère
+    if len(bars) > 0:
+        # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
+        amc_bs = dict(item.split("=") for item in bars[0].text.strip().split(","))
+        print("baremeDefautS :", amc_bs)
+        if (float(amc_bs['b']) < 1):
+            print("WARNING : the grade of the good answser in question will be < 100%, put b=1")
+
+    # on cherche s'il existe un barème par défaut pour question multiple
+    barm = tree.xpath("//*[@class='amc_baremeDefautM']")
+    # bar[0].text contient la chaine de caractère
+    if len(barm) > 0:
+        # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
+        amc_bm = dict(item.split("=") for item in barm[0].text.strip().split(","))
+        print("baremeDefautM :", amc_bm)
+        if (float(amc_bm['b']) < 1):
+            print("WARNING : the grade of the good answser(s) in questionmult may be < 100%, put b=1")
+
+
+    ############################################################################
+    # Prise en compte des catégories
+    # <text>$course$/filein/amc_element_tag</text>
+    Clist = tree.xpath("//*[@class='amc_categorie']")
+    for Ci in Clist:
+        if (catflag == 1):
+            Ci.text = "$course$/"+catname.split('.')[0] + "/" + Ci.text
+        else:
+            Ci.text = "$course$/"+catname.split('.')[0]
+
+
+    ###########################################################################
+    # Application du barème dans chaque question
+    # + vérf barème locale : attribut amc_bareme
+    # on suppose que le bareme est au même niveau que des elements amc_bonne
+    # ou amc_mauvaise
+
+    # Convert all supported question type
+    # =========================================================================
+    Qtot = 0
+    for qtype in SUPPORTED_Q_TYPE:
+        Qlist = tree.xpath("//*[@class='%s']" % qtype)
+        for Qi in Qlist:
+            thisq = CreateQuestion(qtype, Qi)
+            thisq.convert()
+        Qtot += len(Qlist)
+
+
 
 
 
