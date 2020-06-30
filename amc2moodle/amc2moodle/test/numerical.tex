@@ -1,0 +1,150 @@
+\documentclass[a4paper]{article}
+%review
+
+
+%#########################################################################
+\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+%\usepackage[francais]{babel}
+%\usepackage{lmodern}
+\usepackage[hmargin=4cm, vmargin=2cm, includeheadfoot]{geometry}
+\usepackage{alltt}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage[francais,bloc,completemulti]{automultiplechoice}     % Mandatory for conversion
+\usepackage{mhchem} % needed for chemical equations
+% needed by amc to be commented for amc2moodle usage (fp is not yet supported)
+%\usepackage{fp} 
+% exemple de commande utilisateur
+\providecommand{\abs}[1]{\lvert#1\rvert}
+%#########################################################################
+% Entête
+%#########################################################################
+
+
+
+\title{Conversion test for AMC to moodle}
+\author{BN}
+
+
+
+%#########################################################################
+% Document
+%#########################################################################
+\begin{document}
+
+%
+% B A R E M E
+% e=incohérence; b=bonne; m=mauvaise; p planché (on ne descent pas en dessous)
+\baremeDefautS{e=-0.5,b=1,m=-0.5}% never put b<1,
+\baremeDefautM{e=-0.5,b=1,m=-0.25,p=-0.5}% never put b<1, with amc2moodle m correspond to the grade if all the wrong answers are ticked, b correspond to the grade if all the good answers are ticked
+
+
+
+
+%question : environnement, text question
+%element{label}{groupe} :commande, encapsule la commande pour lui donner un groupe
+%reponses : environnement
+%bonne  : commande
+%mauvaise : commande
+% B A R E M E
+% e=incohérence; b=bonne; m=mauvaise; p planché (on ne descent pas en dessous)
+%\baremeDefautS{e=-0.5,b=1,m=-0.5}
+%\baremeDefautM{e=-0.5,b=0.5,m=-0.25,p=-0.5}
+% ajouter aucune de ces réponses n'est correcte
+%\usepackage[francais,bloc,completemulti]{automultiplechoice}
+
+
+
+
+
+\element{num}{
+\begin{questionmultx}{num:int-noopts}
+Find $x$ such $2x-300=0$ ?
+$x$ is an integer, test for exact match, only.
+
+\AMCnumericChoices{150}{digits=3}
+\end{questionmultx}}
+
+\element{num}{
+\begin{questionmultx}{num:int-opts}
+Find $x$ such $2x-300=0$ ?
+$x$ is an integer, test for exact match, and partial match for $x\in [149, 150[\cup]150, 151] $.
+There is one good answer, and to partial answer with a fraction 25 \%.
+\AMCnumericChoices{150}{digits=3,sign=false,scoreexact=2,scoreapprox=0.5,approx=1}
+\end{questionmultx}}
+
+
+\element{num}{
+\begin{questionmultx}{num:float-noopts}
+Give an approximation of $\pi$
+Non additional parameter, will use the default tolerance provided in amc2moodle. Only one good answer.
+\AMCnumericChoices{3.141592653589793}{digits=6, decimals=5}
+\end{questionmultx}}
+
+
+\element{num}{
+\begin{questionmultx}{num:float-noopts1}
+Give an approximation of $\pi$
+
+Here, \texttt{exact} is 100 with 5 decimal, ie  $314159 \pm 1$, ie $x\in [3.14158,\, 3.14160]$.
+Normally only one good answer, with precribed tolerance.
+\AMCnumericChoices{3.141592653589793}{digits=6, decimals=5, exact=1}
+\end{questionmultx}}
+
+\element{num}{
+\begin{questionmultx}{num:float-noopts100}
+Give an approximation of $\pi$
+
+Here, \texttt{exact} is 1 with 5 decimal, ie   $314159 \pm 1$, ie $x\in [3.14158,\, 3.14160]$.
+
+Here, \texttt{approx} is 100 with 5 decimal, ie  $314159 \pm 100$, ie $x\in [3.14059,\, 3.14158] \cup [3.14160,\, 3.14259]$.
+
+Normally on one good answer, 2 partially good answer with a fraction 50 \%.
+
+\AMCnumericChoices{3.141592653589793}{digits=6, decimals=5, exact=1, approx=100}
+\end{questionmultx}}
+
+
+
+
+
+% #################################################################
+% C R E A T I O N  D E S  C O P I E S
+% #################################################################
+\exemplaire{1}{        % nombre de sujet différent
+
+  %debut de l'en-tête des copies :
+
+  \vspace*{.5cm}
+  \begin{minipage}{.4\linewidth}
+    \centering\large\texttt{amc2moodle}
+  \end{minipage}
+  \champnom{\fbox{
+      \begin{minipage}{.5\linewidth}
+        Nom et prénom :
+
+        \vspace*{.5cm}\dotfill
+        \vspace*{1mm}
+      \end{minipage}
+    }}
+
+  \begin{flushleft}
+    Test for numeric questions.
+    \begin{center}
+      \Large{\textsc{QCM using AMC Latex Format}}\\
+      \normalsize
+    \end{center}
+  \end{flushleft}
+
+  \cleargroup{BigGroupe}
+  \copygroup{num}{BigGroupe}
+  \restituegroupe{BigGroupe}
+}
+
+
+
+
+\end{document}

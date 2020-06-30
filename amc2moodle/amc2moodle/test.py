@@ -67,9 +67,33 @@ class TestSuite(unittest.TestCase):
 
     Before changing the reference xml file, please check they can be imported
     in [moodle sandbox](https://sandbox.moodledemo.net/login/index.php)
+
     teacher / sandbox
 
     """
+    # TODO add a list of the test to run
+
+    def test_numerical(self):
+        """ Tests if numerical questions yields reference xml file.
+        """
+        # define i/o file
+        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                              "test/numerical.tex"))
+        fileOut = os.path.abspath('./test_numerical.xml')
+        fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               "test/numerical.xml"))
+        # convert to xml
+        a2m.amc2moodle(fileInput=fileIn,
+                       fileOutput=fileOut,
+                       keepFlag=False,
+                       catname='test_num',
+                       deb=0)
+        # check it
+        equiv = check_hash(fileOut, fileRef)
+        if equiv:
+            print(' > Converted XML is identical to the ref.')
+        # self.assertTrue(equiv, 'The converted file is different from the ref.')
+
 
     def test_notikz(self):
         """ Tests if input tex (without tikz) file yields reference xml file.
