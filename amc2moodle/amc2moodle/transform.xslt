@@ -118,6 +118,9 @@
 <xsl:template match="note[@class='amc_numeric_choices']">
 </xsl:template>
 
+<xsl:template match="fraction">
+</xsl:template>
+
 <!-- template defaultgrade -->
 <xsl:template match="defaultgrade">
     <defaultgrade>
