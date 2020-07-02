@@ -65,6 +65,8 @@ amc2moodle -h
 Then on moodle, go to the course `administration\question bank\import` and choose 'moodle XML format' and tick: **If your grade are not conform to that you must use: 'Nearest grade if not listed' in import option in the moodle question bank** (see below for details).
 Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./amc2moodle/amc2moodle/test/QCM.pdf)
 
+If your original exam uses [AMC-TXT syntax](https://www.auto-multiple-choice.net/auto-multiple-choice.en/AMC-TXT.shtml), you must first convert it to LaTeX before feeding it to `amc2moodle`. To convert an AMC-TXT file to LaTeX, generate the exam documents with AMC graphical interface as usual. AMC will generate a LaTeX version of your exam called `DOC-filtered.tex` inside the project directory, which you can pass to `amc2moodle`.
+
 In the same way, conversion from **moodle XML to amc LaTeX file**, run
 ```
 moodle2amc input_XML_file.xml
