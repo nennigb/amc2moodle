@@ -28,7 +28,8 @@ from wand.image import Image as wandImage
 from xml.sax.saxutils import unescape
 
 # Define default and global
-SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric')
+SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric',
+                    'amc_questionopen')
 
 # set defaut relative tolerance for float in numerical question to 1%
 DEFAULT_NUMERIC_TOL = 1e-2
@@ -270,6 +271,8 @@ class AMCQuestionMult(AMCQuestionSimple):
         amc_bml = self.context.amc_bm
         # si il y a une bareme local, on prend celui-la
         if len(barl) > 0:
+            # TODO see if amc_bml.update(...) is more robust if only
+            # partial scoring is provided
             amc_bml = dict(item.split("=") for item in barl[0].text.strip().split(","))
             print("   local scoring :", amc_bml)
             if (float(amc_bml['b']) < 1):
@@ -381,10 +384,39 @@ class AMCQuestionNumeric(AMCQuestion):
             self._addanswer(Qi, scoreapprox, target - tol - (tola-tol)/2, (tola-tol)/2)
 
 
+class AMCQuestionOpen(AMCQuestion):
+    """ Convert amc open question into moodle essay questions.
+    """
+
+    def _options(self):
+        """ Parse options and create the required elements. 
+        """
+        Qi = self.Qi
+        amc_open = Qi.find(".//note[@class='amc_open']")
+        opts_string = amc_open.attrib['role'].split(',')
+        # define the default parameters used by AMC
+        opts = {'lines': 3}
+        # update it with the picked values
+        for pair in opts_string:
+            key, val = pair.split('=')
+            opts.update({key.strip(): val.strip()})
+        etree.SubElement(Qi, "responsefieldlines").text = str(opts['lines'])
+
+    def _scoring(self):
+        """ Compute the scoring.
+        """
+        Qi = self.Qi
+        # add  <defaultgrade>1.0000000</defaultgrade>
+        etree.SubElement(Qi, "defaultgrade").text = str(MOO_DEFAULT_GRADE)
+
+
+
+
 # dict of all available question
 Q_FACTORY = {'amc_questionmult': AMCQuestionMult,
              'amc_question': AMCQuestionSimple,
-             'amc_questionnumeric': AMCQuestionNumeric}
+             'amc_questionnumeric': AMCQuestionNumeric,
+             'amc_questionopen': AMCQuestionOpen}
 
 
 def CreateQuestion(qtype, Qi, context):
@@ -562,8 +594,6 @@ class AMCQuiz(ABC):
         print(" > {} questions converted...".format(self.Qtot))
 
 
-
-
     def _preProcessing(self):
         """ Clean up input file and create the tree.
         """
@@ -617,7 +647,7 @@ class AMCQuiz(ABC):
             print("baremeDefautM :", amc_bm)
             if (float(amc_bm['b']) < 1):
                 print("WARNING : the grade of the good answser(s) in questionmult may be < 100%, put b=1")
-            self.amc_bs.update(amc_bs)
+            self.amc_bm.update(amc_bm)
 
     def _graphics(self):
         """ Parse <graphics> to set path, size and layout.
@@ -711,7 +741,6 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
 
     Remark : The grade are not computed exactly as in amc, see the doc.
 
-    TODO Factorize question type
 
     Parameters
     ----------

@@ -223,6 +223,17 @@ Combien de fois le programme suivant affiche-t-il \texttt{"x"} ?
 \AMCnumericChoices{290}{digits=3,sign=false,scoreexact=2,scoreapprox=1,approx=10}
 \end{questionmultx}}
 
+
+
+% -----------------------------------------------------------------------------
+\element{open}{
+  \begin{question}{Essai}\label{q:Essai}   
+    Explain in few words the aim of this course.
+% It is possible to add more granularity with partially correct answer using \wrongchoice[P]{p}\scoring{0.5}
+\AMCOpen{lines=2}{    \correctchoice[OK]{OK}    \wrongchoice[F]{F}}
+  \end{question}
+}
+
 % #################################################################
 % C R E A T I O N  D E S  C O P I E S
 % #################################################################
@@ -260,8 +271,9 @@ Combien de fois le programme suivant affiche-t-il \texttt{"x"} ?
   \copygroup{english}{BigGroupe}
   \copygroup{mhchem}{BigGroupe}
   \copygroup{num}{BigGroupe}
-
-  \melangegroupe{BigGroupe}
+  \copygroup{open}{BigGroupe}
+  % not usefull for testing !
+  %\melangegroupe{BigGroupe}
   \restituegroupe{BigGroupe}
 }
 

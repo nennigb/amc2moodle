@@ -111,6 +111,9 @@ Feedback are present, in a certain way, in `automuliplechoice` with the `\explai
 
 
 ### Numerical questions
-These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` question in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported.
+These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` question in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical question, but it is not used here. 
 For question with floating point operations, **you need to comment `\usepackage{fp}` during the conversion** (required internally by AMC). If you need to realise computation in the question, prefer `\pgfmathparse` that is handled by LaTeXML.
 
+
+### Open Question
+These questions defined in AMC with `\AMCOpen` are converted into `essay` question in moodle. Only information about the number of line is pass to moodle, other option (mostly use for text formating) are skipped.

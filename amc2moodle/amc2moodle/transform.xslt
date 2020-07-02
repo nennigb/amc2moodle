@@ -76,8 +76,14 @@
 	</question>
 </xsl:template>
 
-<!--TODO Need to add other type Open, description-->
+<!--\AMCopen yields to essay question type-->
+<xsl:template match="note[@class='amc_questionopen']">
+	<question type="essay">
+	  <xsl:apply-templates />
+	</question>
+</xsl:template>
 
+<!--TODO Need to add other type like description, calculated... -->
 
 <!-- template netoyage champ globaux mise en forme-->
 <xsl:template match="para|inline-para">
@@ -117,6 +123,10 @@
 
 <xsl:template match="note[@class='amc_numeric_choices']">
 </xsl:template>
+
+<xsl:template match="note[@class='amc_open']">
+</xsl:template>
+
 
 <xsl:template match="fraction">
 </xsl:template>

@@ -44,15 +44,6 @@
 
 
 <xsl:template match="note[starts-with(@class, 'amc_question')]">
-<!--  <xsl:if test=".//note[@class='amc_numeric_choices']">-->
-<!--    <note class="amc_numerical">-->
-<!--       <xsl:attribute name="role"><xsl:value-of select="@role"/></xsl:attribute>-->
-<!--       <xsl:copy>-->
-<!--          <xsl:apply-templates select="@* | node()"/>-->
-<!--       </xsl:copy>-->
-<!--    </note>-->
-<!--  </xsl:if>-->
-  
 <xsl:choose>
   <!-- Match amc_numeric_choices and remane this question into 'numerical' -->
   <xsl:when test=".//note[@class='amc_numeric_choices']">
@@ -64,6 +55,14 @@
     </note>
   </xsl:when>
   <!--do the same for AMCopen 'amc_questionopen'-->
+  <xsl:when test=".//note[@class='amc_open']">
+    <!-- It's impossible to change parent depending of child if node are already copied, thus create a new node.-->
+    <!-- the key need to contain 'amc_question'* -->
+    <note class="amc_questionopen">
+       <xsl:attribute name="role"><xsl:value-of select="@role"/></xsl:attribute>     
+       <xsl:apply-templates/>
+    </note>
+  </xsl:when>
   <!--do the same for calculated 'amc_questioncalculated'-->
   <!--  otherwise, just copy the existing attributs and childs -->
   <xsl:otherwise>
