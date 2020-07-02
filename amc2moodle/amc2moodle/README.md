@@ -109,3 +109,8 @@ Each question is then placed in `$course$/catname/elementName`.
 ### Feedback
 Feedback are present, in a certain way, in `automuliplechoice` with the `\explain` command. This part is not yet implemented here. However it could be easy to add it at the response or question level as other fields and bypass them for real `automuliplechoice` test.
 
+
+### Numerical questions
+These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` question in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported.
+For question with floating point operations, **you need to comment `\usepackage{fp}` during the conversion** (required internally by AMC). If you need to realise computation in the question, prefer `\pgfmathparse` that is handled by LaTeXML.
+
