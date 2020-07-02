@@ -60,7 +60,8 @@ amc_bm = {'e': -1, 'b': 1, 'm': -0.5, 'p': -1}
 # valeur par défaut de la note de la question
 moo_defautgrade = 1.
 
-
+# default size for image ²
+DEFAULT_IMG_WIDTH = '200pt'
 # ======================================================================
 # Image processing utilities
 # ======================================================================
@@ -94,9 +95,9 @@ class ImageCustom:
         im.strip()
         # for (k, v) in im.artifacts.items():
         #     print(k, v)
-        print("  Conversion from {} to {}.".format(os.path.splitext(fileIn)[1],
-                                                   os.path.splitext(fileOut)[1]
-                                                   ))
+        print("   Conversion from {} to {}.".format(os.path.splitext(fileIn)[1],
+                                                    os.path.splitext(fileOut)[1]
+                                                    ))
         im.save(filename=fileOut)
         im.close()
 
@@ -153,11 +154,12 @@ class AMCQuestion(ABC):
     """ Abstract class for all questions.
     """
 
-    def __init__(self, Qi):
+    def __init__(self, Qi, context):
         """ Init class from an etree Element amc_question*.
         """
         self.Qi = Qi
         self.name = Qi.find('name/text').text
+        self.context = context
 
     def __repr__(self):
         """ Change string representation.
@@ -180,7 +182,7 @@ class AMCQuestion(ABC):
         # inclusion des images dans les questions & réponses
         Ilist = self.Qi.xpath(".//file")
         for Ii in Ilist:
-            Ii = encodeImg(Ii, pathin, wdir)
+            Ii = encodeImg(Ii, self.context.pathin, self.context.wdir)
 
     @abstractmethod
     def _scoring(self):
@@ -234,7 +236,7 @@ class AMCQuestionSimple(AMCQuestion):
         # barl = Qi.xpath("./text[@class='amc_bareme']")
         barl = Qi.xpath("bareme")
         # Par défaut on a le bareme global
-        amc_bl = amc_bs
+        amc_bl = self.context.amc_bs
         # si il y a une bareme local, on prend celui-la
         if len(barl) > 0:
             amc_bl=dict(item.split("=") for item in barl[0].text.strip().split(","))
@@ -258,11 +260,6 @@ class AMCQuestionSimple(AMCQuestion):
 class AMCQuestionMult(AMCQuestionSimple):
     """ Multiple choice question with multiple good answers.
     """
-    # def __init__(self, q):
-    #     """ Init class from an etree Element.
-    #     """
-    #     super().__init__(q)
-    #     self.qtype = 'multiplechoice'
 
     def _scoring(self):
         """ Compute the scoring.
@@ -273,11 +270,11 @@ class AMCQuestionMult(AMCQuestionSimple):
         # barl = Qi.xpath("./*[@class='amc_bareme']")
         barl = Qi.xpath("bareme")
         # Par défaut on a le bareme global
-        amc_bml = amc_bm
+        amc_bml = self.context.amc_bm
         # si il y a une bareme local, on prend celui-la
         if len(barl) > 0:
             amc_bml = dict(item.split("=") for item in barl[0].text.strip().split(","))
-            print("bareme local :", amc_bml)
+            print("   local scoring :", amc_bml)
             if (float(amc_bml['b']) < 1):
                 print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")
 
@@ -351,12 +348,12 @@ class AMCQuestionNumeric(AMCQuestion):
         num_choices = Qi.find(".//note[@class='amc_numeric_choices']")
         opts_string = num_choices.attrib['role'].split(',')
         # define the default parameters used by AMC
-        opts = {'exact': 0, 'approx': 0, 'decimals': 0,
+        opts = {'exact': 0, 'approx': 0, 'decimals': 0, 'digits': 3,
                 'scoreapprox': 1, 'scoreexact': 2}
         # update it with the picked values
         for pair in opts_string:
             key, val = pair.split('=')
-            opts.update({key: val})
+            opts.update({key.strip(): val.strip()})
 
         # Define the tolerance
         # Par exemple, si decimals=2, si la bonne valeur est 3,14 et si la
@@ -380,7 +377,7 @@ class AMCQuestionNumeric(AMCQuestion):
             tola = float(opts['approx']) / 10**dec
             if tol > tola:
                 print("Warning the 'approx' bound is tighter than the 'exact' bound")
-            scoreapprox = float(100*opts['scoreapprox'])/float(opts['scoreexact'])
+            scoreapprox = 100*float(opts['scoreapprox'])/float(opts['scoreexact'])
             # [x + tol, x + tola] -> scoreexact/scoreexact
             self._addanswer(Qi, scoreapprox, target + tol + (tola-tol)/2, (tola-tol)/2)
             # [x - tola, x - tol] -> scoreapprox/scoreexact
@@ -393,7 +390,7 @@ Q_FACTORY = {'amc_questionmult': AMCQuestionMult,
              'amc_questionnumeric': AMCQuestionNumeric}
 
 
-def CreateQuestion(qtype, Qi):
+def CreateQuestion(qtype, Qi, context):
     """ Factory function for creating the Questions* objects.
 
     Parameters
@@ -402,6 +399,8 @@ def CreateQuestion(qtype, Qi):
         the moodle name of the question type.
     Qi : etree.Element
         The XML tree of the considered question.
+    context : Context
+        The environnement variable.
 
     Returns
     -------
@@ -410,10 +409,35 @@ def CreateQuestion(qtype, Qi):
     """
 
     try:
-        return Q_FACTORY[qtype](Qi)   # *args,**kwargs)
+        return Q_FACTORY[qtype](Qi, context)
     except:
         raise KeyError(" 'qtype' argument should be in {}".format(Q_FACTORY.keys()))
 
+class Context():
+    """ Contains the context of the quizz, like path, default options.
+
+    Basically it will contains all information callected at quiz level but 
+    required in the question processing.
+
+        may be created by a AMCQuiz method...
+    """
+    def __init__(self, pathin, wdir, amc_bs, amc_bm, **options):
+        """ Init the class with mandatory options and other optional parameter.
+        """
+        # mandatory parameters
+        self.pathin = pathin
+        self.wdir = wdir
+        self.amc_bs = amc_bs
+        self.amc_bm = amc_bm
+        # encapsulate other options
+        self.__dict__.update(options)
+
+    def __str__(self):
+        """ Change string representation.
+        """
+        options = self.__dict__.__str__()
+
+        return "The context state is " + options
 
 class AMCQuiz(ABC):
     # possible numerics, open
@@ -455,6 +479,9 @@ class AMCQuiz(ABC):
               thisq = AMCQuestionSimple(Qi)
               thisq.convert()
         self.Qtot += len(Qlist)
+
+    def _exportContext(self):
+        pass
 
 
 def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
@@ -577,7 +604,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
             img_dim = img_options.split('=')[0]
         else:
             img_options = ''
-            img_size = '200pt'  # TODO default, define elsewhere
+            img_size = DEFAULT_IMG_WIDTH  # TODO default, define elsewhere
             img_dim = 'width'
 
         img_path = os.path.dirname(os.path.normpath(os.path.join(pathin, img_name)))
@@ -644,11 +671,13 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
 
     # Convert all supported question type
     # =========================================================================
+    context = Context(pathin=pathin, wdir=wdir, amc_bm=amc_bm, amc_bs=amc_bs)
     Qtot = 0
     for qtype in SUPPORTED_Q_TYPE:
         Qlist = tree.xpath("//*[@class='%s']" % qtype)
         for Qi in Qlist:
-            thisq = CreateQuestion(qtype, Qi)
+            # TODO not very clean wdir and pathin
+            thisq = CreateQuestion(qtype, Qi, context)
             thisq.convert()
         Qtot += len(Qlist)
 
