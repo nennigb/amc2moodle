@@ -234,11 +234,12 @@ class AMCQuestionSimple(AMCQuestion):
         # barl = Qi.xpath("./text[@class='amc_bareme']")
         barl = Qi.xpath("bareme")
         # Par défaut on a le bareme global
-        amc_bl = self.context.amc_bs
+        amc_bl = self.context.amc_bs.copy()
         # si il y a une bareme local, on prend celui-la
         if len(barl) > 0:
-            amc_bl=dict(item.split("=") for item in barl[0].text.strip().split(","))
-            print("bareme local :", amc_bl)
+            amc_bl_=dict(item.split("=") for item in barl[0].text.strip().split(","))
+            amc_bl.update(amc_bl_)
+            print("   local scoring:", amc_bl)
             if (float(amc_bl['b']) < 1.):
                 print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")
 
@@ -268,12 +269,13 @@ class AMCQuestionMult(AMCQuestionSimple):
         # barl = Qi.xpath("./*[@class='amc_bareme']")
         barl = Qi.xpath("bareme")
         # Par défaut on a le bareme global
-        amc_bml = self.context.amc_bm
+        amc_bml = self.context.amc_bm.copy()
         # si il y a une bareme local, on prend celui-la
         if len(barl) > 0:
             # TODO see if amc_bml.update(...) is more robust if only
             # partial scoring is provided
-            amc_bml = dict(item.split("=") for item in barl[0].text.strip().split(","))
+            amc_bml_ = dict(item.split("=") for item in barl[0].text.strip().split(","))
+            amc_bml.update(amc_bml_)
             print("   local scoring :", amc_bml)
             if (float(amc_bml['b']) < 1):
                 print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")

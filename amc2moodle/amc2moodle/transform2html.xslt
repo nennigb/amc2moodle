@@ -75,7 +75,7 @@ Changement de l'organisation des questions
 		</name>
 
         <!-- barème local -->
-       <xsl:for-each select="text[@class='amc_bareme']">
+       <xsl:for-each select=".//text[@class='amc_bareme']">
           <bareme>
                 <xsl:value-of select="text()"/>
          </bareme>
