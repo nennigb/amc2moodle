@@ -773,13 +773,11 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
         wdir = workingdir
 
     # load input latexml xml file
-    xml = open(os.path.join(wdir, filein), 'r')
-    # instanciate the Quiz object
-    quiz = AMCQuiz(xml, pathin, wdir, catname)
-    # run the conversion and save the output
-    quiz.toMoodle(os.path.join(pathout, fileout))
-    # close xml output file
-    xml.close()
+    with open(os.path.join(wdir, filein), 'r') as xml:
+        # instanciate the Quiz object
+        quiz = AMCQuiz(xml, pathin, wdir, catname)
+        # run the conversion and save the output
+        quiz.toMoodle(os.path.join(pathout, fileout))
 
 
 
