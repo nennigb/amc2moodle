@@ -230,7 +230,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # ext extension, path:chemin img, dim [width/height],size, dimension en point
 
     for Ii in Ilist:
-        img_name = Ii.attrib['candidates']
+        img_name = Ii.attrib['candidates'].split(',')[-1]   #get the last candidates
         ext = img_name.split('.')[-1]
         # not all attrib are mandatory... check if they exist before using them
         # try for class
