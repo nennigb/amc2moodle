@@ -1,5 +1,7 @@
 include LICENSE
 include README.md
+include amc2moodle/moodle2amc/README.md
+include amc2moodle/amc2moodle/README.md
 include amc2moodle/amc2moodle/bin/amc2moodle
 include amc2moodle/amc2moodle/*.xslt
 include amc2moodle/amc2moodle/*sty.ltxml
@@ -11,6 +13,9 @@ include amc2moodle/amc2moodle/test/QCM.tex
 include amc2moodle/amc2moodle/test/QCM.xml
 include amc2moodle/amc2moodle/test/QCM_wo-tikz.tex
 include amc2moodle/amc2moodle/test/QCM_wo-tikz.xml
+include amc2moodle/amc2moodle/test/tikz.tex
+include amc2moodle/amc2moodle/test/common-bank.tex
+include amc2moodle/amc2moodle/test/numerical.tex
 include amc2moodle/moodle2amc/bin/moodle2amc
 include amc2moodle/moodle2amc/html2tex.xslt
 include amc2moodle/moodle2amc/struc2tex.xslt
@@ -18,6 +23,7 @@ include amc2moodle/moodle2amc/test/automultiplechoice.sty
 include amc2moodle/moodle2amc/test/moodle-bank-exemple.xml
 include amc2moodle/moodle2amc/test/moodle-bank-exemple.tex
 include amc2moodle/moodle2amc/test/moodle-bank-exemple.pdf
+
 
 
 
