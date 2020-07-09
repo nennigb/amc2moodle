@@ -65,6 +65,7 @@
 
 <!-- font style -->
 <xsl:template match="b">\textbf{<xsl:apply-templates/>}</xsl:template>
+<xsl:template match="strong">\textbf{<xsl:apply-templates/>}</xsl:template>
 
 <xsl:template match="i">\textit{<xsl:apply-templates/>}</xsl:template>
 
