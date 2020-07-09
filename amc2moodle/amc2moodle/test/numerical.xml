@@ -8,7 +8,6 @@
 <?latexml package="graphicx"?>
 <?latexml package="automultiplechoice" options="francais,bloc,completemulti"?>
 <?latexml package="mhchem"?>
-<?latexml package="fp"?>
 <?latexml RelaxNGSchema="LaTeXML"?>
 <quiz>
   
@@ -24,7 +23,7 @@
     </p>
   
   <question type="category"><category><text>$course$/test_num/num</text></category></question>
-  <question type="numerical"><name><text>num:int_noopts</text></name><questiontext format="html"><text><![CDATA[
+  <question type="numerical"><name><text>num:int-noopts</text></name><questiontext format="html"><text><![CDATA[
     
       
         <p>Find 
@@ -40,7 +39,7 @@
     
   ]]></text></questiontext><answer format="moodle_auto_format" fraction="100"><text>150.0</text><tolerance>0.0</tolerance></answer></question>
   <question type="category"><category><text>$course$/test_num/num</text></category></question>
-  <question type="numerical"><name><text>num:int_opts</text></name><questiontext format="html"><text><![CDATA[
+  <question type="numerical"><name><text>num:int-opts</text></name><questiontext format="html"><text><![CDATA[
     
       
         <p>Find 
@@ -59,7 +58,7 @@ There is one good answer, and to partial answer with a fraction 25 %.
     
   ]]></text></questiontext><answer format="moodle_auto_format" fraction="100"><text>150.0</text><tolerance>0.0</tolerance></answer><answer format="moodle_auto_format" fraction="25.0"><text>150.5</text><tolerance>0.5</tolerance></answer><answer format="moodle_auto_format" fraction="25.0"><text>149.5</text><tolerance>0.5</tolerance></answer></question>
   <question type="category"><category><text>$course$/test_num/num</text></category></question>
-  <question type="numerical"><name><text>num:float_noopts</text></name><questiontext format="html"><text><![CDATA[
+  <question type="numerical"><name><text>num:float-noopts</text></name><questiontext format="html"><text><![CDATA[
     
       
         <p>Give an approximation of 
@@ -71,7 +70,7 @@ Non additional parameter, will use the default tolerance provided in amc2moodle.
     
   ]]></text></questiontext><answer format="moodle_auto_format" fraction="100"><text>3.141592653589793</text><tolerance>0.031415926535897934</tolerance></answer></question>
   <question type="category"><category><text>$course$/test_num/num</text></category></question>
-  <question type="numerical"><name><text>num:float_noopts1</text></name><questiontext format="html"><text><![CDATA[
+  <question type="numerical"><name><text>num:float-noopts1</text></name><questiontext format="html"><text><![CDATA[
     
       
         <p>Give an approximation of 
@@ -90,7 +89,7 @@ Normally only one good answer, with precribed tolerance.
     
   ]]></text></questiontext><answer format="moodle_auto_format" fraction="100"><text>3.141592653589793</text><tolerance>1e-05</tolerance></answer></question>
   <question type="category"><category><text>$course$/test_num/num</text></category></question>
-  <question type="numerical"><name><text>num:float_noopts100</text></name><questiontext format="html"><text><![CDATA[
+  <question type="numerical"><name><text>num:float-noopts100</text></name><questiontext format="html"><text><![CDATA[
     
       
         <p>Give an approximation of 
@@ -108,7 +107,7 @@ Normally only one good answer, with precribed tolerance.
         <p>Here, <tt>approx</tt> is 100 with 5 decimal, ie 
            \(314159\pm 100\)
     , ie 
-           \(x\in[3.14059,\,3.14259]\)
+           \(x\in[3.14059,\,3.14158]\cup[3.14160,\,3.14259]\)
     .</p>
       
       
