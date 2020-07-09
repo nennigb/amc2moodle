@@ -264,6 +264,11 @@ class AMCQuestionMult(AMCQuestionSimple):
         """ Compute the scoring.
         """
         Qi = self.Qi
+        # specific part scoring part
+        # add  <defaultgrade>1.0000000</defaultgrade>
+        etree.SubElement(Qi, "defaultgrade").text = str(MOO_DEFAULT_GRADE)
+        # add <single>false</single>
+        etree.SubElement(Qi, "single").text = 'false'
         # est qu'il y a une bareme local cherche dans les child
         # barl = Qi.xpath("./text[@class='amc_bareme']")
         # barl = Qi.xpath("./*[@class='amc_bareme']")
