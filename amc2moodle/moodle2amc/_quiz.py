@@ -103,7 +103,7 @@ class Quiz:
     def _latex_header(self):
         """ Define LaTeX header and newcommand.
         """
-
+        # TODO : select fp only if QuestionNumerical instance ?
         header_text = r"""
         \documentclass[a4paper]{article}
         % -------------------------::== package ==::---------------------------
@@ -119,6 +119,8 @@ class Quiz:
         \usepackage{tikz}
         \usepackage{hyperref}
         \usepackage{ulem} % strike text
+        % fp is needed by AMC for numerical question with float. Need to be commented for amc2moodle usage (fp is not yet supported)
+        \usepackage{fp} 
 
         % -----------------------::== newcommand ==::--------------------------
         \newcommand{\feedback}[1]{}
@@ -167,7 +169,8 @@ class Quiz:
             if number > 0:
                 group_list.append(copy_group % cat)
 
-        melange = "\\melangegroupe{allquestions}\n" + \
+        melange = "% Shuffling is commented for testing\n" + \
+                  "%\\melangegroupe{allquestions}\n" + \
                   "\\restituegroupe{allquestions}"
 
         footer_text = exemplaire_text + ''.join(group_list) + melange + '\n}' \
@@ -236,7 +239,7 @@ class Quiz:
                 else:
                     print("> Question '{}' of type '{}' is not supported. Skipping.".format(qname, qtype))
 
-        print('  done')
+        print('> done.')
 
         # add footer
         footer = self._latex_footer(cat_dict)
@@ -289,6 +292,7 @@ class Quiz:
               u"  - unicode character like euro € currency symbol  \n" + \
               "  - latex special character like '{', '_', '&', ... \n" + \
               "  - strange html tags \n" +\
+              "  - check the scoring \n" +\
               "  - ..."
         print(msg)
 

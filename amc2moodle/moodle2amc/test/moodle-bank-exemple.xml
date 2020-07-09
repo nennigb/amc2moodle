@@ -82,6 +82,18 @@
         <text></text>
       </feedback>
     </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>This a wrong <strong>strong</strong> answer.<br></p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>This a wrong <em>emphasis</em> answer.<br></p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
   </question>
 
 <!-- question: 9537  -->
@@ -205,5 +217,141 @@
     <hidden>0</hidden>
     <idnumber></idnumber>
   </question>
+  
+  
+  <!-- question: 0  -->
+  <question type="category">
+    <category>
+        <text>$course$/Défaut pour BN1/moodle2amc/num</text>
+    </category>
+  </question>
+
+  <!-- Example of numerical question  -->
+  <question type="numerical">
+    <name>
+      <text>num:int</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Find \(x\) such \(2x-300=0\) ? <br></p><p>Here \(x\) is an integer, test for <strong>exact</strong> match, only.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>150</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>
+
+  <!-- Example of numerical question  -->
+  <question type="numerical">
+    <name>
+      <text>num:float</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Give an approximated value for \(\pi\) up to 3 digits?</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>3.141592653589793</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.001</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>
+ 
+    <!-- Example of numerical question with 2 answer (usefull for feedback)  -->
+  <question type="numerical">
+    <name>
+      <text>num:2ans</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Let \(z=3+2\mathrm{i}\). What is the imaginary part ?</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>2</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0</tolerance>
+    </answer>
+    <answer fraction="0" format="moodle_auto_format">
+      <text>3</text>
+      <feedback format="html">
+        <text><![CDATA[<p>No, this is the real part</p>]]></text>
+      </feedback>
+      <tolerance>0</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>
+
+    <!-- Example of numerical question with 2 rounding levels  -->
+  <question type="numerical">
+    <name>
+      <text>num:2rounding</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Give an approximated value for \(\sqrt{2}\) up to 3 digits ?</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>1.4142135623730951</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.001</tolerance>
+    </answer>
+    <answer fraction="50" format="moodle_auto_format">
+      <text>1.4142135623730951</text>
+      <feedback format="html">
+        <text><![CDATA[<p>Be careful with rounding.</p>]]></text>
+      </feedback>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>  
+
+
 
 </quiz>
