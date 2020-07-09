@@ -33,7 +33,7 @@ import urllib
 
 
 # list of supported moodle question type for
-SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay'}
+SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay', 'description'}
 
 # possible to use several grading strategy
 GRADING_STRATEGY = 'std'  # good/wrong no specific grading
@@ -51,6 +51,7 @@ LATEX_FILEOUT = 'out.tex'
 # labels for choices in AMCOpen
 CORRECT_LABEL = 'OK'
 WRONG_LABEL = 'F'
+
 
 class Question(ABC):
     """ Define an absract class for all supported questions.
@@ -71,7 +72,6 @@ class Question(ABC):
         self.gStrategy = GRADING_STRATEGY
         # save number of svg file per question
         self.svg_id = 0
-
 
     def __repr__(self):
         """ Change string representation.
@@ -228,7 +228,9 @@ class Question(ABC):
         qtext = self.question()
         amcq.append(qtext)
         choices = self.answers()
-        amcq.append(choices)
+        # append if there is choices (eg description)
+        if choices:
+            amcq.append(choices)
 
         return amcq
 
@@ -244,7 +246,7 @@ class QuestionMultichoice(Question):
         self.q = q
         self.qtype = 'multiplechoice'
 
-    def gettype(self,):
+    def gettype(self):
         """ Determine the amc question type.
         """
         # test if question or questionmult
@@ -306,7 +308,7 @@ class QuestionEssay(Question):
         self.q = q
         self.qtype = 'essai'
 
-    def gettype(self,):
+    def gettype(self):
         """ Determine the amc question type.
         """
         amcqtype = 'question'
@@ -338,10 +340,44 @@ class QuestionEssay(Question):
         # print(etree.tostring(amc_open).decode())
         return amc_open
 
+class QuestionDescription(Question):
+    """ Description question.
+    """
+
+    def __init__(self, q):
+        """ Init class from an etree Element.
+        """
+        super().__init__(q)
+        self.q = q
+        self.qtype = 'description'
+
+    def gettype(self):
+        """ Determine the amc question type.
+        """
+        amcqtype = 'question'
+
+        return amcqtype
+
+    def answers(self):
+        """ Create and parse answers, nothing to do here.
+        """
+
+        return None
+
+    def question(self):
+        """ Get question text. Overwrite the class method.
+        """
+        # call the class method and add `\QuestionIndicative`
+        text = super().question()
+        text.text = u"\QuestionIndicative\n" + text.text
+
+        return text
+
 
 # dict of all available question
 Q_FACTORY = {'multichoice': QuestionMultichoice,
-             'essay': QuestionEssay}
+             'essay': QuestionEssay,
+             'description': QuestionDescription}
 
 def CreateQuestion(qtype, question):
     """ Factory function for creating the Questions* objects.

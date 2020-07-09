@@ -189,5 +189,21 @@
       </feedback>
     </answer>
   </question>
+ <!-- Example of description question --> 
+  <question type="description">
+    <name>
+      <text>ProblemDescription</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Provide a <strong>description</strong> of a problem that can be common to several questions. It is useful to define notation, pictures, equations \(\int_0^1 x \mathrm{d} x = 0\)...]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+  </question>
 
 </quiz>
