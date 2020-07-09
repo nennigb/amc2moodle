@@ -29,7 +29,7 @@ from xml.sax.saxutils import unescape
 
 # Define default and global
 SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric',
-                    'amc_questionopen')
+                    'amc_questionopen', 'amc_questiondescription')
 
 # set defaut relative tolerance for float in numerical question to 1%
 DEFAULT_NUMERIC_TOL = 1e-2
@@ -417,13 +417,31 @@ class AMCQuestionOpen(AMCQuestion):
         etree.SubElement(Qi, "defaultgrade").text = str(MOO_DEFAULT_GRADE)
 
 
+class AMCQuestionDescription(AMCQuestion):
+    """ Convert amc question without answer into moodle description questions.
+
+    No specific thing to define here.
+    """
+
+    def _options(self):
+        """ Parse options and create the required elements.
+        """
+        pass
+
+    def _scoring(self):
+        """ Compute the scoring.
+        """
+        pass
+
+
 
 
 # dict of all available question
 Q_FACTORY = {'amc_questionmult': AMCQuestionMult,
              'amc_question': AMCQuestionSimple,
              'amc_questionnumeric': AMCQuestionNumeric,
-             'amc_questionopen': AMCQuestionOpen}
+             'amc_questionopen': AMCQuestionOpen,
+             'amc_questiondescription': AMCQuestionDescription}
 
 
 def CreateQuestion(qtype, Qi, context):

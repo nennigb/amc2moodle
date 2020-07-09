@@ -41,7 +41,7 @@
 \baremeDefautM{e=-0.5,b=1,m=-0.25,p=-0.5}% never put b<1, with amc2moodle m correspond to the grade if all the wrong answers are ticked, b correspond to the grade if all the good answers are ticked
 
 % Include tex file containing the questions
-\include{common-bank} % cat1, cat2, english, mhchem, num, open
+\include{common-bank} % cat1, cat2, english, mhchem, num, open, desc
 \include{tikz} % tikz
 
 
@@ -77,10 +77,11 @@ Illustration of \texttt{amc2moodle} capabilities. All these questions can be con
   \copygroup{cat1}{BigGroupe}
   \copygroup{cat2}{BigGroupe}
   \copygroup{english}{BigGroupe}
-  \copygroup{tikz}{BigGroupe}
   \copygroup{mhchem}{BigGroupe}
   \copygroup{num}{BigGroupe}
   \copygroup{open}{BigGroupe}
+  \copygroup{desc}{BigGroupe}
+  \copygroup{tikz}{BigGroupe}
   % not usefull for testing !
   %\melangegroupe{BigGroupe}
   \restituegroupe{BigGroupe}

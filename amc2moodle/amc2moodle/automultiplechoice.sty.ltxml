@@ -44,6 +44,9 @@ DefConstructor('\scoringDefaultS{}',"<ltx:text class='amc_baremeDefautS'>#1</ltx
 DefConstructor('\baremeDefautM{}',"<ltx:text class='amc_baremeDefautM'>#1</ltx:text>"); #début document
 DefConstructor('\scoringDefaultM{}',"<ltx:text class='amc_baremeDefautM'>#1</ltx:text>"); #début document
 
+# Dans le cas où la question posée est juste informative et ne doit pas contribuer à la note de l'étudiant, on utilisera la commande \QuestionIndicative, comme dans l'exemple suivant :
+DefConstructor('\QuestionIndicative',"<ltx:text class='amc_bareme'>e=0,b=0,m=0,v=0</ltx:text>"); # pas testé
+
 DefConstructor('\exemplaire{}{}',"");   # on supprime la partie construction du sujet si présente
 DefConstructor('\onecopy{}{}',"");
 DefConstructor('\AMCcode{}{}',"");
@@ -62,8 +65,6 @@ DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'><ltx:inl
 DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>");
 # questionmultx is the same as questionmult, except it does not display \multiSymbole
 DefEnvironment('{questionmultx}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>");
-# Dans le cas où la question posée est juste informative et ne doit pas contribuer à la note de l'étudiant, on utilisera la commande \QuestionIndicative, comme dans l'exemple suivant :
-DefConstructor('\QuestionIndicative',"<ltx:note class='amc_bareme'>e=0,b=0,m=0</ltx:note>"); # pas testé
 
 DefEnvironment('{examcopy}[]',"");   # alternative to onecopy, # on supprime la partie construction du sujet si présente
 

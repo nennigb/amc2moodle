@@ -175,3 +175,18 @@ Combien de fois le programme suivant affiche-t-il \texttt{"x"} ?
 \AMCOpen{lines=2}{    \correctchoice[OK]{OK}    \wrongchoice[F]{F}}
   \end{question}
 }
+
+% Test for Description question
+\element{desc}{
+\begin{question}{pb-description} \QuestionIndicative
+Provide a description of a problem that can be common to several questions. It is useful to define notation, pictures
+\begin{center}
+\includegraphics[height=32pt]{4.png}
+\end{center}
+equations $\int_0^1 x \mathrm{d} x = 0$\dots. Since, it is not a \emph{real} question, the \texttt{choices} environment is not provided. In this case, the question will be converted by \texttt{amc2moodle} into moodle \texttt{description} question type.
+
+To use it in AMC, do not forget to use \texttt{QuestionIndicative} to tell AMC not to count points for this question (with a 0-point scoring).
+
+% the associated scoring is \bareme{b=0,m=0,e=0,v=0} cf AMC doc
+\end{question}
+}

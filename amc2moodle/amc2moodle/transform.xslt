@@ -83,6 +83,13 @@
 	</question>
 </xsl:template>
 
+<!--\AMCopen yields to essay question type-->
+<xsl:template match="note[@class='amc_questiondescription']">
+	<question type="description">
+	  <xsl:apply-templates />
+	</question>
+</xsl:template>
+
 <!--TODO Need to add other type like description, calculated... -->
 
 <!-- template netoyage champ globaux mise en forme-->

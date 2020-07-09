@@ -63,6 +63,16 @@
        <xsl:apply-templates/>
     </note>
   </xsl:when>
+  <!--do the same for 'amc_questiondescription'
+  'choices' is removed in all case. Should test for amc_bonne, amc_mauvaise, amc_numeric_choices -->
+  <xsl:when test="not(.//note[starts-with(@class, 'amc_bonne')]) and not(.//note[starts-with(@class, 'amc_mauvaise')]) and not(.//note[starts-with(@class, 'amc_numeric_choices')])">
+    <!-- It's impossible to change parent depending of child if node are already copied, thus create a new node.-->
+    <!-- the key need to contain 'amc_question'* -->
+    <note class="amc_questiondescription">
+       <xsl:attribute name="role"><xsl:value-of select="@role"/></xsl:attribute>
+       <xsl:apply-templates/>
+    </note>
+  </xsl:when>
   <!--do the same for calculated 'amc_questioncalculated'-->
   <!--  otherwise, just copy the existing attributs and childs -->
   <xsl:otherwise>
