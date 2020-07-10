@@ -63,30 +63,34 @@
 
 
 <!-- template Question, questionmult-->
-<xsl:template match="note[starts-with(@class, 'amc_question') and not(.//note[@class='amc_numeric_choices'])]">
+<xsl:template match="note[@class='amc_question' or @class='amc_questionmult']">
 	<question type="multichoice">
-	<xsl:if test="@class='amc_question'">
-		<single>true</single>  <!-- une seule case à cocher -->
-	</xsl:if>
-	<xsl:if test="@class='amc_questionmult'">
-		<single>false</single>  <!-- plusieurs cases à cocher -->
-	</xsl:if>
 		<xsl:apply-templates />
 	</question>
 </xsl:template>
 
 <!-- \AMCnumericChoices yields to numerical question type -->
-<xsl:template match="note[@class='amc_questionmult' and .//note[@class='amc_numeric_choices']]">
+<xsl:template match="note[@class='amc_questionnumeric']">
 	<question type="numerical">
-          <answer fraction="100">
-            <text>
-              <xsl:value-of select=".//note[@class='amc_numeric_choices']"/>
-            </text>
-          </answer>
 	  <xsl:apply-templates />
 	</question>
 </xsl:template>
 
+<!--\AMCopen yields to essay question type-->
+<xsl:template match="note[@class='amc_questionopen']">
+	<question type="essay">
+	  <xsl:apply-templates />
+	</question>
+</xsl:template>
+
+<!--\AMCopen yields to essay question type-->
+<xsl:template match="note[@class='amc_questiondescription']">
+	<question type="description">
+	  <xsl:apply-templates />
+	</question>
+</xsl:template>
+
+<!--TODO Need to add other type like description, calculated... -->
 
 <!-- template netoyage champ globaux mise en forme-->
 <xsl:template match="para|inline-para">
@@ -125,6 +129,13 @@
 </xsl:template>
 
 <xsl:template match="note[@class='amc_numeric_choices']">
+</xsl:template>
+
+<xsl:template match="note[@class='amc_open']">
+</xsl:template>
+
+
+<xsl:template match="fraction">
 </xsl:template>
 
 <!-- template defaultgrade -->
