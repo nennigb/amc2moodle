@@ -204,6 +204,154 @@ class AMCQuestion(ABC):
 class AMCQuestionSimple(AMCQuestion):
     """ Multiple choice question with single good answer.
     """
+    # Simple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
+    amc_bs = {'e': -1, 'b': 1, 'm': -0.5}
+    # Multiple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
+    amc_bm = {'e': -1, 'b': 1, 'm': -0.5, 'p': -1}
+    # valeur par défaut de la note de la question
+    moo_defautgrade = 1.
+
+    # file out for debug purpose
+    filetemp0 = os.path.join(wdir, "temp0.xml")
+    filetemp = os.path.join(wdir, "temp.xml")
+
+    # path of the file
+
+    # path to xslt stylesheet
+    # TODO use pkgutils
+    # 1. remove namespace
+    filexslt_ns = os.path.join(os.path.dirname(__file__),
+                               "transform_ns.xslt")
+    # 2. convert to html, tab, figure, equations
+    filexslt_pre = os.path.join(os.path.dirname(__file__),
+                                "transform2html.xslt")
+    # 3. remane element and finish the job
+    filexslt = os.path.join(os.path.dirname(__file__),
+                            "transform.xslt")
+
+    ##########################################################################
+    # Pré traitement
+    # on parse le fichier xml
+    # Elements are lists
+    # Elements carry attributes as a dict
+    xml = open(os.path.join(wdir, filein), 'r')
+    tree0 = etree.parse(xml)
+
+    # on supprime le namespace
+    # TODO a terme faire autrement
+    xslt_ns = open(filexslt_ns, 'r')
+    xslt_ns_tree = etree.parse(xslt_ns)
+    transform_ns = etree.XSLT(xslt_ns_tree)
+    # applique transformation
+    tree = transform_ns(tree0)
+    # on modifie les element graphic pour gérer les chemins, le taille et la mise en forme.
+    # <graphics candidates="schema_interpL.png" graphic="schema_interpL.png" options="width=216.81pt" xml:id="g1" class="ltx_centering"/>
+    Ilist = tree.xpath(".//graphics")  # que sur attributs ici
+    # conversion des notations d'alignement
+    align = {'ltx_align_right': 'right', 'ltx_align_left': 'left',
+             'ltx_centering': 'center'}
+    # ext extension, path:chemin img, dim [width/height],size, dimension en point
+
+    for Ii in Ilist:
+        img_name = Ii.attrib['candidates']
+        ext = img_name.split('.')[-1]
+        # not all attrib are mandatory... check if they exist before using them
+        # try for class
+        if 'class' in Ii.attrib:
+            img_align = Ii.attrib['class']
+        else:
+            img_align = 'ltx_centering'  # default value center !
+        # try for option
+        if 'options' in Ii.attrib:
+            img_options = Ii.attrib['options']
+            img_size = img_options.split('=')[-1]  # il reste pt, mais cela ne semble pas poser de pb
+            img_dim = img_options.split('=')[0]
+        else:
+            img_options = ''
+            img_size = '200pt'
+            img_dim = 'width'
+
+        img_path = os.path.dirname(os.path.normpath(os.path.join(pathin, img_name)))
+
+        name = basename(img_name)
+        # print(name, ext, img_dim, align[img_align])
+        Ii.attrib.update({'ext':ext, 'dim': img_dim, 'size': img_size,
+                          'pathF': img_path, 'align': align[img_align],
+                          'name': name})
+
+    # path
+    # ext
+    # dim = width or height
+    # size :
+    # width options="height=216.81pt"
+    # alig <-> class
+
+    # remise en forme + html + math + image + tableau
+    xslt_pre = open(filexslt_pre, 'r')
+    xslt_pre_tree = etree.parse(xslt_pre)
+    transform_pre = etree.XSLT(xslt_pre_tree)
+    # applique transformation
+    tree = transform_pre(tree)
+    if (deb == 1):
+        # ecriture
+        tree.write(filetemp0, pretty_print=True, encoding="utf-8")
+
+
+    ###########################################################################
+    # Recherche barème par défaut
+    # attribut amc_baremeDefautS et amc_baremeDefautM
+    # on cherche s'il existe un barème par défaut pour question simple
+    bars = tree.xpath("//*[@class='amc_baremeDefautS']")  # que sur attributs ici
+    # bar[0].text contient la chaine de caractère
+    if len(bars) > 0:
+        # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
+        amc_bs = dict(item.split("=") for item in bars[0].text.strip().split(","))
+        print("baremeDefautS :", amc_bs)
+        if (float(amc_bs['b']) < 1):
+            print("WARNING : the grade the good answser in question will be < 100%, put b=1")
+
+    # on cherche s'il existe un barème par défaut pour question multiple
+    barm = tree.xpath("//*[@class='amc_baremeDefautM']")
+    # bar[0].text contient la chaine de caractère
+    if len(barm) > 0:
+        # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
+        amc_bm = dict(item.split("=") for item in barm[0].text.strip().split(","))
+        print("baremeDefautM :", amc_bm)
+        if (float(amc_bm['b']) < 1):
+            print("WARNING : the grade of the good answser(s) in questionmult may be < 100%, put b=1")
+
+
+    ############################################################################
+    # Prise en compte des catégories
+    # <text>$course$/filein/amc_element_tag</text>
+    Clist = tree.xpath("//*[@class='amc_categorie']")
+    for Ci in Clist:
+        if (catflag == 1):
+            Ci.text = "$course$/"+catname.split('.')[0] + "/" + Ci.text
+        else:
+            Ci.text = "$course$/"+catname.split('.')[0]
+
+
+    ###########################################################################
+    # Application du barème dans chaque question
+    # + vérf barème locale : attribut amc_bareme
+    # on suppose que le bareme est au même niveau que des elements amc_bonne
+    # ou amc_mauvaise
+
+    # Question simple
+    # =========================================================================
+    #Qlist = tree.xpath("//text[@class='amc_question']")
+    Qlist = tree.xpath("//*[@class='amc_question']")
+    # calcul nombre de questions total
+    Qtot = len(Qlist)
+    for Qi in Qlist:
+        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
+        etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
+
+        # inclusion des images dans les questions & réponses
+        Ilist = Qi.xpath(".//file")
+        for Ii in Ilist:
+            Ii = encodeImg(Ii, pathin, wdir)
 
     def _options(self):
         """ Manage options at question levels.
