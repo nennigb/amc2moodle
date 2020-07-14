@@ -89,12 +89,12 @@ moo_defautgrade = 1.
 ```
 This value can be changed (as in AMC) with the tex command
 ```
-\baremeDefautS{e=-0.5,b=1,m=-0.5}         % never put b<1,
-\baremeDefautM{e=-0.5,b=1,m=-0.25,p=-0.5} % never put b<1,
+\baremeDefautS{e=-0.5,b=1,m=-0.5}         % never put b!=1,
+\baremeDefautM{e=-0.5,b=1,m=-0.25,p=-0.5} % never put b!=1,
 ```
 or at the question level with the tex command `\bareme`.
-The grade $g_i$ in % is then computed as
-$g_i = 100  c_i / N_i$ where $i$ stand for the good or the wrong answer. Here, $N_i$ is the total number of the good or the wrong answer and $c_i$ the coefficient (m, b, ...). It important to set b=1 to get 100% if all the good answers are found. The e parameter is not used here, because it is not possible to tick 2 answers in moodle for one-answer-question. The only case where incoherent can be used is if the ``_there isn't any correct answer_'' answer is ticked with another question but it is not implemented.
+The grade `g_i` in % is then computed as
+`g_i = 100  c_i / N_i` where `i` stand for the good or the wrong answer. Here, `N_i` is the total number of the good or the wrong answer and `c_i` the coefficient (m, b, ...). It important to set b=1 to get 100% if all the good answers are found. The e parameter is not used here, because it is not possible to tick 2 answers in moodle for one-answer-question. The only case where incoherent can be used is if the ``_there isn't any correct answer_'' answer is ticked with another question but it is not implemented.
 For instance if `m=-0.5` and `b=1`, a student who ticks all the wrong answers get -0.5, a student who ticks all the good answer get  1 and student who ticks all the boxes get 0.5.
 
 Another difference is that moodle 3 use tabulated grades like: 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10 and their multiple. **If your grade are not conform to that you must use: 'Nearest grade if not listed' in import option in the moodle question bank**. But check at least that the sum of good answer give 100% !
@@ -109,3 +109,16 @@ Each question is then placed in `$course$/catname/elementName`.
 ### Feedback
 Feedback are present, in a certain way, in `automuliplechoice` with the `\explain` command. This part is not yet implemented here. However it could be easy to add it at the response or question level as other fields and bypass them for real `automuliplechoice` test.
 
+
+### Numerical questions
+These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` question in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical question, but it is not used here. 
+For question with floating point operations, **you need to comment `\usepackage{fp}` during the conversion** (required internally by AMC). If you need to realise computation in the question, prefer `\pgfmathparse` that is handled by LaTeXML.
+
+
+### Open Question
+These questions defined in AMC with `\AMCOpen` are converted into `essay` question in moodle. Only information about the number of line is pass to moodle, other option (mostly use for text formating) are skipped.
+
+### Description
+Provide a description of a problem that can be common to several questions. It is useful to define notation, pictures, equations. Since, it is not a *real* question, the `choices` environment is not provided. In this case, the question will be converted by `amc2moodle` into moodle `description` question type.
+To use it in AMC, do not forget to use `\QuestionIndicative` to tell AMC not to count points for this question (with a 0-point scoring).
+> In AMC it is also possible to use `element` content to do share text between questions of the same group, but it will be ignored by `amc2moodle` (too open to parse it).

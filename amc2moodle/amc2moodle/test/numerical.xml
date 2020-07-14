@@ -1,0 +1,119 @@
+<?latexml class="article" options="a4paper"?>
+<?latexml package="inputenc" options="utf8"?>
+<?latexml package="geometry" options="hmargin=4cm,vmargin=2cm,includeheadfoot"?>
+<?latexml package="alltt"?>
+<?latexml package="multicol"?>
+<?latexml package="amsmath,amssymb"?>
+<?latexml package="color"?>
+<?latexml package="graphicx"?>
+<?latexml package="automultiplechoice" options="francais,bloc,completemulti"?>
+<?latexml package="mhchem"?>
+<?latexml RelaxNGSchema="LaTeXML"?>
+<quiz>
+  
+  
+  <!--Conversion test for AMC to moodle-->
+  <!--
+    BN
+  -->
+  
+    <p>
+      
+      
+    </p>
+  
+  <question type="category"><category><text>$course$/test_num/num</text></category></question>
+  <question type="numerical"><name><text>num:int-noopts</text></name><questiontext format="html"><text><![CDATA[
+    
+      
+        <p>Find 
+           \(x\)
+     such 
+           \(2x-300=0\)
+     ?
+
+           \(x\)
+     is an integer, test for exact match, only.</p>
+      
+      
+    
+  ]]></text></questiontext><answer format="moodle_auto_format" fraction="100"><text>150.0</text><tolerance>0.0</tolerance></answer></question>
+  <question type="category"><category><text>$course$/test_num/num</text></category></question>
+  <question type="numerical"><name><text>num:int-opts</text></name><questiontext format="html"><text><![CDATA[
+    
+      
+        <p>Find 
+           \(x\)
+     such 
+           \(2x-300=0\)
+     ?
+
+           \(x\)
+     is an integer, test for exact match, and partial match for 
+           \(x\in[149,150[\cup]150,151]\)
+    .
+There is one good answer, and to partial answer with a fraction 25 %.
+</p>
+      
+    
+  ]]></text></questiontext><answer format="moodle_auto_format" fraction="100"><text>150.0</text><tolerance>0.0</tolerance></answer><answer format="moodle_auto_format" fraction="25.0"><text>150.5</text><tolerance>0.5</tolerance></answer><answer format="moodle_auto_format" fraction="25.0"><text>149.5</text><tolerance>0.5</tolerance></answer></question>
+  <question type="category"><category><text>$course$/test_num/num</text></category></question>
+  <question type="numerical"><name><text>num:float-noopts</text></name><questiontext format="html"><text><![CDATA[
+    
+      
+        <p>Give an approximation of 
+           \(\pi\)
+    
+Non additional parameter, will use the default tolerance provided in amc2moodle. Only one good answer.
+</p>
+      
+    
+  ]]></text></questiontext><answer format="moodle_auto_format" fraction="100"><text>3.141592653589793</text><tolerance>0.031415926535897934</tolerance></answer></question>
+  <question type="category"><category><text>$course$/test_num/num</text></category></question>
+  <question type="numerical"><name><text>num:float-noopts1</text></name><questiontext format="html"><text><![CDATA[
+    
+      
+        <p>Give an approximation of 
+           \(\pi\)
+    </p>
+      
+      
+        <p>Here, <tt>exact</tt> is 100 with 5 decimal, ie 
+           \(314159\pm 1\)
+    , ie 
+           \(x\in[3.14158,\,3.14160]\)
+    .
+Normally only one good answer, with precribed tolerance.
+</p>
+      
+    
+  ]]></text></questiontext><answer format="moodle_auto_format" fraction="100"><text>3.141592653589793</text><tolerance>1e-05</tolerance></answer></question>
+  <question type="category"><category><text>$course$/test_num/num</text></category></question>
+  <question type="numerical"><name><text>num:float-noopts100</text></name><questiontext format="html"><text><![CDATA[
+    
+      
+        <p>Give an approximation of 
+           \(\pi\)
+    </p>
+      
+      
+        <p>Here, <tt>exact</tt> is 1 with 5 decimal, ie 
+           \(314159\pm 1\)
+    , ie 
+           \(x\in[3.14158,\,3.14160]\)
+    .</p>
+      
+      
+        <p>Here, <tt>approx</tt> is 100 with 5 decimal, ie 
+           \(314159\pm 100\)
+    , ie 
+           \(x\in[3.14059,\,3.14158]\cup[3.14160,\,3.14259]\)
+    .</p>
+      
+      
+        <p>Normally on one good answer, 2 partially good answer with a fraction 50 %.</p>
+      
+      
+    
+  ]]></text></questiontext><answer format="moodle_auto_format" fraction="100"><text>3.141592653589793</text><tolerance>1e-05</tolerance></answer><answer format="moodle_auto_format" fraction="50.0"><text>3.142097653589793</text><tolerance>0.000495</tolerance></answer><answer format="moodle_auto_format" fraction="50.0"><text>3.141087653589793</text><tolerance>0.000495</tolerance></answer></question>
+</quiz>
