@@ -12,6 +12,8 @@
 \usepackage{tikz}
 \usepackage{hyperref}
 \usepackage{ulem} % strike text
+% fp is needed by AMC for numerical question with float. Need to be commented for amc2moodle usage (fp is not yet supported)
+\usepackage{fp} 
 
 % -----------------------::== newcommand ==::--------------------------
 \newcommand{\feedback}[1]{}
@@ -39,7 +41,7 @@ flush left text
 \end{flushright}
 In moodle editor, there is also \textsubscript{exponent} and \textsuperscript{indice} and \sout{that}and svg file \includegraphics[width=100px]{./Figures/dessin.png} 
   \begin{choices}
-	    \correctchoice{This is the good \underline{underlined} answer.}    \wrongchoice{This is one \textit{italic} wrong answer.}    \wrongchoice{This a wrong \textbf{bold} answer.}
+	    \correctchoice{This is the good \underline{underlined} answer.}    \wrongchoice{This is one \textit{italic} wrong answer.}    \wrongchoice{This a wrong \textbf{bold} answer.}    \wrongchoice{This a wrong \textbf{strong} answer.}    \wrongchoice{This a wrong \emph{emphasis} answer.}
   \end{choices}
 
   \end{question}
@@ -96,6 +98,54 @@ sys2 & 2 kg & - & 1.5 m\\
   \end{question}
 }
 
+% -----------------------------------------------------------------------------
+\element{Défaut pour BN1-moodle2amc}{
+  \begin{question}{ProblemDescription}\label{q:ProblemDescription}   
+    \QuestionIndicative
+Provide a \textbf{description} of a problem that can be common to several questions. It is useful to define notation, pictures, equations \(\int_0^1 x \mathrm{d} x = 0\)...
+  \end{question}
+}
+
+% -----------------------------------------------------------------------------
+\element{Défaut pour BN1-moodle2amc-num}{
+  \begin{questionmultx}{num:int}\label{q:num:int}   
+    Find \(x\) such \(2x-300=0\) ? Here \(x\) is an integer, test for \textbf{exact} match, only.
+% need \usepackage{fp} for floatting point computation 
+\AMCnumericChoices{150}{sign = false, exact = 0, digits = 3, decimals = 0, scoreexact = 1}   
+
+  \end{questionmultx}
+}
+
+% -----------------------------------------------------------------------------
+\element{Défaut pour BN1-moodle2amc-num}{
+  \begin{questionmultx}{num:float}\label{q:num:float}   
+    Give an approximated value for \(\pi\) up to 3 digits?
+% need \usepackage{fp} for floatting point computation 
+\AMCnumericChoices{3.141592653589793}{sign = false, exact = 1, digits = 4, decimals = 3, scoreexact = 1}   
+
+  \end{questionmultx}
+}
+
+% -----------------------------------------------------------------------------
+\element{Défaut pour BN1-moodle2amc-num}{
+  \begin{questionmultx}{num:2ans}\label{q:num:2ans}   
+    Let \(z=3+2\mathrm{i}\). What is the imaginary part ?
+% need \usepackage{fp} for floatting point computation 
+\AMCnumericChoices{2}{sign = false, exact = 0, digits = 1, decimals = 0, scoreexact = 1}   
+
+  \end{questionmultx}
+}
+
+% -----------------------------------------------------------------------------
+\element{Défaut pour BN1-moodle2amc-num}{
+  \begin{questionmultx}{num:2rounding}\label{q:num:2rounding}   
+    Give an approximated value for \(\sqrt{2}\) up to 3 digits ?
+% need \usepackage{fp} for floatting point computation 
+\AMCnumericChoices{1.4142135623730951}{scoreapprox = 0.5, digits = 4, sign = false, decimals = 3, approx = 100, exact = 1, scoreexact = 1}   
+
+  \end{questionmultx}
+}
+
 % ============================================================================
 \exemplaire{1}{    	% nombre de sujet différent
 
@@ -121,7 +171,9 @@ Nom et prénom :
 % mélange et catégorie (groupe dans ACM)
 \cleargroup{allquestions}
 \copygroup{Défaut pour BN1-moodle2amc}{allquestions}
-\melangegroupe{allquestions}
+\copygroup{Défaut pour BN1-moodle2amc-num}{allquestions}
+% Shuffling is commented for testing
+%\melangegroupe{allquestions}
 \restituegroupe{allquestions}
 }
 \end{document}

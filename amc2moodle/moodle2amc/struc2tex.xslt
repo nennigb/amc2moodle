@@ -70,6 +70,11 @@
     </xsl:choose>    
 </xsl:template>
 
+<xsl:template match="AMCnumericChoices">
+% need \usepackage{fp} for floatting point computation 
+\AMCnumericChoices{<xsl:value-of select = "@target"/>}{<xsl:value-of select = "text()"/>}   
+</xsl:template>
+
 <!-- template for header/footer -->
 <xsl:template match="header"> 
   <xsl:value-of select="text()"/>

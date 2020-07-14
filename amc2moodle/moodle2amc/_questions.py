@@ -19,8 +19,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-__all__ = ['Question', 'QuestionMultichoice', 'CreateQuestion',
-           'SUPPORTED_QUESTION_TYPE']
+__all__ = ['Question', 'QuestionMultichoice',
+           'QuestionEssay', 'QuestionDescription',
+           'QuestionNumerical',
+           'SUPPORTED_QUESTION_TYPE', 'CreateQuestion']
 
 from lxml import etree
 from xml.sax.saxutils import unescape
@@ -30,10 +32,12 @@ from abc import ABC, abstractmethod
 from wand.image import Image
 # decode filemame unsed in moodle
 import urllib
+import math
+import sys
 
 
 # list of supported moodle question type for
-SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay'}
+SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay', 'description', 'numerical'}
 
 # possible to use several grading strategy
 GRADING_STRATEGY = 'std'  # good/wrong no specific grading
@@ -51,6 +55,14 @@ LATEX_FILEOUT = 'out.tex'
 # labels for choices in AMCOpen
 CORRECT_LABEL = 'OK'
 WRONG_LABEL = 'F'
+
+# Default parameters for numerical Questions
+DECIMAL = 0      # minimal number of decimal
+SIGN = False     # use sign in AMC
+DIGIT = 1        # minimal number of digit
+SCOREEXACT = 1   # default grade in AMC is 2, 1 in moodle
+EPS = 10*sys.float_info.epsilon  # float precision to avoid log singularity
+
 
 class Question(ABC):
     """ Define an absract class for all supported questions.
@@ -71,7 +83,6 @@ class Question(ABC):
         self.gStrategy = GRADING_STRATEGY
         # save number of svg file per question
         self.svg_id = 0
-
 
     def __repr__(self):
         """ Change string representation.
@@ -228,7 +239,9 @@ class Question(ABC):
         qtext = self.question()
         amcq.append(qtext)
         choices = self.answers()
-        amcq.append(choices)
+        # append if there is choices (eg description)
+        if choices != None:
+            amcq.append(choices)
 
         return amcq
 
@@ -244,7 +257,7 @@ class QuestionMultichoice(Question):
         self.q = q
         self.qtype = 'multiplechoice'
 
-    def gettype(self,):
+    def gettype(self):
         """ Determine the amc question type.
         """
         # test if question or questionmult
@@ -306,7 +319,7 @@ class QuestionEssay(Question):
         self.q = q
         self.qtype = 'essai'
 
-    def gettype(self,):
+    def gettype(self):
         """ Determine the amc question type.
         """
         amcqtype = 'question'
@@ -338,10 +351,149 @@ class QuestionEssay(Question):
         # print(etree.tostring(amc_open).decode())
         return amc_open
 
+class QuestionNumerical(Question):
+    """ Multiple choice question (question or questionmult).
+
+    Whereas Moodle, AMC does not support multiple answer for numerical 
+    questions, excepted to
+        - yield different grade if the rounding is too loose
+    The following behaviors are ignored:
+        - catch classical wrong answer for feedback
+        - support for multiple solution to a problem eg. modulo 2pi
+    The unit handling is not supported.
+    """
+
+    def __init__(self, q):
+        """ Init class from an etree Element.
+        """
+        super().__init__(q)
+        self.q = q
+        self.qtype = 'numerical'
+
+    def gettype(self):
+        """ Determine the amc question type.
+        """
+        # test if question or questionmult
+        amcqtype = 'questionmultx'
+
+
+        return amcqtype
+
+    def answers(self):
+        """ Create and parse answers. 
+        """
+        # eg: \AMCnumericChoices{3.141592653589793}{digits=6, decimals=5, sign=true}
+        amc_choices = etree.Element('AMCnumericChoices')
+
+        # Check if there is several answers
+        ans_list = self.q.findall(".//answer")
+        if len(ans_list) > 1:
+            print('  Warning: multiple answers in the moodle question. ')
+
+        # Process the 1st good answer
+        ok_list = self.q.findall(".//answer[@fraction='100']")
+        if len(ok_list) != 1:
+            print('  Warning: Multiple good answer. Take only the first one.')
+        else:
+            ans = ok_list[0]
+            # get and cast the target
+            target = float(ans.find('text').text)
+            if target.is_integer():
+                target = int(target)
+            tolerance = float(ans.find('tolerance').text)
+            # Get sign, if positive use default SIGN
+            if target < 0:
+                sign = True
+            else:
+                sign = SIGN
+            # Estimate required the number of digit for floor(target)
+            digits = max(DIGIT,
+                         math.ceil(math.log10(abs(target))))
+            # Estimate the requiered number of decimal from tolerance
+            # if decimals > 0, need \usepackage{fp} in AMC
+            if abs(tolerance) > EPS:
+                decimals = abs(min(-DECIMAL,
+                                   math.floor(math.log10(abs(tolerance)))))
+            else:
+                decimals = 0
+            # Compute AMC tolerance for exact solution
+            exact = round(tolerance*(10**decimals))
+            # Populate the tree
+            attrib = {'exact': exact,
+                      'decimals': decimals,
+                      'digits': digits + decimals,
+                      'sign': str(sign).lower(),
+                      'scoreexact': SCOREEXACT}
+            # Check for looser bounds and update attrib if needed
+            for a in ans_list:
+                t = float(a.find('text').text)
+                f = float(a.attrib['fraction'])
+                if (a is not(ans)) and (f > 0) and (abs(t-target) < EPS):
+                    print('  Detect two identical targets. ',
+                          'Try to generate approx scoring..')
+                    tolerance_approx = float(a.find('tolerance').text)
+                    scoreapprox = f*SCOREEXACT/100
+                    approx = round(tolerance_approx*(10**decimals))
+                    attrib.update({'scoreapprox': scoreapprox,
+                                   'approx': approx})
+
+            # Prepare the latex rendering
+            amc_choices.text = self._render_dict(attrib)
+            amc_choices.attrib['target'] = str(target)
+
+        return amc_choices
+
+
+    @staticmethod
+    def _render_dict(d):
+        """ Convert a dict in key=val, key=val, ...
+        """
+        out_=''
+        for item in d.items():
+            pair = '{} = {}, '.format(str(item[0]).strip("'"), str(item[1]).strip("'"))
+            out_ += pair
+        out = out_[0:-2]
+        return out
+
+class QuestionDescription(Question):
+    """ Description question.
+    """
+
+    def __init__(self, q):
+        """ Init class from an etree Element.
+        """
+        super().__init__(q)
+        self.q = q
+        self.qtype = 'description'
+
+    def gettype(self):
+        """ Determine the amc question type.
+        """
+        amcqtype = 'question'
+
+        return amcqtype
+
+    def answers(self):
+        """ Create and parse answers, nothing to do here.
+        """
+
+        return None
+
+    def question(self):
+        """ Get question text. Overwrite the class method.
+        """
+        # call the class method and add `\QuestionIndicative`
+        text = super().question()
+        text.text = u"\QuestionIndicative\n" + text.text
+
+        return text
+
 
 # dict of all available question
 Q_FACTORY = {'multichoice': QuestionMultichoice,
-             'essay': QuestionEssay}
+             'essay': QuestionEssay,
+             'description': QuestionDescription,
+             'numerical': QuestionNumerical}
 
 def CreateQuestion(qtype, question):
     """ Factory function for creating the Questions* objects.
