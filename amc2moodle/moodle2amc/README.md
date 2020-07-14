@@ -31,6 +31,8 @@ quiz.convert(fileOut)
 
   - Convert **Multichoices** moodle question, with single or multiple answers
   - Convert **Essay** moodle question into `\AMCOpen`
+  - Convert **Description** moodle question into AMC question without `choices` and marked as `\QuestionIndicative`
+  - Convert **Numerical** moodle question into AMC question. Moodle can handle several targets with a tolerance, but **AMC support only one target with two accuracy levels** : `exact` with a tight tolerance and `approx` with looser tolerance. It means that only one answer will be mapped (see examples). 
   - Convert basic html text formating, image, LaTeX equation, embbeded svg and basic table to LaTeX
   - Recover moodle category in your latex file. The _category_ names are map into _groups_, defined with the environnements `\element{}{}`. In AMC _groups_ can be used to pick or randomize questions just like in moodle.
   - Use the output latex file into AMC to finalize your exam or use the joined `automultiplechoice.sty` file to compile AMC draft file
