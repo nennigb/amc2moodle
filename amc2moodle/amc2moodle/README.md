@@ -28,7 +28,7 @@ a2m.amc2moodle(fileInput=fileIn,
 
 Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf)
 
-  -  Convert `question` and `questionmult` environments.
+  -  Convert `question`, `questionmult` and `questionmultx` environments.
   -  You don't need to remove questionnaires part `\exemplaire` or `\onecopy`. But if this part contains undefined commands, remove/comment it!
   -  Put in-line equations like $x^2$ or use equation environment (or $$ delimiters). For the moment eqnarray  or the amsmath environments multline, align are not supported. The choice have been made to keep equation in tex and use mathjax filter of moodle for rendering. In my opinion, it is better for modifying question after importation.
   -  Include image, in all format supported by `Wand`. `amc2moodle`  will convert it in .png for moodle export. The image will be embedded as text (base64) in the output xml file. The folder is '/' in moodle. The image can be in an another folder than the tex file.
@@ -37,9 +37,11 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use enumerate and itemize (but without the tag `\item[tag]`)
   -  Automatically add an answer like *there is no good answer* if there is no good answer.
   -  Like in auto-multiple-choice, all answers are Shuffled by default, you can keep answers ordered by using `\begin{choices}[o]` or `\begin{responses}[o]`.
-  -  Use `\AMCnumericChoices` to create numerical question. (This only works with plain numbers, not computed results, and approximate answers are not supported.)
+  -  Use `\AMCnumericChoices` to create moodle `numerical` question.
+  -  Use `\AMCOpen` to create moodle `essay` question.
+  -  Use `\QuestionIndicative` to create moodle `description` question.
   -  Use user's command defined in the LaTeX file.
-  -  Use `\usepackage[utf8]{inputenc}`   for accents
+  -  Use `\usepackage[utf8]{inputenc}` for accents
   -  Use packages that are supported by `LaTeXML`. See the list [here](http://dlmf.nist.gov/LaTeXML/manual/included.bindings). Instead you need to add a binding to LaTeXML.
   -  Use `tikz`. `LaTeXML` generates `svg` content, embedded in the question or answer html text.
   -  Use `mhchem` package for chemical equation. Because this package is not yet supported by LaTeXML, the rendering is delegated to `mathjax`. To use it, your moodle admin need to add `mhchem` to the TeX extensions of `mathjax`:
@@ -70,7 +72,7 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use command like `\raggedright`, text align is not fully supported. This add align information into the `class` attribute of `\elem{note}` and the string matching break down. Note that `\raggedright` is bypassed.
   -  Usage of `multicol` is bypassed. But it should be possible to use it elsewhere (create newcommand).
   -  Translate equation into mathml, but it can be easily changed
-  -  Use AMC numeric with computed results, or open question
+  -  Use AMC numeric with computed results
   -  Only the main commands of the package `automultiplechoice.sty` are supported in french. The English keywords support is on-going. The list of supported keywords can be seen in `automultiplechoice.sty.ltxml`
   -  You cannot remove the add of "None of these answers are correct" choice at the end of each multiple question.
 
@@ -111,12 +113,12 @@ Feedback are present, in a certain way, in `automuliplechoice` with the `\explai
 
 
 ### Numerical questions
-These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` question in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical question, but it is not used here. 
-For question with floating point operations, **you need to comment `\usepackage{fp}` during the conversion** (required internally by AMC). If you need to realise computation in the question, prefer `\pgfmathparse` that is handled by LaTeXML.
+These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` questions in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical questions, but it is not used here. 
+For question with floating point operations, **you need to comment `\usepackage{fp}` during the conversion** (required internally by AMC). If you need to realize computation in the question, prefer `\pgfmathparse` that is handled by LaTeXML.
 
 
 ### Open Question
-These questions defined in AMC with `\AMCOpen` are converted into `essay` question in moodle. Only information about the number of line is pass to moodle, other option (mostly use for text formating) are skipped.
+These questions defined in AMC with `\AMCOpen` are converted into `essay` questions in moodle. Only information about the number of lines is passed to moodle, other options (mostly use for text formating) are skipped.
 
 ### Description
 Provide a description of a problem that can be common to several questions. It is useful to define notation, pictures, equations. Since, it is not a *real* question, the `choices` environment is not provided. In this case, the question will be converted by `amc2moodle` into moodle `description` question type.

@@ -16,6 +16,7 @@ include amc2moodle/amc2moodle/test/QCM_wo-tikz.xml
 include amc2moodle/amc2moodle/test/tikz.tex
 include amc2moodle/amc2moodle/test/common-bank.tex
 include amc2moodle/amc2moodle/test/numerical.tex
+include amc2moodle/amc2moodle/test/numerical.xml
 include amc2moodle/moodle2amc/bin/moodle2amc
 include amc2moodle/moodle2amc/html2tex.xslt
 include amc2moodle/moodle2amc/struc2tex.xslt
