@@ -1,5 +1,5 @@
 # `amc2moodle`
-![pypi release](https://img.shields.io/pypi/v/amc2moodle.svg) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![CI-Ubuntu](https://github.com/nennigb/amc2moodle/workflows/CI-Ubuntu/badge.svg)  ![CI-Mac-OS](https://github.com/nennigb/amc2moodle/workflows/CI-mac-os/badge.svg)
+[![pypi release](https://img.shields.io/pypi/v/amc2moodle.svg)](https://pypi.org/project/amc2moodle/) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![CI-Ubuntu](https://github.com/nennigb/amc2moodle/workflows/CI-Ubuntu/badge.svg)  ![CI-Mac-OS](https://github.com/nennigb/amc2moodle/workflows/CI-mac-os/badge.svg)
 
 `amc2moodle`, is a suite of tools to convert multiple choice questionnaires (MCQ)
   - **from** [auto-multiple-choice](https://www.auto-multiple-choice.net) LaTeX quizzes **to** [moodle questions (XML format)](https://docs.moodle.org/38/en/Moodle_XML_format), see details in the [amc2moodle README file](amc2moodle/amc2moodle/README.md).
