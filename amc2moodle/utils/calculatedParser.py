@@ -13,7 +13,7 @@ from pyparsing import Word, alphas, nums, alphas, alphanums, Char, oneOf,\
                       Forward, Optional, ParseResults, _flatten
 
 
-
+__all__ = ['CalculatedParserToFP', 'CreateCalculatedParser']
 
 # TODO create test suite
 # TODO create CalculatedParserToPGF
@@ -91,6 +91,7 @@ abs,acos,add,and,array,asin,atan,atan2,bin,ceil,cos,
 
 
 
+
 class CalculatedParser(ABC):
     """ Define abstract class for parsing moodle calculted question and a 
     common interface for latex rendering.
@@ -136,7 +137,7 @@ class CalculatedParser(ABC):
         equation.setParseAction(self.equation_hook)
         return equation, variable
 
-    def rendering(self, s):
+    def render(self, s):
         """ Render the input string s to the targeted latex output.
         """
         # create the parser
@@ -153,7 +154,7 @@ class CalculatedParser(ABC):
         """
         # notpossible to use '_' in tex name
         out = tokens.name.replace('_', '')
-        return "\\" + out
+        return "\\" + out +' '
 
     @staticmethod
     def real_hook(tokens):
@@ -231,7 +232,7 @@ class CalculatedParserToFP(CalculatedParser):
                 out.append(tok)
         # call ParseResults _flatten to un-nest the list before the final rendering
         out = ''.join(_flatten(out))
-        return "\\FPprint{\\FPeval{\\out}{" + out + "}\\out}"
+        return "\\FPprint{\\FPeval{\\out}{clip(" + out + ")}\\out}"
 
     @staticmethod
     def function_hook(tokens):
@@ -268,7 +269,27 @@ class CalculatedParserToFP(CalculatedParser):
         return out
 
 
+# dict of all available question
+PARSER_FACTORY = {'xml2fp': CalculatedParserToFP}
 
+def CreateCalculatedParser(ptype):
+    """ Factory function for creating the CalculatedParser* objects.
+    
+    Parameters
+    ----------
+    ptype : string
+        the kind of parser to create picked from PARSER_FACTORY.
+
+    Returns
+    -------
+    Instance of concrete CalculatedParser* class.
+
+    """
+
+    try:
+        return PARSER_FACTORY[ptype]()   # *args,**kwargs)
+    except:
+        raise KeyError(" 'qtype' argument should be in {}".format(PARSER_FACTORY.keys() ) )
 
 if __name__=="__main__":
     #s=" {a} et de largeur {b} and Formula in the text {={a}*{b}}."
@@ -279,8 +300,8 @@ if __name__=="__main__":
     # s = '{=-(max(3, 2)+2*{x})}'
     # s = '{=1+1}'
     s= "<text><![CDATA[<p><b>Moodle</b> and <b>fp</b> latex package syntax is not always equivalent. Here some test for pathological cases.</p><p>Let {x} and {y} some real number.<br></p><ul><li>argument of 'pow' function are in a different order {=pow({x},2)}</li><li>the 'sqrt' function doesn't exist, need 'root(n, x)' in fp, {=sqrt(({x}-{y})*({x}+{y}))}</li><li>'pi' is a function in moodle, {=sin(1.5*pi())}</li><li>test with '- unary' expression {=-{x}+(-{y}+2)}<br></li></ul>]]></text>"
-    parser = CalculatedParserToFP()
-    out = parser.rendering(s)
+    parser = CreateCalculatedParser('xml2fp')
+    out = parser.render(s)
     print(out)
 
     
