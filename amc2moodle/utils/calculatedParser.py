@@ -154,6 +154,10 @@ class CalculatedParser(ABC):
         """
         # notpossible to use '_' in tex name
         out = tokens.name.replace('_', '')
+        if out.isalpha() == False:
+            print("  Warning the variable '{}' is not".format(out),
+                  "compatible with LaTeX naming convention. You will need",
+                  "to change this name in our tex file.")
         return "\\" + out +' '
 
     @staticmethod
