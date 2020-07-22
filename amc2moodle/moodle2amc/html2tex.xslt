@@ -28,7 +28,7 @@
 \end{enumerate} 
 </xsl:template>
   
-<xsl:template match="li">  \item <xsl:apply-templates/>
+<xsl:template match="li">  \item <xsl:apply-templates/><xsl:text>&#xa;</xsl:text>
 </xsl:template>
 
 
