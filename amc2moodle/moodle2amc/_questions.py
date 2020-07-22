@@ -496,9 +496,6 @@ class QuestionDescription(Question):
 
 class QuestionCalculatedMulti(Question):
     """ Moodle Calculated question (question or questionmult).
-
-    - call parser befor or after html conversion
-    - need to generate header from data_set
     """
 
     def __init__(self, q):
