@@ -52,9 +52,7 @@
     <xsl:apply-templates/>
 </xsl:template>
 
-<xsl:template match="p">
-    <xsl:apply-templates/>
-</xsl:template>
+<xsl:template match="p"><xsl:apply-templates/><xsl:text>&#xa;</xsl:text></xsl:template>
 
 <!-- exponent and indicies in text -->
 <xsl:template match="sup">\textsuperscript{<xsl:apply-templates/>}</xsl:template>
