@@ -96,6 +96,11 @@ class CalculatedParser(ABC):
     """ Define abstract class for parsing moodle calculted question and a 
     common interface for latex rendering.
     """
+    @property
+    @abstractmethod
+    def varformat(self):
+        """A formater string for rendering variable in tex. Must contains {name}"""
+        pass
 
     def grammar(self):
         """ Define the parser grammar.
@@ -142,11 +147,28 @@ class CalculatedParser(ABC):
         """
         # create the parser
         equation, variable = self.grammar()
-        # parse and replace the equations
+        # parse and replace in the 'equations'
         out = equation.transformString(s)
-        # and the variable
-        out2 = variable.transformString(out)
+        # parse and replace for the 'variable'
+        # different syntax because render variable alone or in equations is different
+        out2 = self._render_variable(variable, out)
         return out2
+
+    def _render_variable(self, variable, s):
+        """ Transform variable to the targeted LaTeX output. Since rendering
+        variable alone and in equation is different, need specific method.
+        """
+        vout = []
+        # initial start value
+        start_ = 0
+        # call the concrete value
+        vrender = self.varformat
+        for tok, start, end in variable.scanString(s):
+            vout.append(s[start_:start])
+            vout.append(vrender.format(name=tok.name))
+            start_ = end
+        vout.append(s[start_::])
+        return ''.join(vout)
 
     @staticmethod
     def variable_hook(tokens):
@@ -210,6 +232,8 @@ class CalculatedParserToFP(CalculatedParser):
 
     Normally only hooks have to be given.
     """
+    # string to use for variable replacement in render
+    varformat = '\\FPprint{{{name}}}'
 
     @staticmethod
     def atom_hook(tokens):
