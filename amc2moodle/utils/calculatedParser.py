@@ -147,7 +147,7 @@ class CalculatedParser(ABC):
         """
         # create the parser
         equation, variable = self.grammar()
-        # parse and replace in the 'equations'
+        # parse and replace 'equation'
         out = equation.transformString(s)
         # parse and replace for the 'variable'
         # different syntax because render variable alone or in equations is different
@@ -287,7 +287,7 @@ class CalculatedParserToFP(CalculatedParser):
         elif tokens.name in FP_EVAL_FUNCTION.keys():
             out[0] = FP_EVAL_FUNCTION[tokens.name]
         # check that only valid expression are used
-        elif tokens.name in FP_UNSUPPORTED.keys():
+        elif tokens.name in FP_UNSUPPORTED:
             print("Unsupported *function* '{}' by `fp` package in the expression.".format(tokens.name))
             out = tokens
         else:
