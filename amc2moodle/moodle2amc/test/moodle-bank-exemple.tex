@@ -20,18 +20,19 @@
 \begin{document}
 
 % -----------------------------------------------------------------------------
-\element{Défaut pour BN1-moodle2amc}{
+\element{moodle2amc}{
   \begin{question}{Essai}\label{q:Essai}   
     Explain in few words the aim of this course.
 % It is possible to add more granularity with partially correct answer using \wrongchoice[P]{p}\scoring{0.5}
-\AMCOpen{lines=3}{    \correctchoice[OK]{OK}    \wrongchoice[F]{F}}
-  \end{question}
-}
+\AMCOpen{lines=3}{    \correctchoice[OK]{OK}
+    \wrongchoice[F]{F}}
+  \end{question}}
 
 % -----------------------------------------------------------------------------
-\element{Défaut pour BN1-moodle2amc}{
+\element{moodle2amc}{
   \begin{question}{html layout}\label{q:html layout}   
     a link \href{https://github.com/nennigb/amc2moodle}{here } and an image \includegraphics[]{./Figures/4.png} and an equation \( \int_{2\pi} x^2 \mathrm{d} x \)
+
 \begin{center}
     centered text
 \end{center}
@@ -41,110 +42,193 @@ flush left text
 \end{flushright}
 In moodle editor, there is also \textsubscript{exponent} and \textsuperscript{indice} and \sout{that}and svg file \includegraphics[width=100px]{./Figures/dessin.png} 
   \begin{choices}
-	    \correctchoice{This is the good \underline{underlined} answer.}    \wrongchoice{This is one \textit{italic} wrong answer.}    \wrongchoice{This a wrong \textbf{bold} answer.}    \wrongchoice{This a wrong \textbf{strong} answer.}    \wrongchoice{This a wrong \emph{emphasis} answer.}
+    \correctchoice{This is the good \underline{underlined} answer.}
+    \wrongchoice{This is one \textit{italic} wrong answer.}
+    \wrongchoice{This a wrong \textbf{bold} answer.}
+    \wrongchoice{This a wrong \textbf{strong} answer.}
+    \wrongchoice{This a wrong \emph{emphasis} answer.}
+
   \end{choices}
 
-  \end{question}
-}
+  \end{question}}
 
 % -----------------------------------------------------------------------------
-\element{Défaut pour BN1-moodle2amc}{
+\element{moodle2amc}{
   \begin{question}{table}\label{q:table}   
-    Test html table conversion to tex        
+    Test html table conversion to tex
+
+
+        
 \begin{center}
 	
   \begin{tabular}{cccc}
   \hline
-   & weight & width & length\\   
+  
+
+
+ & weight & width & length\\   
+
   \hline
+
+
 sys1 & 1 kg & 0.35 m & 1 m\\   
+
 sys2 & 2 kg & - & 1.5 m\\   
+
   \hline
+
 	
   \end{tabular}\\
  table legend
 \end{center}
  
+
+
   \begin{choices}
-	    \wrongchoice{wrong answer}    \correctchoice{the good answer is obviously a weird table        
+    \wrongchoice{wrong answer}
+    \correctchoice{the good answer is obviously a weird table
+
+        
 \begin{center}
 	
   \begin{tabular}{cc}
   \hline
-  stuff1 & stuff2\\   
+  
+
+
+stuff1 & stuff2\\   
+
   \hline
+
+
 \(x^2\) & bold \textbf{text}\\   
+
   \hline
+
 	
   \end{tabular}\\
  
 \end{center}
- }    \wrongchoice{an other table, more simple         
+ 
+}
+    \wrongchoice{an other table, more simple
+
+         
 \begin{center}
 	
   \begin{tabular}{ccc}
   \hline
-    Firstname & Lastname & Age\\   
+  
+  Firstname & Lastname & Age\\   
+
   Jill & Smith & 50\\   
+
   Eve & Jackson & 94\\   
+
   \hline
 	
   \end{tabular}\\
  
 \end{center}
  }
+
   \end{choices}
 
-  \end{question}
-}
+  \end{question}}
 
 % -----------------------------------------------------------------------------
-\element{Défaut pour BN1-moodle2amc}{
+\element{moodle2amc}{
   \begin{question}{ProblemDescription}\label{q:ProblemDescription}   
     \QuestionIndicative
 Provide a \textbf{description} of a problem that can be common to several questions. It is useful to define notation, pictures, equations \(\int_0^1 x \mathrm{d} x = 0\)...
-  \end{question}
-}
+  \end{question}}
 
 % -----------------------------------------------------------------------------
-\element{Défaut pour BN1-moodle2amc-num}{
+\element{moodle2amc-num}{
   \begin{questionmultx}{num:int}\label{q:num:int}   
-    Find \(x\) such \(2x-300=0\) ? Here \(x\) is an integer, test for \textbf{exact} match, only.
-% need \usepackage{fp} for floatting point computation 
-\AMCnumericChoices{150}{sign = false, exact = 0, digits = 3, decimals = 0, scoreexact = 1}   
+    Find \(x\) such \(2x-300=0\) ? 
+Here \(x\) is an integer, test for \textbf{exact} match, only.
 
-  \end{questionmultx}
-}
+% need \usepackage{fp} for floatting point computation 
+\AMCnumericChoices{150}{exact = 0, scoreexact = 1, sign = false, decimals = 0, digits = 3}   
+
+  \end{questionmultx}}
 
 % -----------------------------------------------------------------------------
-\element{Défaut pour BN1-moodle2amc-num}{
+\element{moodle2amc-num}{
   \begin{questionmultx}{num:float}\label{q:num:float}   
     Give an approximated value for \(\pi\) up to 3 digits?
-% need \usepackage{fp} for floatting point computation 
-\AMCnumericChoices{3.141592653589793}{sign = false, exact = 1, digits = 4, decimals = 3, scoreexact = 1}   
 
-  \end{questionmultx}
-}
+% need \usepackage{fp} for floatting point computation 
+\AMCnumericChoices{3.141592653589793}{exact = 1, scoreexact = 1, sign = false, decimals = 3, digits = 4}   
+
+  \end{questionmultx}}
 
 % -----------------------------------------------------------------------------
-\element{Défaut pour BN1-moodle2amc-num}{
+\element{moodle2amc-num}{
   \begin{questionmultx}{num:2ans}\label{q:num:2ans}   
     Let \(z=3+2\mathrm{i}\). What is the imaginary part ?
-% need \usepackage{fp} for floatting point computation 
-\AMCnumericChoices{2}{sign = false, exact = 0, digits = 1, decimals = 0, scoreexact = 1}   
 
-  \end{questionmultx}
-}
+% need \usepackage{fp} for floatting point computation 
+\AMCnumericChoices{2}{exact = 0, scoreexact = 1, sign = false, decimals = 0, digits = 1}   
+
+  \end{questionmultx}}
 
 % -----------------------------------------------------------------------------
-\element{Défaut pour BN1-moodle2amc-num}{
+\element{moodle2amc-num}{
   \begin{questionmultx}{num:2rounding}\label{q:num:2rounding}   
     Give an approximated value for \(\sqrt{2}\) up to 3 digits ?
-% need \usepackage{fp} for floatting point computation 
-\AMCnumericChoices{1.4142135623730951}{scoreapprox = 0.5, digits = 4, sign = false, decimals = 3, approx = 100, exact = 1, scoreexact = 1}   
 
-  \end{questionmultx}
-}
+% need \usepackage{fp} for floatting point computation 
+\AMCnumericChoices{1.4142135623730951}{exact = 1, scoreexact = 1, sign = false, decimals = 3, approx = 100, digits = 4, scoreapprox = 0.5}   
+
+  \end{questionmultx}}
+
+% -----------------------------------------------------------------------------
+\element{moodle2amc-calculated}{
+  \begin{question}{Calculée}\label{q:Calculée}   
+    \FPeval{\a}{trunc(1+random*(10-1), 1)} % uniform in [1, 10]
+\FPeval{\b}{trunc(1+random*(10-1), 1)} % uniform in [1, 10]
+Quelle est l'aire d'un rectangle de longueur \FPprint{\a } et de largeur \FPprint{\b } ?
+Formula in the text \FPprint{\FPeval{\out}{clip(\a *\b )}\out}. It is also possible to use float \FPprint{\FPeval{\out}{clip(\a *(\b +2.3)/10.0)}\out}.
+Accolade should not be used for number \FPprint{\FPeval{\out}{clip(2.5*2.2)}\out}
+
+
+  \begin{choices}
+    \correctchoice{\FPprint{\FPeval{\out}{clip(\a *\b )}\out}}
+    \wrongchoice{\FPprint{\FPeval{\out}{clip(\a +\b )}\out}}
+
+  \end{choices}
+
+  \end{question}}
+
+% -----------------------------------------------------------------------------
+\element{moodle2amc-calculated}{
+  \begin{question}{CheckComputation}\label{q:CheckComputation}   
+    \FPeval{\x}{trunc(1+random*(10-1), 1)} % uniform in [1, 10]
+\FPeval{\y}{trunc(1+random*(10-1), 1)} % uniform in [1, 10]
+\textbf{Moodle} and \textbf{fp} latex package syntax is not always equivalent. Here some test for pathological cases.
+Let \FPprint{\x } and \FPprint{\y } some real number.
+ 
+\begin{itemize}
+  \item argument of 'pow' function are in a different order "pow(\FPprint{\x },2)" = \FPprint{\FPeval{\out}{clip(pow(2,\x ))}\out}
+  \item the 'sqrt' function doesn't exist, need 'root(nth, x)' in fp, "sqrt((\FPprint{\x }-\FPprint{\y })*(\FPprint{\x }+\FPprint{\y }))" = \FPprint{\FPeval{\out}{clip(root(2, (\x -\y )*(\x +\y )))}\out}
+  \item 'pi' is a function in moodle, "sin(1.5*pi())" = \FPprint{\FPeval{\out}{clip(sin(1.5*\FPpi))}\out}
+  \item test with '- unary' expression "-\FPprint{\x }+(-\FPprint{\y }+2)" = \FPprint{\FPeval{\out}{clip(neg(\x )+(neg(\y )+2))}\out}
+  \item test min-max "max(\FPprint{\x },\FPprint{\y })" = \FPprint{\FPeval{\out}{clip(max(\x ,\y ))}\out}
+  \item test nested "log(log(\FPprint{\y }+\FPprint{\x })/log(\FPprint{\y }+\FPprint{\x }))" = \FPprint{\FPeval{\out}{clip(ln(ln(\y +\x )/ln(\y +\x )))}\out}
+
+\end{itemize} 
+test formatting on variable \textbf{\FPprint{\x }}
+
+  \begin{choices}
+    \correctchoice{\FPprint{\FPeval{\out}{clip(\x )}\out}}
+    \wrongchoice{\FPprint{\FPeval{\out}{clip((\y +\x )/(\y +\x ))}\out}}
+    \wrongchoice{\FPprint{\FPeval{\out}{clip(ln(\y +\x )/ln(\y +\x ))}\out}}
+
+  \end{choices}
+
+  \end{question}}
 
 % ============================================================================
 \exemplaire{1}{    	% nombre de sujet différent
@@ -160,8 +244,7 @@ Nom et prénom :
 
 \vspace*{.5cm}\dotfill
 \vspace*{1mm}
-    \end{minipage}
-}}
+    \end{minipage}}}
 
 \begin{center}
   \Large{\textsc{An AMC quiz generated from moodle XML questions export}}\\
@@ -170,10 +253,10 @@ Nom et prénom :
 
 % mélange et catégorie (groupe dans ACM)
 \cleargroup{allquestions}
-\copygroup{Défaut pour BN1-moodle2amc}{allquestions}
-\copygroup{Défaut pour BN1-moodle2amc-num}{allquestions}
+\copygroup{moodle2amc-num}{allquestions}
+\copygroup{moodle2amc}{allquestions}
+\copygroup{moodle2amc-calculated}{allquestions}
 % Shuffling is commented for testing
 %\melangegroupe{allquestions}
-\restituegroupe{allquestions}
-}
+\restituegroupe{allquestions}}
 \end{document}
