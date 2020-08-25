@@ -21,7 +21,7 @@
 
 __all__ = ['Question', 'QuestionMultichoice',
            'QuestionEssay', 'QuestionDescription',
-           'QuestionNumerical',
+           'QuestionNumerical', 'QuestionCalculatedMulti',
            'SUPPORTED_QUESTION_TYPE', 'CreateQuestion']
 
 from lxml import etree
@@ -34,10 +34,11 @@ from wand.image import Image
 import urllib
 import math
 import sys
-
+from ..utils.calculatedParser import *
 
 # list of supported moodle question type for
-SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay', 'description', 'numerical'}
+SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay', 'description',
+                           'numerical', 'calculatedmulti'}
 
 # possible to use several grading strategy
 GRADING_STRATEGY = 'std'  # good/wrong no specific grading
@@ -63,6 +64,11 @@ DIGIT = 1        # minimal number of digit
 SCOREEXACT = 1   # default grade in AMC is 2, 1 in moodle
 EPS = 10*sys.float_info.epsilon  # float precision to avoid log singularity
 
+# Add set for True or false string
+TRUE = {'true', '1'}
+FALSE = {'false', '0'}
+# Default parameters for calculated Questions
+CALCULATED_DEFAULT_PARSER = 'xml2fp'
 
 class Question(ABC):
     """ Define an absract class for all supported questions.
@@ -124,10 +130,10 @@ class Question(ABC):
         <br> are removed (not exml content).
         """
         # remove manually CDATA from the string
+        # FIXME use .text and etree.CDATA(new_text)
         cdata_content = (cdata_content.replace('<text><![CDATA[', '<text>')
                          .replace('%', '\%')
                          .replace(']]></text>', '</text>')
-                         .replace('\n', '')
                          .replace('<br>', ''))
 
         parser = etree.HTMLParser(recover=True)
@@ -488,12 +494,145 @@ class QuestionDescription(Question):
 
         return text
 
+class QuestionCalculatedMulti(Question):
+    """ Moodle Calculated question (question or questionmult).
+    """
+
+    def __init__(self, q):
+        """ Init class from an etree Element.
+        """
+        super().__init__(q)
+        self.q = q
+        self.qtype = 'calculatedmulti'
+
+    def gettype(self):
+        """ Determine the amc question type.
+        """
+        # test if question or questionmult
+        single = self.q.find('single').text
+        if single.lower() in TRUE:
+            amcqtype = 'question'
+        elif single.lower() in FALSE:
+            amcqtype = 'questionmult'
+        else:
+            print(" Unknwon question type in '{}'".format(self.name))
+
+        return amcqtype
+
+    def _dataset(self):
+        """ Parse XML dataset to built question header.
+        """
+        datasets = single = self.q.find('dataset_definitions')
+        jockers = []
+        # Collect jockers datas
+        for data in datasets.iterfind('dataset_definition'):
+            # check if dataset is private (if not, may have inconsistenies)
+            if data.find('status/text').text.lower() !='private':
+                print(" Warining : some variables are shared between question. May leads to inconsistencies.")
+            # get variable name and remove '_' as in CalculatedParser
+            v = data.find('name/text').text
+            v = v.replace('_','')
+            # check distribution law
+            if data.find('distribution/text').text !='uniform':
+                print(" Warining : only 'uniform' distribution is supported.")
+            # Gets bounds
+            vmin = data.find('minimum/text').text
+            vmax = data.find('maximum/text').text
+            ndec = data.find('decimals/text').text
+            # Gets moodle values
+            values = []
+            for value in data.iterfind('dataset_items/dataset_item/value'):
+                values.append(value.text)
+            # store into a dict
+            jockers.append({'name' : v, 'min': vmin, 'max': vmax,
+                           'ndec': ndec, 'values': values})
+
+        # Select the good layout to create moodle variable in LaTeX
+        # TODO add other rules for other rendering strategies
+        if CALCULATED_DEFAULT_PARSER == 'xml2fp':
+            header_line = "\\FPeval{{\\{jname}}}{{trunc({jmin}+random*({jmax}-{jmin}), {jndec})}} % uniform in [{jmin}, {jmax}]"
+
+        header = []
+        # Render all the jockers/variables
+        for j in jockers:
+            header.append(header_line.format(jname=j['name'],
+                                             jmin=j['min'], jmax=j['max'],
+                                             jndec=j['ndec']))
+
+        data_header = '\n'.join(header)
+
+        return data_header
+
+
+    def question(self):
+        """ Get question text. Overwrite the class method to add a header that 
+        define the random variable.
+        """
+
+        # extract questiontext text
+        questiontext = self.q.find('questiontext/text')
+        rawtext = questiontext.text
+        # call math expression parser
+        # Create the parser /!\ need to be before latex rendring because of {}
+        parser = CreateCalculatedParser(CALCULATED_DEFAULT_PARSER)
+        # parse question
+        parsed_text = parser.render(rawtext)
+        # update questiontext
+        questiontext.text = etree.CDATA(parsed_text)
+        # call the class method (html2tex)
+        text = super().question()
+        # Create the header containg the definition of random variable
+        header = self._dataset()
+        # Concatenate both
+        text.text = '\n'.join((header, text.text))
+
+        return text
+
+    def answers(self):
+        """ Create and parse answers.
+        """
+        amc_choices = etree.Element('choices')
+        # loop over all answers
+        for i, ans in enumerate(self.q.findall('.//answer')):
+            # TODO how to integrate the scoring aspect
+            if self.gStrategy == 'std':
+                # the fraction (scoring) field is not allways at the same place
+                try:
+                    fraction = ans.find('fraction').text
+                except:
+                    try:
+                        fraction = ans.attrib['fraction']
+                    except:
+                        raise ValueError('fraction not found.')
+                if float(fraction) > 0:
+                    tag = 'correctchoice'
+                else:
+                    tag = 'wrongchoice'
+            amc_ans = etree.Element(tag, attrib={'order': str(i)})
+
+            # call math expression parser
+            cdata_content = etree.tostring(ans.find('text'), encoding='utf8').decode('utf-8')
+            # Create the parser
+            parser = CreateCalculatedParser(CALCULATED_DEFAULT_PARSER)
+            # parse answer
+            text = parser.render(cdata_content)
+            # convert to etree
+            text_tree = etree.fromstring(text)
+            # add to current answer
+            amc_ans.append(text_tree)
+            # store in a list of all answers
+            amc_choices.append(amc_ans)
+
+        return amc_choices
+
+
 
 # dict of all available question
 Q_FACTORY = {'multichoice': QuestionMultichoice,
              'essay': QuestionEssay,
              'description': QuestionDescription,
-             'numerical': QuestionNumerical}
+             'numerical': QuestionNumerical,
+             'calculatedmulti': QuestionCalculatedMulti}
 
 def CreateQuestion(qtype, question):
     """ Factory function for creating the Questions* objects.

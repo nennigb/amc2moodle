@@ -41,7 +41,7 @@ print('version:', this_version)
 
 
 setup(
-    name="amc2moodle", # Replace with your own username
+    name="amc2moodle",
     version=this_version,
     author="B. Nennig, L. Laurent",
     author_email="benoit.nennig@supmeca.fr",
@@ -50,7 +50,8 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/nennigb/amc2moodle",
     zip_safe=False,
-    packages=['amc2moodle','amc2moodle.amc2moodle', 'amc2moodle.moodle2amc'],
+    packages=['amc2moodle','amc2moodle.amc2moodle', 'amc2moodle.moodle2amc',
+              'amc2moodle.utils'],
     include_package_data=True,
     scripts=['amc2moodle/amc2moodle/bin/amc2moodle',
              'amc2moodle/moodle2amc/bin/moodle2amc'],
@@ -62,6 +63,7 @@ setup(
     install_requires=[
         'wand>=0.5.9',
         'lxml>=3.5.0',
+        'pyparsing>=2.4.6',
         'wheel>=0.29.0'
     ],
     python_requires='>=3.5'

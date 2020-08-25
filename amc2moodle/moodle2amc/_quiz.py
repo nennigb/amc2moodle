@@ -90,7 +90,9 @@ class Quiz:
                            .decode('utf-8')
                            .replace('<document>\n', '')
                            .replace('<document>', '')
-                           .replace('</document>', ''))
+                           .replace('</document>', '')
+                           .replace('\n}', '}'))
+
         # Write document to file
         with open(texfile, 'w') as f:
             f.write(tex_str)

@@ -62,7 +62,9 @@ jobs:
         # add automultiplechoice.sty local copy to LaTeX PATH (for this step)
         export TEXINPUTS=.:./amc2moodle/moodle2amc/test:$TEXINPUTS
         python -m amc2moodle.moodle2amc.test
-
+    - name: Test calculated questions parsers
+      run: |
+        python -m amc2moodle.utils.test
     
     # Store output files
     # amc2moodle
