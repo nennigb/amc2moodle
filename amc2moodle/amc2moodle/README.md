@@ -116,6 +116,31 @@ Feedback are present, in a certain way, in `automuliplechoice` with the `\explai
 These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` questions in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical questions, but it is not used here. 
 For question with floating point operations, **you need to comment `\usepackage{fp}` during the conversion** (required internally by AMC). If you need to realize computation in the question, prefer `\pgfmathparse` that is handled by LaTeXML.
 
+### Parametrized (calculated) questions
+These questions are possible in AMC in several ways but `amc2moodle` currently supports only the use for `fp` package. When `fp` is used to create an random parameter, the question will be converted and map into moodle `CalculatedMulti` question.
+Only a part of `fp` syntax is supported `\FPset`, `\FPrandom`, `\FPseed` (ignored), `\FPpi`, `\FPeval` and `\FPprint` (other command can be easilly defined in `fp.sty.ltxml` using `\FPeval`).
+To define an expression, the general purpose command `\FPeval` should be use
+```
+\FPeval{\a}{trunc(1+random*(10-1), 1)} % uniform in [1, 10]
+\FPeval{\b}{2.5+3}
+```
+in `amc2moodle` this command will affect the expression to the output variable. To map them into moodle, only expression printed with `\FPprint` will appear in moodle calculated question text.
+
+The moodle jocker will be automatically created at each call of `random` in `\FPeval` or with `\FPrandom`. Currently, the jocker are created used python random generator and results will be different from those obtained by `fp`. If required the jocker value can be changed in the output xml file in the `dataset_definitions` node.
+
+Moodle expected that the answer will contains only mathematical expression thus `amc2moodle` will also expect `choices` environnement defined like
+```
+\begin{choices}
+   \correctchoice{\FPprint{\FPeval{\out}{\a * \b}\out}}
+   \wrongchoice{\FPprint{\FPeval{\out}{\a + \b}\out}}
+\end{choices}
+``` 
+It is noteworthy that there is NO `$x=$` or additional things...
+
+More example are available in the test suite.
+
+This fonctionnaly is **experimental** and may possibly have side effects with other usage of `fp` in the question definition.
+
 
 ### Open Question
 These questions defined in AMC with `\AMCOpen` are converted into `essay` questions in moodle. Only information about the number of lines is passed to moodle, other options (mostly use for text formating) are skipped.
