@@ -329,6 +329,8 @@ class CalculatedParserFromFP(CalculatedParser):
     """
     # string to use for variable replacement in render
     varformat = '{name}'
+    # store all wildcards encounter during the parsing
+    wildcards = set()
 
     def grammar(self):
         """ Define the parser grammar for FP syntaxe. Modified from base class.
@@ -340,6 +342,7 @@ class CalculatedParserFromFP(CalculatedParser):
         rpar = Literal(')')
         integer = Word(nums)            # simple unsigned integer
         real = Regex(r"[+-]?\d+(:?\.\d*)?(:?[eE][+-]?\d+)?")
+        # add extra input parameter to the parseaction to keep in mind all variable
         real.setParseAction(self.real_hook)
         number = real | integer
 
@@ -352,7 +355,7 @@ class CalculatedParserFromFP(CalculatedParser):
         # Normally, no variable excepted random*, pi ...
         # may contain almost everything
         variable = Word(alphas, alphanums + "_")('name')
-        variable.setParseAction(self.variable_hook)
+        variable.setParseAction(lambda t : self.variable_hook(self.wildcards, t))
         # arithmetic operators
         minus = Literal('-')
         arithOp = oneOf("+ * /") | minus
@@ -381,7 +384,7 @@ class CalculatedParserFromFP(CalculatedParser):
         return out
 
     @staticmethod
-    def variable_hook(tokens):
+    def variable_hook(wildcards, tokens):
         """ Change variable name for moodle interpreter.
         """
         out = tokens.asList()
@@ -390,6 +393,7 @@ class CalculatedParserFromFP(CalculatedParser):
             return 'pi()'
         else:
             # return the moodle variable format
+            wildcards.add(out[0])
             return '{' + out[0] +'}'
 
     @staticmethod
@@ -489,9 +493,11 @@ if __name__=="__main__":
 
     # amc2moodle
     #s= "fp{(sin(3) + clip((trunc(1+rand0*(10-1), 1))+(trunc(1+rand1*(10-1), 1))))}"
-    s= "blabla fp{ ( root(2, 3.0+1.0) + sin(pi) + arctan(rand1)) } blabla"
+    s= "blabla fp{ ( root(2, 3.0+1.0) + sin(pi+rand0) + arctan(rand1)) } blabla"
     parser = CreateCalculatedParser('fp2xml')
     out = parser.render(s)
     print('> amc2moodle:\n', out)
+
+    print('> wildcards set:', parser.wildcards)
     
-    
+
