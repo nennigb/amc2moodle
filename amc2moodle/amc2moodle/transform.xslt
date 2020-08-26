@@ -99,10 +99,7 @@
 
 <!--TODO Need to add other type like description, calculated... -->
 
-<!-- template netoyage champ globaux mise en forme-->
-<xsl:template match="para|inline-para">
-    <xsl:apply-templates/>
-</xsl:template>
+
 
 
 

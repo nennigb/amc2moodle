@@ -26,10 +26,13 @@ import base64
 import os
 from wand.image import Image as wandImage
 from xml.sax.saxutils import unescape
+from ..utils.calculatedParser import *
+import random
 
 # Define default and global
 SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric',
-                    'amc_questionopen', 'amc_questiondescription')
+                    'amc_questionopen', 'amc_questiondescription',
+                    'amc_questioncalcmult')
 
 # set defaut relative tolerance for float in numerical question to 1%
 DEFAULT_NUMERIC_TOL = 1e-2
@@ -59,6 +62,17 @@ MOO_DEFAULT_GRADE = 1.
 # default size for image ²
 DEFAULT_IMG_WIDTH = '200pt'
 
+# calculated
+CALCULATED_DEFAULT_PARSER = 'fp2xml'
+# number of decimal in random value
+CALCULATED_DEFAULT_DECIMAL_NUMBER = 3
+# Number of random value for each wildcards
+CALCULATED_DEFAULT_ITEM_NUMBER = 5
+# answer formatting and tolerance
+CALCULATED_TOLERANCETYPE = 1
+CALCULATED_TOLERANCE = 0.01
+CALCULATED_CORRECTANSWERFORMAT = 1
+CALCULATED_CORRECTANSWERLENGTH = 2
 
 # ======================================================================
 # Image processing utilities
@@ -396,7 +410,7 @@ class AMCQuestionOpen(AMCQuestion):
     """
 
     def _options(self):
-        """ Parse options and create the required elements. 
+        """ Parse options and create the required elements.
         """
         Qi = self.Qi
         amc_open = Qi.find(".//note[@class='amc_open']")
@@ -434,6 +448,150 @@ class AMCQuestionDescription(AMCQuestion):
         pass
 
 
+class AMCQuestionCalcMult(AMCQuestionSimple):
+    """ Parametrized Multiple choice question with single good answer.
+    """
+
+    def _parsemath(self):
+        """ Parse FP expression and convert them to moodle XML.
+
+        Returns
+        -------
+        wildcards : set
+            The set of all encournters random variables to create the datasets.
+        """
+        Qi = self.Qi
+        # parse fp expressions
+        parser = CreateCalculatedParser(CALCULATED_DEFAULT_PARSER)
+        for orig_text in Qi.xpath(".//questiontext/note|.//note[@class='amc_bonne']/note|.//note[@class='amc_mauvaise']/note"):
+            rawtext = (etree.tostring(orig_text, encoding='utf8')
+                            .decode('utf-8')
+                            .replace('<note><![CDATA[','')
+                            .replace(']]></note>','')
+                            .replace(r'\n', ''))
+            # parse question
+            parsed_text = parser.render(rawtext)
+            # questiontext.getparent().remove(questiontext)
+            orig_text.clear()
+
+            # FIXME this manipulation reveals a problem in the management of CDATA
+            # fields created in transform2html. Since the orig_text.text contains only a part
+            # of CDATA tag '<![CDATA[\n    '
+            # this markup is ignored and transform.xslt process normally the elements
+            # see orig_text.getchildren()[0]
+
+            orig_text.text = '<![CDATA[' + parsed_text + ']]>'  # works
+            # orig_text.text = etree.CDATA(parsed_text)  # doesn't work ??!!
+
+            #etree.dump(Qi)
+        return parser.wildcards
+
+
+    def _addAnswerFields(self):
+        """ Add calcultaed question specific fields to all answers.
+        """
+        Qi = self.Qi
+        # add them to each answer good or wrong
+        for ans in Qi.xpath(".//note[@class='amc_bonne']|.//note[@class='amc_mauvaise']"):
+            tolerance = etree.Element('tolerance')
+            tolerance.text = str(CALCULATED_TOLERANCE)
+
+            tolerancetype = etree.Element('tolerancetype')
+            tolerancetype.text = str(CALCULATED_TOLERANCETYPE)
+
+            correctanswerformat = etree.Element('correctanswerformat')
+            correctanswerformat.text = str(CALCULATED_CORRECTANSWERFORMAT)
+
+            correctanswerlength = etree.Element('correctanswerlength')
+            correctanswerlength.text = str(CALCULATED_CORRECTANSWERLENGTH)
+
+            fields = [tolerance, tolerancetype, correctanswerformat,
+                      correctanswerlength]
+
+            ans.extend(fields)
+
+    def _datasets(self, wildcards):
+        """ Create data set from wildcard uniformly distributed between [0, 1].
+
+        Parameters
+        ----------
+        wildcards : set
+            The set of all encournters random variables to create the datasets.
+        """
+
+        # initialize data global container
+        dataset_definitions = etree.Element('dataset_definitions')
+        for wildcard in wildcards:
+            # initialize data container for each wildcard
+            data = etree.SubElement(dataset_definitions, 'dataset_definition')
+            # create all subelements
+            status = self._SubElement_text(data, 'status', 'private')
+            name = self._SubElement_text(data, 'name', wildcard)
+            indextype = etree.SubElement(data, 'type')
+            indextype.text = 'calculatedsimple'
+
+            # Set all random distirbution parameters
+            # in fp all random parameters are defined between 0 and 1
+            distribution = self._SubElement_text(data, 'distribution', 'uniform')
+            minimum = self._SubElement_text(data, 'minimum', '0')
+            maximum = self._SubElement_text(data, 'maximum', '1')
+            decimals = self._SubElement_text(data, 'decimals',
+                                             str(CALCULATED_DEFAULT_DECIMAL_NUMBER))
+            itemcount = etree.SubElement(data, 'itemcount')
+            itemcount.text = str(CALCULATED_DEFAULT_ITEM_NUMBER)
+            number_of_items = etree.SubElement(data, 'number_of_items')
+            number_of_items.text = str(CALCULATED_DEFAULT_ITEM_NUMBER)
+            # set container for all random values
+            dataset_items = etree.SubElement(data, 'dataset_items')
+            for i in range(0, CALCULATED_DEFAULT_ITEM_NUMBER):
+                # set container for each random value
+                dataset_item =  etree.SubElement(dataset_items, 'dataset_item')
+                number =  etree.SubElement(dataset_item, 'number')
+                number.text = str(i)
+                value =  etree.SubElement(dataset_item, 'value')
+                rand = random.uniform(0, 1)
+                # limit the number of digits
+                rand = round(rand, CALCULATED_DEFAULT_DECIMAL_NUMBER)
+                value.text = str(rand)
+
+        self.Qi.append(dataset_definitions)
+
+    @staticmethod
+    def _SubElement_text(parent, name, value):
+        """ Create a subelement with a text element to store data.
+
+        Parameters
+        ----------
+        parent : etree
+            The parent of the element to create.
+        name : string
+            name of the element.
+        value : string
+            the value store in <text>.
+
+        Returns
+        -------
+        se : etre
+            The subelement.
+        """
+        se = etree.SubElement(parent, name)
+        etree.SubElement(se, 'text').text = value
+        return se
+
+    def _scoring(self):
+        """ Compute the scoring.
+        """
+        # and call AMCQuestionSimple scoring method
+        super()._scoring()
+        # parse fp expressions
+        wildcards = self._parsemath()
+        print('   Found {} wildcards.'.format(len(wildcards)))
+        # TODO add a test to check that all wildcards starts with rand!
+        # to control substitution
+        # Add calcultaed question specific fields to all answers.
+        self._addAnswerFields()
+        # create the dataset
+        self._datasets(wildcards)
 
 
 # dict of all available question
@@ -441,7 +599,8 @@ Q_FACTORY = {'amc_questionmult': AMCQuestionMult,
              'amc_question': AMCQuestionSimple,
              'amc_questionnumeric': AMCQuestionNumeric,
              'amc_questionopen': AMCQuestionOpen,
-             'amc_questiondescription': AMCQuestionDescription}
+             'amc_questiondescription': AMCQuestionDescription,
+             'amc_questioncalcmult': AMCQuestionCalcMult}
 
 
 def CreateQuestion(qtype, Qi, context):
@@ -606,11 +765,13 @@ class AMCQuiz(ABC):
         transform = etree.XSLT(etree.parse(self.filexslt))
         # apply XSLT transformation
         self.tree = transform(self.tree)
-        if (self.deb == 1):
-            print(etree.tostring(self.tree, pretty_print=True, encoding="utf-8"))
 
         # Save output
-        self.tree.write(fileout, pretty_print=True, encoding="utf-8")
+        s = unescape(etree.tostring(self.tree, pretty_print=True, encoding="utf-8").decode('utf-8'))
+        if (self.deb == 1):
+            print(etree.tostring(self.tree, pretty_print=True, encoding="utf-8"))
+        with open(fileout, 'w') as f:
+            f.write(s)
 
         # summary
         print('\n')
@@ -738,7 +899,7 @@ class AMCQuiz(ABC):
 
 
     def _exportContext(self):
-        """ Export environnement variable as a Context object. 
+        """ Export environnement variable as a Context object.
         """
         context = Context(pathin=self.pathin, wdir=self.wdir,
                           amc_bm=self.amc_bm, amc_bs=self.amc_bs,
@@ -800,7 +961,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # load input latexml xml file
     with open(os.path.join(wdir, filein), 'r') as xml:
         # instanciate the Quiz object
-        quiz = AMCQuiz(xml, pathin, wdir, catname)
+        quiz = AMCQuiz(xml, pathin, wdir, catname, deb)
         # run the conversion and save the output
         quiz.toMoodle(os.path.join(pathout, fileout))
 

@@ -114,9 +114,7 @@ Changement de l'organisation des questions
 
 
             <xsl:copy>
-               <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>
-                   <xsl:apply-templates />
-               <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
+               <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text><xsl:apply-templates /><xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
             </xsl:copy>
         </questiontext>
 
@@ -127,9 +125,7 @@ Changement de l'organisation des questions
               <note>
               <xsl:attribute name="class"><xsl:value-of select="@class"/></xsl:attribute>
                    <xsl:copy>
-                      <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>
-                        <xsl:apply-templates/>
-                      <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
+                      <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text><xsl:apply-templates/><xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
                    </xsl:copy>
 
                    <!-- prise en compte des images en 2 étapes stockage et placement
@@ -206,7 +202,10 @@ A faire : <center> </center>,  small caps, sf, sl, sc
 Single <br/> does the trick  -->
 <xsl:template match="break"><br/></xsl:template>
 
-
+<!-- template netoyage champ globaux mise en forme-->
+<xsl:template match="para|inline-para">
+    <xsl:apply-templates/>
+</xsl:template>
 
 <!-- #############################################################
 

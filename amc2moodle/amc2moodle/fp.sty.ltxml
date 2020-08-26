@@ -46,7 +46,7 @@ DefMacro('\FPeval{}{}', sub {
   }
 );
 # FPprint will create an element (only operation visible for moodle)
-DefConstructor('\FPprint{}','<ltx:note class="FPprint">#1</ltx:note>');
+DefConstructor('\FPprint{}','<ltx:note class="amc_FPprint">#1</ltx:note>');
 # support for pi
 DefMacro('\FPpi','3.141592653589793238');
 # Don't forget this, so perl knows the package loaded.
