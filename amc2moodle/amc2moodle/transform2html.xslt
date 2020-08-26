@@ -318,6 +318,9 @@ to change the bullet in html
 <xsl:template match="tags">
 </xsl:template>
 
+
+<xsl:template match="note[@class='amc_FPprint']">fp{<xsl:apply-templates/>}</xsl:template>
+
 <!--- ###########################################################
        Include Here new template for supported package
 - mhchem through mathjax
@@ -326,6 +329,7 @@ to change the bullet in html
 <!--mhchem-->
 <!-- called outside math env only since raw tex are used in Math mode-->
 <xsl:template match="note[@class='mhchem']">\(\<xsl:value-of select="@role"/>{<xsl:apply-templates/>}\)</xsl:template>
+
 
 
 

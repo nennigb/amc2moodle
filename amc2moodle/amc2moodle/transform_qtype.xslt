@@ -74,6 +74,14 @@
     </note>
   </xsl:when>
   <!--do the same for calculated 'amc_questioncalculated'-->
+  <xsl:when test=".//note[@class='amc_FPprint']">
+    <!-- It's impossible to change parent depending of child if node are already copied, thus create a new node.-->
+    <!-- the key need to contain 'amc_question'* -->
+    <note class="amc_questioncalcmult">
+       <xsl:attribute name="role"><xsl:value-of select="@role"/></xsl:attribute>     
+       <xsl:apply-templates/>
+    </note>
+  </xsl:when>
   <!--  otherwise, just copy the existing attributs and childs -->
   <xsl:otherwise>
     <note>
