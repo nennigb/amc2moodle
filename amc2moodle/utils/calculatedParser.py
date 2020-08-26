@@ -13,7 +13,8 @@ from pyparsing import Word, alphas, nums, alphas, alphanums, Char, oneOf,\
                       Forward, Optional, ParseResults, _flatten
 
 
-__all__ = ['CalculatedParserToFP', 'CreateCalculatedParser']
+__all__ = ['CalculatedParserToFP', 'CalculatedParserFromFP',
+           'CreateCalculatedParser']
 
 # TODO create test suite
 # TODO create CalculatedParserToPGF
