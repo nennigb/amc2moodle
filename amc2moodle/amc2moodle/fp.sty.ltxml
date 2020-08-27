@@ -41,6 +41,8 @@ DefMacro('\FPeval{}{}', sub {
   my ($gullet, $arg1, $arg2) = @_;
   # arbitrary perl goes here, e.g. the 'random' replacement
   my $out = replace($arg2, 'random', 'rand');
+  # Since each expression are processed symbolically (instead of floatting point evaluation in `fp`) need to add bracket arround all substitution steps
+  $out = '('. $out . ')';
   DefMacroI($arg1, undef, $out);
   return;
   }
