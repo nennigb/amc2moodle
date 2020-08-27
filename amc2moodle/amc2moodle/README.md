@@ -40,6 +40,7 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use `\AMCnumericChoices` to create moodle `numerical` question.
   -  Use `\AMCOpen` to create moodle `essay` question.
   -  Use `\QuestionIndicative` to create moodle `description` question.
+  -  use `fp` package to create moodle calculated question (experimental)
   -  Use user's command defined in the LaTeX file.
   -  Use `\usepackage[utf8]{inputenc}` for accents
   -  Use packages that are supported by `LaTeXML`. See the list [here](http://dlmf.nist.gov/LaTeXML/manual/included.bindings). Instead you need to add a binding to LaTeXML.
@@ -141,6 +142,10 @@ More example are available in the test suite.
 
 This fonctionnaly is **experimental** and may possibly have side effects with other usage of `fp` in the question definition.
 
+
+
+
+Only provate datasets are currently supported.
 
 ### Open Question
 These questions defined in AMC with `\AMCOpen` are converted into `essay` questions in moodle. Only information about the number of lines is passed to moodle, other options (mostly use for text formating) are skipped.
