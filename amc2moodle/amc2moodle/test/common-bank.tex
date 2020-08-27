@@ -190,3 +190,32 @@ To use it in AMC, do not forget to use \texttt{QuestionIndicative} to tell AMC n
 % the associated scoring is \bareme{b=0,m=0,e=0,v=0} cf AMC doc
 \end{question}
 }
+
+% Test for calculated question
+\element{calc}{
+\begin{question}{Calculated}\label{q:Calculated}  
+\FPseed 0 %  defined but unused, because different random generator are used. 
+\FPset{\x}{1}
+
+\FPrandom{\y}
+
+\FPeval{\a}{\x+random*(10-1)} % uniform in [1, 10]
+\FPeval{\b}{1+\y*(10-1)} % uniform in [1, 10]
+\FPeval{\c}{random * random} 
+
+What is the \textbf{area} of rectangle of height \FPprint{\a} and width \FPprint{\b} ?
+
+We recall that $\pi=$\FPpi .
+
+Check for random labels : \FPprint{\c}
+
+Check nested expression :
+\FPeval{\nest}{ (1 + (pi+\x)/(pi-\x)) }
+\FPprint{\nest}
+
+\begin{choices}
+  \correctchoice{\FPprint{\FPeval{\out}{clip(\a *\b )}\out}}
+  \wrongchoice{\FPprint{\FPeval{\out}{clip(\a +\b )}\out}}
+\end{choices}
+\end{question}
+}
