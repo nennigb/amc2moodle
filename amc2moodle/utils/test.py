@@ -43,6 +43,7 @@ class TestSuiteCalculatedParserToFP(unittest.TestCase):
                     ['{=sqrt(3)}', r'\FPprint{\FPeval{\out}{clip(root(2, 3))}\out}', ''],  # sqrt -> root(2,...)
                     ['{=(1.0 + pow(2, 3)/2)}', r'\FPprint{\FPeval{\out}{clip((1.0+pow(3,2)/2))}\out}', ''],  # pow -> pow(2,...)
                     ['{=pow(2, 0.5)}', r'\FPprint{\FPeval{\out}{clip(pow(0.5,2))}\out}', ''],  # pow for roots 1.414213562373095042
+                    ['{=pow(0.5+1.5, 0.5)}', r'\FPprint{\FPeval{\out}{clip(pow(0.5,0.5+1.5))}\out}', ''],  # test expr in swap 1.414213562373095042
                     ['{=-({x}-{y})}', r'\FPprint{\FPeval{\out}{clip(neg((\x -\y )))}\out}', ''],  # - unary
                     ['{=-1.2e-3}', r'\FPprint{\FPeval{\out}{clip(-0.0012)}\out}', ''],  # float
                     ['{=2*(((1-2)*(1+2))/(1+pi()))}', r'\FPprint{\FPeval{\out}{clip(2*(((1-2)*(1+2))/(1+\FPpi)))}\out}', ''],  # nested + pi()

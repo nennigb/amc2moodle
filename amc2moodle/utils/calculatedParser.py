@@ -54,7 +54,6 @@ FP_EVAL_FUNCTION = {'atan': 'arctan',
                     'atan': 'arctan',
                     'sqrt': 'sqrt',  # need to use root
                     'abs': 'abs',
-                    'pow': 'pow',
                     'exp': 'exp',
                     'log': 'ln',
                     'min': 'min',
@@ -78,9 +77,8 @@ MDL_FUNCTION = {'arctan': 'atan',
                 'arccos': 'acos',
                 'tan': 'tan',
                 'arctan': 'atan',
-                'root': 'sqrt',  # need to use root
+                'root': 'sqrt',  # need to use sqrt or pow
                 'abs': 'abs',
-                'pow': 'pow',
                 'exp': 'exp',
                 'ln': 'log',
                 'min': 'min',
@@ -157,8 +155,8 @@ class CalculatedParser(ABC):
         atom.setParseAction(self.atom_hook)
         # Finalize postponed elements...
         expr << atom + ZeroOrMore(arithOp + atom)
-        # FIXME need to group for arguments swapping
-        function << fnname + Group(lpar + ZeroOrMore(expr) + Optional(Literal(',') + expr) + rpar)
+        # Need to group arguments for swapping them
+        function << fnname + Group(lpar + Group(ZeroOrMore(expr)) + Optional(Literal(',') + Group(expr)) + rpar)
         # Define equation
         equation = equal + expr + rightAc
         equation.setParseAction(self.equation_hook)
