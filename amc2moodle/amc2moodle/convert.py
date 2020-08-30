@@ -466,8 +466,8 @@ class AMCQuestionCalcMult(AMCQuestionSimple):
         for orig_text in Qi.xpath(".//questiontext/note|.//note[@class='amc_bonne']/note|.//note[@class='amc_mauvaise']/note"):
             rawtext = (etree.tostring(orig_text, encoding='utf8')
                             .decode('utf-8')
-                            .replace('<note><![CDATA[','')
-                            .replace(']]></note>','')
+                            .replace('<note>', '')
+                            .replace('</note>', '')
                             .replace(r'\n', ''))
             # parse question
             parsed_text = parser.render(rawtext)
@@ -480,10 +480,10 @@ class AMCQuestionCalcMult(AMCQuestionSimple):
             # this markup is ignored and transform.xslt process normally the elements
             # see orig_text.getchildren()[0]
 
-            orig_text.text = '<![CDATA[' + parsed_text + ']]>'  # works
+            orig_text.text = parsed_text  # works, CDATA already included
             # orig_text.text = etree.CDATA(parsed_text)  # doesn't work ??!!
 
-            #etree.dump(Qi)
+            # etree.dump(Qi)
         return parser.wildcards
 
 
