@@ -327,8 +327,10 @@ class CalculatedParserFromFP(CalculatedParser):
     """
     # string to use for variable replacement in render
     varformat = '{name}'
-    # store all wildcards encounter during the parsing
-    wildcards = set()
+
+    def __init__(self):
+        # store all wildcards encounter during the parsing
+        self.wildcards = set()
 
     def grammar(self):
         """ Define the parser grammar for FP syntaxe. Modified from base class.
