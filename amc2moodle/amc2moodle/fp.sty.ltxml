@@ -28,8 +28,8 @@ sub replace {
    return join('', @spl);
 }
       
-# Create the FPseed counter but usefless in the conversion seed since not the same alg in fp and python
-DefMacro('\FPseed', '\newcount\FPseed');
+# Create the FPseed register but useless for the conversion since random generators are different
+DefRegister('\FPseed', Number(0));
 # FPset to define constant 
 DefMacro('\FPset{}{}','\def#1{(#2)}');
 # Create the rand counter to label all 'random' call
