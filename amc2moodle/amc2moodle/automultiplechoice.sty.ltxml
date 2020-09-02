@@ -59,12 +59,14 @@ DefConstructor('\includesounds{}',"<ltx:graphics graphic='#1' options='sound'></
 
 # ===================================================================
 # QUESTIONS
+# Set counter 'questions' for question
+NewCounter('questions', 'document');
 # question simple
-DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>");
+DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>", properties => sub { StepCounter('questions') });
 # question multiple
-DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>");
+DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>", properties => sub { StepCounter('questions') });
 # questionmultx is the same as questionmult, except it does not display \multiSymbole
-DefEnvironment('{questionmultx}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>");
+DefEnvironment('{questionmultx}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>", properties => sub { StepCounter('questions') });
 
 DefEnvironment('{examcopy}[]',"");   # alternative to onecopy, # on supprime la partie construction du sujet si présente
 

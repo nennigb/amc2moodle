@@ -32,8 +32,8 @@ sub replace {
 DefRegister('\FPseed', Number(0));
 # FPset to define constant 
 DefMacro('\FPset{}{}','\def#1{(#2)}');
-# Create the rand counter to label all 'random' call
-NewCounter('rand', 'document');
+# Create the rand counter to label all 'random' call. Reset the counter at each new question.
+NewCounter('rand', 'questions');
 # FPrand to define a random parameter
 DefMacro('\FPrandom{}{}','\stepcounter{rand}\edef#1{rand\value{rand}}');
 # FPeval is just a replacement def, like FPset, 
@@ -53,3 +53,4 @@ DefConstructor('\FPprint{}','<ltx:note class="amc_FPprint">#1</ltx:note>');
 DefMacro('\FPpi','3.141592653589793238');
 # Don't forget this, so perl knows the package loaded.
 1;
+
