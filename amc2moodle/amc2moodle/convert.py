@@ -549,7 +549,8 @@ class _Calculated:
                 # set container for each random value
                 dataset_item =  etree.SubElement(dataset_items, 'dataset_item')
                 number =  etree.SubElement(dataset_item, 'number')
-                number.text = str(i)
+                # moodle indexes start at 1
+                number.text = str(i+1)
                 value =  etree.SubElement(dataset_item, 'value')
                 rand = random.uniform(0, 1)
                 # limit the number of digits
