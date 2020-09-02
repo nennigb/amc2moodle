@@ -91,7 +91,7 @@
 </xsl:template>
 
 <!--\FPprint yields to calculatedmulti question type-->
-<xsl:template match="note[@class='amc_questioncalcmult']">
+<xsl:template match="note[@class='amc_questioncalcmult' or @class='amc_questionmultcalcmult']">
 	<question type="calculatedmulti">
 	  <xsl:apply-templates />
 	</question>

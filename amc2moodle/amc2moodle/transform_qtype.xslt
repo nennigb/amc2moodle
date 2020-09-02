@@ -73,10 +73,17 @@
        <xsl:apply-templates/>
     </note>
   </xsl:when>
-  <!--do the same for calculated 'amc_questioncalculated'-->
-  <xsl:when test=".//note[@class='amc_FPprint']">
+  <!--do the same for calculated->questionmult(x) 'amc_questionmultcalcmult'-->
+  <xsl:when test="(.//note[@class='amc_FPprint']) and (@class='amc_questionmult')">
     <!-- It's impossible to change parent depending of child if node are already copied, thus create a new node.-->
-    <!-- the key need to contain 'amc_question'* -->
+    <note class="amc_questionmultcalcmult">
+       <xsl:attribute name="role"><xsl:value-of select="@role"/></xsl:attribute>     
+       <xsl:apply-templates/>
+    </note>
+  </xsl:when>
+  <!--do the same for calculated->question 'amc_questioncalcmult'-->
+  <xsl:when test="(.//note[@class='amc_FPprint']) and (@class='amc_question')">
+    <!-- It's impossible to change parent depending of child if node are already copied, thus create a new node.-->
     <note class="amc_questioncalcmult">
        <xsl:attribute name="role"><xsl:value-of select="@role"/></xsl:attribute>     
        <xsl:apply-templates/>

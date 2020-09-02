@@ -32,7 +32,7 @@ import random
 # Define default and global
 SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric',
                     'amc_questionopen', 'amc_questiondescription',
-                    'amc_questioncalcmult')
+                    'amc_questioncalcmult', 'amc_questionmultcalcmult')
 
 # set defaut relative tolerance for float in numerical question to 1%
 DEFAULT_NUMERIC_TOL = 1e-2
@@ -448,8 +448,10 @@ class AMCQuestionDescription(AMCQuestion):
         pass
 
 
-class AMCQuestionCalcMult(AMCQuestionSimple):
-    """ Parametrized Multiple choice question with single good answer.
+class _Calculated:
+    """ Customization class for Parametrized Multiple choice question.
+
+    Connot be instanciated, must be used with Mixins
     """
 
     def _parsemath(self):
@@ -594,13 +596,26 @@ class AMCQuestionCalcMult(AMCQuestionSimple):
         self._datasets(wildcards)
 
 
+class AMCQuestionCalcMult(_Calculated, AMCQuestionSimple):
+    """ Parametrized Multiple choice question with single good answer.
+    """
+    pass
+
+
+class AMCQuestionMultCalcMult(_Calculated, AMCQuestionMult):
+    """ Parametrized Multiple choice question with multiple good answers.
+    """
+    pass
+
+
 # dict of all available question
 Q_FACTORY = {'amc_questionmult': AMCQuestionMult,
              'amc_question': AMCQuestionSimple,
              'amc_questionnumeric': AMCQuestionNumeric,
              'amc_questionopen': AMCQuestionOpen,
              'amc_questiondescription': AMCQuestionDescription,
-             'amc_questioncalcmult': AMCQuestionCalcMult}
+             'amc_questioncalcmult': AMCQuestionCalcMult,
+             'amc_questionmultcalcmult': AMCQuestionMultCalcMult}
 
 
 def CreateQuestion(qtype, Qi, context):
@@ -720,7 +735,7 @@ class AMCQuiz(ABC):
         """ Change string representation.
         """
         rep = ("Instance of {}. {} have be converted."
-               .format(self.__class__.__name__, self.name, self.Qtot))
+               .format(self.__class__.__name__, self.Qtot))
         return rep
 
     def __str__(self):
