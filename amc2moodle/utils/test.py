@@ -91,6 +91,7 @@ class TestSuiteCalculatedParserFromFP(unittest.TestCase):
                     ['fp{root(1+1, 3)}', r'{=pow(3,1/(1+1))}', ''],  # root(2,...)-> pow if not 2
                     ['fp{ln(pi)}', r'{=log(pi())}', ''],  # ln -> log
                     ['fp{clip(1+rand0*(10-1))}', r'{=(1+{rand0}*(10-1))}', ''], # clip is skipped (print only)
+                    ['fp{neg(neg(1+2))}', r'{=-(-(1+2))}', ''], # check 'neg'
                     ['fp{(arctan(1.2)+arcsin(3))/(arccos((pi+rand2)/2))}', r'{=(atan(1.2)+asin(3))/(acos((pi()+{rand2})/2))}', ''],  # ln -> log
                     ['fp{xyz(2)}', r'{=xyz(2)}', 'Unsupported'],  # Miss formed, parser skip
                    ]

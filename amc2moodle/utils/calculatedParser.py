@@ -83,7 +83,8 @@ MDL_FUNCTION = {'arctan': 'atan',
                 'ln': 'log',
                 'min': 'min',
                 'max': 'max',
-                'clip': ''}
+                'clip': '',
+                'neg': '-'}
 
 MDL_UNSUPPORTED = {'clip'}
 
@@ -399,12 +400,8 @@ class CalculatedParserFromFP(CalculatedParser):
     @staticmethod
     def atom_hook(tokens):
         """ Change unary minus into neg(exp) at atom level.
-        """
-        # neg() in fp should be change '- expr' in moodle
-        out = tokens.asList()
-        if out[0] == 'neg(':
-            out[0] = '-('
-        return out
+        """      
+        return tokens
 
     @staticmethod
     def equation_hook(tokens):
