@@ -91,6 +91,11 @@ DefConstructor('\AMCnumericChoices{}{}', '<ltx:note class="amc_numeric_choices" 
 DefConstructor('\AMCOpen{}{}', '<ltx:note class="amc_open" role="#1">#2</ltx:note>');
 
 # ===================================================================
+# OPTIONS
+DefConstructor('\SetOption{}{}',"<ltx:note class='amc_options' role='#1'>#2</ltx:note>"); 
+
+
+# ===================================================================
 # MISE EN FORME PAPIER
 #DefMacro('\raggedright','');
 #DefMacro('\raggedleft','');

@@ -75,10 +75,14 @@ Changement de l'organisation des questions
 		</name>
 
         <!-- barème local -->
-       <xsl:for-each select=".//text[@class='amc_bareme']">
+        <xsl:for-each select=".//text[@class='amc_bareme']">
           <bareme>
                 <xsl:value-of select="text()"/>
          </bareme>
+        </xsl:for-each>
+        <!-- general options -->
+        <xsl:for-each select=".//note[@class='amc_options']">
+          <options><xsl:attribute name="name"><xsl:value-of select="@role"/></xsl:attribute><xsl:value-of select="text()"/></options>
         </xsl:for-each>
         <!-- Support for options in \begin{choices} -->
         <xsl:for-each select=".//note[@class='amc_choices_options']">
@@ -235,7 +239,8 @@ equation
 </xsl:template>
 <xsl:template match="text[@class='amc_bareme']">
 </xsl:template>
-
+<xsl:template match="note[@class='amc_options']">
+</xsl:template>
 
 
 <!-- #############################################################

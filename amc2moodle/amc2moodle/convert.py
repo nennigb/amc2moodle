@@ -200,9 +200,28 @@ class AMCQuestion(ABC):
     def _scoring(self):
         pass
 
-    @abstractmethod
     def _options(self):
-        pass
+        """ Look for amc_options elements and store them in _options_dict.
+        """
+        Qi = self.Qi
+        optlist = Qi.xpath(".//options")
+        self._options_dict = dict()
+        for opt in optlist:
+            # the option name is in 'role' atrtibute
+            # the option value is in
+            self._options_dict[opt.attrib['name']] = opt.text
+            opt.getparent().remove(opt)
+        if optlist:
+            print("   Modified default options with {}:".format(self._options_dict) )
+
+    def _setWithOptionsOrDefault(self, opt_name, default_value):
+        """ Set an option to its value if provided, else use default value.
+        """
+        if opt_name in self._options_dict.keys():
+            return self._options_dict[opt_name]
+        else:
+            return default_value
+
 
     def convert(self):
         """ Run all questions convertion steps.
@@ -222,6 +241,8 @@ class AMCQuestionSimple(AMCQuestion):
     def _options(self):
         """ Manage options at question levels.
         """
+        # Call generic options search
+        super()._options()
         Qi = self.Qi
         # check local shuffle policy
         Qiwantshuffle = SHUFFLE_ALL
@@ -537,15 +558,18 @@ class _Calculated:
             distribution = self._SubElement_text(data, 'distribution', 'uniform')
             minimum = self._SubElement_text(data, 'minimum', '0')
             maximum = self._SubElement_text(data, 'maximum', '1')
-            decimals = self._SubElement_text(data, 'decimals',
-                                             str(CALCULATED_DEFAULT_DECIMAL_NUMBER))
+            # Decimal number
+            decimal_number = int(self._setWithOptionsOrDefault('decimal_number', CALCULATED_DEFAULT_DECIMAL_NUMBER))
+            decimals = self._SubElement_text(data, 'decimals', str(decimal_number))
+            # nitems in the dataset
+            nitems = int(self._setWithOptionsOrDefault('nitems', CALCULATED_DEFAULT_ITEM_NUMBER))
             itemcount = etree.SubElement(data, 'itemcount')
-            itemcount.text = str(CALCULATED_DEFAULT_ITEM_NUMBER)
+            itemcount.text = str(nitems)
             number_of_items = etree.SubElement(data, 'number_of_items')
-            number_of_items.text = str(CALCULATED_DEFAULT_ITEM_NUMBER)
+            number_of_items.text = str(nitems)
             # set container for all random values
             dataset_items = etree.SubElement(data, 'dataset_items')
-            for i in range(0, CALCULATED_DEFAULT_ITEM_NUMBER):
+            for i in range(0, nitems):
                 # set container for each random value
                 dataset_item =  etree.SubElement(dataset_items, 'dataset_item')
                 number =  etree.SubElement(dataset_item, 'number')
@@ -554,7 +578,7 @@ class _Calculated:
                 value =  etree.SubElement(dataset_item, 'value')
                 rand = random.uniform(0, 1)
                 # limit the number of digits
-                rand = round(rand, CALCULATED_DEFAULT_DECIMAL_NUMBER)
+                rand = round(rand, decimal_number)
                 value.text = str(rand)
 
         self.Qi.append(dataset_definitions)
