@@ -112,6 +112,8 @@ Each question is then placed in `$course$/catname/elementName`.
 ### Feedback
 Feedback are present, in a certain way, in `automuliplechoice` with the `\explain` command. This part is not yet implemented here. However it could be easy to add it at the response or question level as other fields and bypass them for real `automuliplechoice` test.
 
+## Passing options
+Options can be passed to `amc2moodle` using the `amc2moodle` internal command `\SetOptions{option_name}{value}`. To avoid LaTeX compilation problem, you need to comment it.
 
 ### Numerical questions
 These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` questions in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical questions, but it is not used here. 
@@ -137,15 +139,15 @@ Moodle expected that the answer will contains only mathematical expression thus 
 \end{choices}
 ``` 
 It is noteworthy that there is NO `$x=$` or additional things...
+The moodle wildcard, cannot be replaced in equations rendered by mathjax.
 
 More example are available in the test suite.
 
 This fonctionnaly is **experimental** and may possibly have side effects with other usage of `fp` in the question definition.
 
+Only private datasets are currently supported.
 
-
-
-Only provate datasets are currently supported.
+> Supported options : `decimal_number` (number of decimal place in random number), `nitems` (number of variants for each random parameter)
 
 ### Open Question
 These questions defined in AMC with `\AMCOpen` are converted into `essay` questions in moodle. Only information about the number of lines is passed to moodle, other options (mostly use for text formating) are skipped.
@@ -154,3 +156,5 @@ These questions defined in AMC with `\AMCOpen` are converted into `essay` questi
 Provide a description of a problem that can be common to several questions. It is useful to define notation, pictures, equations. Since, it is not a *real* question, the `choices` environment is not provided. In this case, the question will be converted by `amc2moodle` into moodle `description` question type.
 To use it in AMC, do not forget to use `\QuestionIndicative` to tell AMC not to count points for this question (with a 0-point scoring).
 > In AMC it is also possible to use `element` content to do share text between questions of the same group, but it will be ignored by `amc2moodle` (too open to parse it).
+
+
