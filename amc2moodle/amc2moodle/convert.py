@@ -671,7 +671,7 @@ class Context():
         return "The context state is " + options
 
 
-class AMCQuiz(ABC):
+class AMCQuiz:
     """ Class to handle conversion from XML file obtain with LaTeXML
     to moodle XML.
 
