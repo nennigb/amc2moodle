@@ -559,7 +559,7 @@ class _Calculated:
             minimum = self._SubElement_text(data, 'minimum', '0')
             maximum = self._SubElement_text(data, 'maximum', '1')
             # Decimal number
-            decimal_number = int(self._setWithOptionsOrDefault('decimal_number', CALCULATED_DEFAULT_DECIMAL_NUMBER))
+            decimal_number = int(self._setWithOptionsOrDefault('decimalNumber', CALCULATED_DEFAULT_DECIMAL_NUMBER))
             decimals = self._SubElement_text(data, 'decimals', str(decimal_number))
             # nitems in the dataset
             nitems = int(self._setWithOptionsOrDefault('nitems', CALCULATED_DEFAULT_ITEM_NUMBER))

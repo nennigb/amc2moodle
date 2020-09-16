@@ -147,7 +147,7 @@ This fonctionnaly is **experimental** and may possibly have side effects with ot
 
 Only private datasets are currently supported.
 
-> Supported options : `decimal_number` (number of decimal place in random number), `nitems` (number of variants for each random parameter)
+> Supported options : `decimalNumber` (number of decimal place in random number), `nitems` (number of variants for each random parameter)
 
 ### Open Question
 These questions defined in AMC with `\AMCOpen` are converted into `essay` questions in moodle. Only information about the number of lines is passed to moodle, other options (mostly use for text formating) are skipped.
