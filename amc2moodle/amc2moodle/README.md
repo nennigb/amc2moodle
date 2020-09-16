@@ -37,6 +37,7 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use enumerate and itemize (but without the tag `\item[tag]`)
   -  Automatically add an answer like *there is no good answer* if there is no good answer.
   -  Like in auto-multiple-choice, all answers are Shuffled by default, you can keep answers ordered by using `\begin{choices}[o]` or `\begin{responses}[o]`.
+  -  Pass some options or modify your tex file only for `amc2moodle` using "magic comments" (see below). 
   -  Use `\AMCnumericChoices` to create moodle `numerical` question.
   -  Use `\AMCOpen` to create moodle `essay` question.
   -  Use `\QuestionIndicative` to create moodle `description` question.
@@ -103,7 +104,6 @@ For instance if `m=-0.5` and `b=1`, a student who ticks all the wrong answers ge
 Another difference is that moodle 3 use tabulated grades like: 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10 and their multiple. **If your grade are not conform to that you must use: 'Nearest grade if not listed' in import option in the moodle question bank**. But check at least that the sum of good answer give 100% !
 
 
-
 ### Categories
 By default, the imported questions are all created in `$course$/filein`. When the category flag is used, the AMC command `element` is used to create subcategories and the argument `catname` is used instead of `filein`.
 Each question is then placed in `$course$/catname/elementName`.
@@ -112,8 +112,13 @@ Each question is then placed in `$course$/catname/elementName`.
 ### Feedback
 Feedback are present, in a certain way, in `automuliplechoice` with the `\explain` command. This part is not yet implemented here. However it could be easy to add it at the response or question level as other fields and bypass them for real `automuliplechoice` test.
 
-## Passing options
-Options can be passed to `amc2moodle` using the `amc2moodle` internal command `\SetOptions{option_name}{value}`. To avoid LaTeX compilation problem, you need to comment it.
+## Passing options and "magic comments"
+Options can be passed to `amc2moodle` using the `amc2moodle` internal command `\SetOptions{option_name}{value}`. To avoid LaTeX compilation problem with `automuliplechoice`, you need to comment it. Another possibility is to use "magic comments" prefix `%amc2moodle` to pass options to `amc2moodle` and to keep LaTeX backward compatibility, for instance:
+```
+%amc2moodle \SetOptions{nitems}{10}
+```
+Such line are ignored in standard LaTeX processing and uncommented for `amc2moodle` workflow.
+Another possibility is to use "magic comments" to add some specific TeX code/text to moodle question (link to external file or video url, change in scoring, remove or add answers).
 
 ### Numerical questions
 These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` questions in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical questions, but it is not used here. 
