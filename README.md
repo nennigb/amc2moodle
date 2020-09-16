@@ -89,6 +89,7 @@ In case of problem, do not hesitate to ask help on [issues](https://github.com/n
   - [TeX2Quiz](https://github.com/hig3/tex2quiz), is a similar project to translate multiple choice quiz into moodle XML, without connection with AMC.
   - [moodle](https://www.ctan.org/pkg/moodle) - Generating Moodle quizzes via LaTeX. A package for writing Moodle quizzes in LaTeX. In addition to typesetting the quizzes for proofreading, the package compiles an XML file to be uploaded to a Moodle server.
   - [moodle-mod-automultiplechoice](https://github.com/UGA-DAPI/moodle-mod-automultiplechoice) - An interface to use AMC within Moodle.
+  - [flatex](https://github.com/johnjosephhorton/flatex) - A Python script for "flattening" a nested LaTeX document by pulling in all the \input files. Part of this project has been reused in amc2moodle.
 
 ## How to contribute ?
 If you want to contribute to `amc2moodle`, your are welcomed! Don't hesitate to
