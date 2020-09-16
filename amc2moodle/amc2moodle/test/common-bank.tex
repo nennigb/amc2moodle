@@ -247,8 +247,9 @@ where $x$=\FPprint{\x}, $y$=\FPprint{\y} and $z$=\FPprint{\z}.
 \FPeval{\eigone}{(neg(\b) + root(2,\disc))/(2*\a)}
 \FPeval{\eigtwo}{(neg(\b) - root(2,\disc))/(2*\a)}
 
-% use magic comment to set nitems
-%\setnitems{2}
+% Use "magic comments" to set nitems and decimalNumber in amc2moodle
+%amc2moodle \SetOption{nitems}{3}
+%amc2moodle \SetOption{decimalNumber}{2}
 
 \begin{choices}
   \correctchoice{\FPprint{\eigone}}
