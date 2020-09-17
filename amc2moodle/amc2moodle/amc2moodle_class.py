@@ -73,7 +73,8 @@ class amc2moodle:
     magictag = '%amc2moodle '
 
     def __init__(self, fileInput, fileOutput=None, keepFlag=False,
-                 catname='amc', indentXML=False, usetempdir=True, deb=0):
+                 catname='amc', indentXML=False, usetempdir=True,
+                 magic_flag=True, deb=0):
         """ Initialize the object.
 
         Parameters
@@ -90,6 +91,8 @@ class amc2moodle:
             Run XML indentatation program. The default is False.
         usetempdir : bool, optional
             Store all intermediate file in temp directory. The default is True.
+        magic_flag : bool, optional
+            Enable magic comment.The default is True.
         deb : int, optional
             Store all intermediate file for debugging.
 
@@ -120,6 +123,7 @@ class amc2moodle:
             self.catname = catname
             self.inputtex = fileInput
             self.deb = deb
+            self.magic_flag = magic_flag
 
             if fileOutput:
                 self.output = fileOutput
@@ -156,6 +160,7 @@ class amc2moodle:
     def showData(self):
         """ Show loaded parameters.
         """
+        disable = {True:'enable', False:'disable'}
         print('====== Parameters ======')
         print(' > path input TeX: %s' % getPathFile(self.inputtex))
         print(' > input TeX file: %s' % getFilename(self.inputtex))
@@ -165,6 +170,7 @@ class amc2moodle:
         print(' > temp XML file: %s' % self.tempxmlfile)
         print(' > keep temp files: %s' % self.keepFlag)
         print(' > categorie name: %s' % self.catname)
+        print(' > magic comments: %s' % disable[self.magic_flag])
 
     def endMessage(self):
         """ Show end message explaining moodle inmport procedure.
@@ -198,7 +204,8 @@ class amc2moodle:
             self.magictex = m.name
 
         # Merge all included tex files in one and remove magic comments.
-        texpand = Flatex(self.inputtex, self.magictex, magic_flag=True,
+        texpand = Flatex(self.inputtex, self.magictex,
+                         magic_flag=self.magic_flag,
                          noline=False)
         texpand.expand()
         texpand.report()
@@ -244,8 +251,11 @@ class amc2moodle:
         """
         print('====== Build XML =======')
         # remove magic comment, return magictex
-        print(' > Search for magic comments...')
+        if self.magic_flag:
+            print(' > Search for magic comments...')
         self.removeMagicComment()
+
+
         print(' > Running LaTeXML pre-processing...')
         # process magictex as tex input
         if self.runLaTeXML():
