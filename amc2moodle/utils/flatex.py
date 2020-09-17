@@ -92,17 +92,18 @@ class Flatex:
 
     @staticmethod
     def combine_path(base_path, relative_ref):
+        """ Return the absolute filename path of the included tex file.
         """
-        Combines the base path of the tex document being worked on with the
-        relate reference found in that document.
-        """
-        if (base_path != ""):
-            os.chdir(base_path)
-        # Handle if .tex is supplied directly with file name or not
-        if relative_ref.endswith('.tex'):
-            return os.path.join(base_path, relative_ref)
+        # check for absolute path
+        if not(os.path.isabs(relative_ref)):
+            abs_path = os.path.join(base_path, relative_ref)
         else:
-            return os.path.abspath(relative_ref) + '.tex'
+            abs_path = relative_ref
+        # Handle if .tex is supplied directly with file name or not
+        if not relative_ref.endswith('.tex'):
+            abs_path += '.tex'
+
+        return abs_path
 
     def expand_file(self, base_file, current_path):
         """
