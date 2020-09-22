@@ -21,7 +21,6 @@
 
 from amc2moodle.utils.calculatedParser import *
 from io import StringIO
-import os
 import unittest
 from unittest.mock import patch
 
@@ -52,7 +51,18 @@ class TestSuiteCalculatedParserToFP(unittest.TestCase):
                     ['{=log(log(2) + 2}', r'{=log(log(2) + 2}', ''],  # Miss formed, parser skip
                     ['{=xyz(2)}', r'\FPprint{\FPeval{\out}{clip(xyz(2))}\out}', 'Unsupported'],  # Miss formed, parser skip
                     ['{=expm1(2)}', r'\FPprint{\FPeval{\out}{clip(expm1(2))}\out}', 'Unsupported'],  # Miss formed, parser skip
-                   ]
+                    # Embedded LaTeX equation in XML may leads to problems (because of braces)
+                    # Remove standard mathjax delimiters from 'variable' parsing,
+                    # In mathjax equation environnement inside delimiters is correct
+                    [r'$$\begin{equation}\int x dx =3\end{equation}$$ {=sin({x}+1)}',
+                     r'$$\begin{equation}\int x dx =3\end{equation}$$ \FPprint{\FPeval{\out}{clip(sin(\x +1))}\out}',''], # $$ ... $$
+                    [r'\(\begin{equation}\int x dx =3\end{equation}\) {=sin({x}+1)}',
+                     r'\(\begin{equation}\int x dx =3\end{equation}\) \FPprint{\FPeval{\out}{clip(sin(\x +1))}\out}',''], #\( ... \)
+                    [r'\[\begin{equation}\int x dx =3\end{equation}\] {=sin({x}+1)}',
+                     r'\[\begin{equation}\int x dx =3\end{equation}\] \FPprint{\FPeval{\out}{clip(sin(\x +1))}\out}',''], #\[ ... \[)]
+                    [r'\[\begin{equation}\int x dx =3\end{equation}\] {x}',
+                     r'\[\begin{equation}\int x dx =3\end{equation}\] \FPprint{\x }',''] #\[ ... \[)] + var
+                    ]
 
     def test_render(self):
         """ Tests if input XML file yields reference LaTeX file and warning are

@@ -125,6 +125,9 @@ class CalculatedParser(ABC):
     def grammar(self):
         """ Define the parser grammar.
         """
+        # Ignore TeX commands between delimiters $$, \(,  \)
+        tex_eq = (Literal(r'\(') | Literal(r'$$') | Literal(r'\[')) + ... + (Literal(r'\)') | Literal(r'$$') | Literal(r'\]'))
+
         # Define elemtary stuff
         leftAc = Literal('{').suppress()
         rightAc = Literal('}').suppress()
@@ -145,6 +148,7 @@ class CalculatedParser(ABC):
         # may contain almost everything
         variable = Combine(leftAc + Word(alphas, alphanums + "_") + rightAc)('name')
         variable.setParseAction(self.variable_hook)
+        variable.ignore(tex_eq)
         # arithmetic operators
         minus = Literal('-')
         arithOp = oneOf("+ * /") | minus
