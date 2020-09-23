@@ -5,15 +5,15 @@
   - **from** [auto-multiple-choice](https://www.auto-multiple-choice.net) LaTeX quizzes **to** [moodle questions (XML format)](https://docs.moodle.org/38/en/Moodle_XML_format), see details in the [amc2moodle README file](amc2moodle/amc2moodle/README.md).
   - **from** [moodle questions (XML format)](https://docs.moodle.org/38/en/Moodle_XML_format) **to** [auto-multiple-choice](https://www.auto-multiple-choice.net) LaTeX quizzes, see details in the [moodle2amc README file](amc2moodle/moodle2amc/README.md).
 
-The conversion support equation, table, figures and standard text formatting.
+The conversion supports equations, tables, figures and standard text formatting.
 This software is written in python and in XSLT, thus the conversion step is OS independent. It has been tested for moodle 3.x and auto-multiple-choice (v1.0.3-v1.4) and the conversion step is OS independent.
 
-Note that auto-multiple-choice (amc) LaTeX format is very convenient, and can be used for preparing multiple choice questions off-line and avoiding moodle web GUI.
+Note that [auto-multiple-choice](https://www.auto-multiple-choice.net) (amc) LaTeX format is very convenient, and can be used for preparing multiple choice questions off-line and avoiding moodle web GUI.
 
 
 ## Installation
 
-### before installing amc2moodle:
+### Before installing amc2moodle:
 
   -  install python (version >=3.5)
   -  install `imageMagick`, useful to convert image files (*.eps, *.pdf, ...) into png
@@ -51,7 +51,10 @@ to install it in editable mode, useful if git is used.
 Note: for Ubuntu users use `pip3` instead of `pip` for python3.
 
 ### Uninstallation
-Run `pip uninstall amc2moodle`.
+Run 
+```
+pip uninstall amc2moodle
+```
 
 ## Conversion
 The program can be run in a shell terminal, for instance to convert an **amc LaTeX file to moodle XML**
@@ -75,14 +78,14 @@ Help and options can be obtained using
 ```
 moodle2amc -h
 ```
-Then the output LaTeX can be edited and included for creating amc exams. Examples of the `moodle2amc` possibilities are given [here](./amc2moodle/moodle2amc/test/moodle-bank-exemple.pdf)
+Then the output LaTeX can be edited and included for creating amc exams. Examples of the `moodle2amc` possibilities are given [here](./amc2moodle/moodle2amc/test/moodle-bank-exemple.pdf).
 
 
 
 ## Troubleshooting
 In case of problem, do not hesitate to ask help on [issues](https://github.com/nennigb/amc2moodle/issues)
   - 'convert: not authorized..' see ImageMagick policy.xml file see [here](https://stackoverflow.com/questions/52699608/wand-policy-error-error-constitute-c-readimage-412)
-  - bugs with tikz-LaTeXML in texlive 2019/2020: please update the following `perl` modules `Parse::RecDescent`, `XML::LibXML` and `XML::LibXSLT` [here](https://github.com/brucemiller/LaTeXML/issues/1279) with `cpan`or `cpanm`in CLI.
+  - bugs with tikz-LaTeXML in texlive 2019/2020: please update the following `perl` modules `Parse::RecDescent`, `XML::LibXML` and `XML::LibXSLT` [here](https://github.com/brucemiller/LaTeXML/issues/1279) with `cpan` or `cpanm`in CLI.
 
 ## Related Project
   - [auto-multiple-choice](https://www.auto-multiple-choice.net),  is a piece of software that can help you creating and managing multiple choice questionnaires (MCQ), with automated marking.
@@ -100,7 +103,7 @@ If you want to contribute to `amc2moodle`, your are welcomed! Don't hesitate to
   - add support for other language (French and English are present) in AMC command
   - ...
 
-To ensure code homogeneity among contributors, we use a source-code analyzer (e.g. pylint).
+To ensure code homogeneity among contributors, we use a source-code analyzer (e.g. `pylint`).
 Before submitting a PR, run the tests suite.
 
 ## License

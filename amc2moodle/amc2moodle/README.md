@@ -41,9 +41,9 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use `\AMCnumericChoices` to create moodle `numerical` question.
   -  Use `\AMCOpen` to create moodle `essay` question.
   -  Use `\QuestionIndicative` to create moodle `description` question.
-  -  use `fp` package to create moodle calculated question (experimental)
-  -  Use user's command defined in the LaTeX file.
-  -  Use `\usepackage[utf8]{inputenc}` for accents
+  -  Use `fp` package to create moodle calculated question (experimental)
+  -  Use user's commands defined in the LaTeX file.
+  -  Use `\usepackage[utf8]{inputenc}` for accents.
   -  Use packages that are supported by `LaTeXML`. See the list [here](http://dlmf.nist.gov/LaTeXML/manual/included.bindings). Instead you need to add a binding to LaTeXML.
   -  Use `tikz`. `LaTeXML` generates `svg` content, embedded in the question or answer html text.
   -  Use `mhchem` package for chemical equation. Because this package is not yet supported by LaTeXML, the rendering is delegated to `mathjax`. To use it, your moodle admin need to add `mhchem` to the TeX extensions of `mathjax`:
