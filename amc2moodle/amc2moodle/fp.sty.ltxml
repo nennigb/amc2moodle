@@ -35,7 +35,7 @@ DefMacro('\FPset{}{}','\def#1{(#2)}');
 # Create the rand counter to label all 'random' call. Reset the counter at each new question.
 NewCounter('rand', 'questions');
 # FPrand to define a random parameter
-DefMacro('\FPrandom{}{}','\stepcounter{rand}\edef#1{rand\value{rand}}');
+DefMacro('\FPrandom{}{}','\stepcounter{rand}\edef#1{rand\arabic{rand}}');
 # FPeval is just a replacement def, like FPset, 
 DefMacro('\FPeval{}{}', sub {
   my ($gullet, $arg1, $arg2) = @_;
