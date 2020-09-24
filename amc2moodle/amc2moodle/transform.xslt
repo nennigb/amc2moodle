@@ -90,12 +90,16 @@
 	</question>
 </xsl:template>
 
+<!--\FPprint yields to calculatedmulti question type-->
+<xsl:template match="note[@class='amc_questioncalcmult' or @class='amc_questionmultcalcmult']">
+	<question type="calculatedmulti">
+	  <xsl:apply-templates />
+	</question>
+</xsl:template>
+
 <!--TODO Need to add other type like description, calculated... -->
 
-<!-- template netoyage champ globaux mise en forme-->
-<xsl:template match="para|inline-para">
-    <xsl:apply-templates/>
-</xsl:template>
+
 
 
 

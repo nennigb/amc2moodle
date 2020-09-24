@@ -223,6 +223,36 @@ class TestSuiteNoTikz(unittest.TestCase):
         # the test is ok if ok==0
         self.assertEqual(ok, 0)
 
+    def check_nitems(self, qname, value):
+        """ Check 'nitems' value in a calculated question.
+
+        qname : string
+            name of the question
+        value : string
+            value of itemcount (n_items option)
+        """
+        tree = self.tree
+        ok = 0
+
+        for q in tree.iterfind(".//question[@type='calculatedmulti']"):
+            if q.find('name/text').text == qname:
+                for data_set in q.iterfind('.//dataset_definitions/dataset_definition/itemcount'):
+                    if data_set.text == str(value):
+                        ok += 1
+        return ok
+
+    def test_nitems_in_calculated(self):
+        """ Check option 'nitems' in calculated questions.
+        """
+        # question name and nitems value
+        q_dict = {'eig': 3,        # set with SetOption
+                  'calc:area': 5}  # default value
+        # loop over questions of q_dict
+        for qname, value in q_dict.items():
+            ok = self.check_nitems(qname, value)
+            # the test is ok if ok != 0
+            self.assertNotEqual(ok, 0)
+
 
 class TestSuiteOther(unittest.TestCase):
     """ Define test cases for unittest. Just check the process finish normally.

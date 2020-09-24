@@ -21,7 +21,6 @@
 
 from amc2moodle.utils.calculatedParser import *
 from io import StringIO
-import os
 import unittest
 from unittest.mock import patch
 
@@ -43,6 +42,7 @@ class TestSuiteCalculatedParserToFP(unittest.TestCase):
                     ['{=sqrt(3)}', r'\FPprint{\FPeval{\out}{clip(root(2, 3))}\out}', ''],  # sqrt -> root(2,...)
                     ['{=(1.0 + pow(2, 3)/2)}', r'\FPprint{\FPeval{\out}{clip((1.0+pow(3,2)/2))}\out}', ''],  # pow -> pow(2,...)
                     ['{=pow(2, 0.5)}', r'\FPprint{\FPeval{\out}{clip(pow(0.5,2))}\out}', ''],  # pow for roots 1.414213562373095042
+                    ['{=pow(0.5+1.5, 0.5)}', r'\FPprint{\FPeval{\out}{clip(pow(0.5,0.5+1.5))}\out}', ''],  # test expr in swap 1.414213562373095042
                     ['{=-({x}-{y})}', r'\FPprint{\FPeval{\out}{clip(neg((\x -\y )))}\out}', ''],  # - unary
                     ['{=-1.2e-3}', r'\FPprint{\FPeval{\out}{clip(-0.0012)}\out}', ''],  # float
                     ['{=2*(((1-2)*(1+2))/(1+pi()))}', r'\FPprint{\FPeval{\out}{clip(2*(((1-2)*(1+2))/(1+\FPpi)))}\out}', ''],  # nested + pi()
@@ -51,14 +51,68 @@ class TestSuiteCalculatedParserToFP(unittest.TestCase):
                     ['{=log(log(2) + 2}', r'{=log(log(2) + 2}', ''],  # Miss formed, parser skip
                     ['{=xyz(2)}', r'\FPprint{\FPeval{\out}{clip(xyz(2))}\out}', 'Unsupported'],  # Miss formed, parser skip
                     ['{=expm1(2)}', r'\FPprint{\FPeval{\out}{clip(expm1(2))}\out}', 'Unsupported'],  # Miss formed, parser skip
+                    # Embedded LaTeX equation in XML may leads to problems (because of braces)
+                    # Remove standard mathjax delimiters from 'variable' parsing,
+                    # In mathjax equation environnement inside delimiters is correct
+                    [r'$$\begin{equation}\int x dx =3\end{equation}$$ {=sin({x}+1)}',
+                     r'$$\begin{equation}\int x dx =3\end{equation}$$ \FPprint{\FPeval{\out}{clip(sin(\x +1))}\out}',''], # $$ ... $$
+                    [r'\(\begin{equation}\int x dx =3\end{equation}\) {=sin({x}+1)}',
+                     r'\(\begin{equation}\int x dx =3\end{equation}\) \FPprint{\FPeval{\out}{clip(sin(\x +1))}\out}',''], #\( ... \)
+                    [r'\[\begin{equation}\int x dx =3\end{equation}\] {=sin({x}+1)}',
+                     r'\[\begin{equation}\int x dx =3\end{equation}\] \FPprint{\FPeval{\out}{clip(sin(\x +1))}\out}',''], #\[ ... \[)]
+                    [r'\[\begin{equation}\int x dx =3\end{equation}\] {x}',
+                     r'\[\begin{equation}\int x dx =3\end{equation}\] \FPprint{\x }',''] #\[ ... \[)] + var
+                    ]
+
+    def test_render(self):
+        """ Tests if input XML file yields reference LaTeX file and warning are
+        printed.
+        """
+        print('\n> test for', self.__class__.__name__)
+        # Create the parser
+        parser = CreateCalculatedParser('xml2fp')
+        for e, ref, expectedwarn in self.expr:
+            print("Expr = {} -> {}".format(e, ref))
+            # mock out std ouput for testing
+            with patch('sys.stdout', new=StringIO()) as fake_out:
+                # parse answer
+                out = parser.render(e)
+                # check for the expected conversion
+                self.assertEqual(out, ref)
+                # check for expected warnings
+                # As '' belong to all strings
+                warn = fake_out.getvalue()
+                if warn:
+                    self.assertIn(expectedwarn, warn)
+
+
+
+class TestSuiteCalculatedParserFromFP(unittest.TestCase):
+    """ Define AMC/FP question parser test cases for unittest.
+    """
+
+    def setUp(self):
+        """ Define the test cases.
+        """
+        # # define the [moodle input, the expected latex output, warning msg]
+        self.expr =[['nothing', 'nothing', ''],  # nothing to parse
+                    ['blabla fp{rand1} bla', r'blabla {={rand1}} bla', ''],  # variable
+                    ['fp{root(2, 3)}', r'{=sqrt(3)}', ''],  # root(2,...)-> sqrt
+                    ['fp{root(1+1, 3)}', r'{=pow(3,1/(1+1))}', ''],  # root(2,...)-> pow if not 2
+                    ['fp{ln(pi)}', r'{=log(pi())}', ''],  # ln -> log
+                    ['fp{clip(1+rand0*(10-1))}', r'{=(1+{rand0}*(10-1))}', ''], # clip is skipped (print only)
+                    ['fp{neg(neg(1+2))}', r'{=-(-(1+2))}', ''], # check 'neg'
+                    ['fp{(arctan(1.2)+arcsin(3))/(arccos((pi+rand2)/2))}', r'{=(atan(1.2)+asin(3))/(acos((pi()+{rand2})/2))}', ''],  # ln -> log
+                    ['fp{xyz(2)}', r'{=xyz(2)}', 'Unsupported'],  # Miss formed, parser skip
                    ]
 
     def test_render(self):
         """ Tests if input XML file yields reference LaTeX file and warning are
         printed.
         """
+        print('\n> test for', self.__class__.__name__)
         # Create the parser
-        parser = CreateCalculatedParser('xml2fp')
+        parser = CreateCalculatedParser('fp2xml')
         for e, ref, expectedwarn in self.expr:
             print("Expr = {} -> {}".format(e, ref))
             # mock out std ouput for testing

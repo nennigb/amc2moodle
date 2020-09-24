@@ -8,6 +8,7 @@
 <?latexml package="graphicx"?>
 <?latexml package="automultiplechoice" options="francais,bloc,completemulti"?>
 <?latexml package="mhchem"?>
+<?latexml package="fp"?>
 <?latexml package="tikz"?>
 <?latexml RelaxNGSchema="LaTeXML"?>
 <quiz>
@@ -91,7 +92,7 @@
     
   ]]></text></questiontext><answer format="html" fraction="33.333333333333336"><text><![CDATA[ Ou en <tt>C</tt> using <tt>alltt</tt> package
 <p><pre>
-int s=-2; <br/>for (int i=0;i&lt;4; i++)<text font="serif">{</text> <br/>s=i*i+s; <br/><text font="serif">}</text>
+int s=-2; <br/>for (int i=0;i<4; i++)<text font="serif">{</text> <br/>s=i*i+s; <br/><text font="serif">}</text>
 </pre></p>
 ]]></text></answer><answer format="html" fraction="33.333333333333336"><text><![CDATA[
            \(\lvert-10-2\rvert\)
@@ -106,9 +107,9 @@ int s=-2; <br/>for (int i=0;i&lt;4; i++)<text font="serif">{</text> <br/>s=i*i+s
      ]]></text></answer><answer format="html" fraction="33.333333333333336"><text><![CDATA[Avec une équation matricielle
 
     $$\begin{equation}
-           \mathrm{det}\begin{pmatrix}1&amp;2\\
--1&amp;10\end{pmatrix}=\begin{vmatrix}1&amp;2\\
--1&amp;10\end{vmatrix}
+           \mathrm{det}\begin{pmatrix}1&2\\
+-1&10\end{pmatrix}=\begin{vmatrix}1&2\\
+-1&10\end{vmatrix}
     \end{equation}$$
     
 ]]></text></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>false</single><answer format="html" fraction="-6.25"><text>aucune de ces réponses n'est correcte</text></answer></question>
@@ -189,13 +190,13 @@ Test for itemize html rendering,</p>
         <p>Here is a test for <tt>mhchem</tt>-LaTeXpackage. This package is not yet supported by LaTeXML, thus the rendering is delegated to <tt>mathjax</tt>. To use it, you need to add <tt>mhchem</tt> in the <tt>mathjax</tt> moodle plugin (ask to admin, see details in README file).</p>
       
       
-        <p>A complicated chemical equation \(\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}\), the same written in math mode : <i>\(\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}\)</i>, combine with other math operator 
-           \(K=\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}\)
+        <p>A complicated chemical equation \(\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}\), the same written in math mode : <i>\(\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}\)</i>, combine with other math operator 
+           \(K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}\)
      and finally placed in the equation environment</p>
         
           
     $$\begin{equation}
-           K=\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}
+           K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}
     \end{equation}$$
     
         
@@ -203,7 +204,7 @@ Test for itemize html rendering,</p>
         
       
     
-  ]]></text></questiontext><answer format="html" fraction="100.0"><text><![CDATA[a simpler one \(\ce{CO2 + C -&gt; 2 CO}\).]]></text></answer><answer format="html" fraction="-50.0"><text><![CDATA[Wrong Choice! ]]></text></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>true</single></question>
+  ]]></text></questiontext><answer format="html" fraction="100.0"><text><![CDATA[a simpler one \(\ce{CO2 + C -> 2 CO}\).]]></text></answer><answer format="html" fraction="-50.0"><text><![CDATA[Wrong Choice! ]]></text></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>true</single></question>
   <question type="category"><category><text>$course$/test_tikz/num</text></category></question>
   <question type="numerical"><name><text>with-int</text></name><questiontext format="html"><text><![CDATA[
     
@@ -211,7 +212,7 @@ Test for itemize html rendering,</p>
         <p>Combien de fois le programme suivant affiche-t-il <tt>"x"</tt> ?</p>
       
       
-        <p><tt>for (int i = 4; i &lt; 24; ++i)<br/> for (int j = i + 2; j - 1 &gt; 0; --j)<br/>  puts("x");</tt></p>
+        <p><tt>for (int i = 4; i < 24; ++i)<br/> for (int j = i + 2; j - 1 > 0; --j)<br/>  puts("x");</tt></p>
       
       
     
@@ -240,6 +241,78 @@ Test for itemize html rendering,</p>
       
     
   ]]></text></questiontext></question>
+  <question type="category"><category><text>$course$/test_tikz/calc</text></category></question>
+  <question type="calculatedmulti"><name><text>calc:area</text></name><questiontext format="html"><text><![CDATA[
+    
+      
+        <p>What is the <b>area</b> of rectangle of height {=((1)+{rand2}*(10-1))} and width {=(1+{rand1}*(10-1))} ?</p>
+      
+      
+        <p>We recall that 
+           \(\pi=\)
+    3.141592653589793238.</p>
+      
+      
+        <p>Check for random labels : {=({rand3}*{rand4})}</p>
+      
+      
+        <p>Check nested expression :
+ {=((1+(pi()+(1))/(pi()-(1))))} =? 2.933884413848519720</p>
+      
+      
+        <p>Check for power and trigo :
+
+           \(\sin(0.5)^{2}+\cos(0.5)^{2}\)
+     =  {=(pow(cos(0.5),1+1)+pow(sin(0.5),2))} =? 1</p>
+      
+      
+      
+    
+  ]]></text></questiontext><answer format="html" fraction="100.0"><text><![CDATA[
+        {=((((1)+{rand2}*(10-1))*(1+{rand1}*(10-1))))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="-50.0"><text><![CDATA[
+        {=((((1)+{rand2}*(10-1))+(1+{rand1}*(10-1))))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>true</single><dataset_definitions><dataset_definition><status><text>private</text></status><name><text>rand2</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.984</value></dataset_item><dataset_item><number>2</number><value>0.847</value></dataset_item><dataset_item><number>3</number><value>0.29</value></dataset_item><dataset_item><number>4</number><value>0.478</value></dataset_item><dataset_item><number>5</number><value>0.348</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand3</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.76</value></dataset_item><dataset_item><number>2</number><value>0.821</value></dataset_item><dataset_item><number>3</number><value>0.209</value></dataset_item><dataset_item><number>4</number><value>0.435</value></dataset_item><dataset_item><number>5</number><value>0.374</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand1</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.161</value></dataset_item><dataset_item><number>2</number><value>0.118</value></dataset_item><dataset_item><number>3</number><value>0.47</value></dataset_item><dataset_item><number>4</number><value>0.588</value></dataset_item><dataset_item><number>5</number><value>0.538</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand4</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.648</value></dataset_item><dataset_item><number>2</number><value>0.613</value></dataset_item><dataset_item><number>3</number><value>0.997</value></dataset_item><dataset_item><number>4</number><value>0.479</value></dataset_item><dataset_item><number>5</number><value>0.75</value></dataset_item></dataset_items></dataset_definition></dataset_definitions></question>
+  <question type="category"><category><text>$course$/test_tikz/calc</text></category></question>
+  <question type="calculatedmulti"><name><text>eig</text></name><questiontext format="html"><text><![CDATA[
+    
+      
+        <p>Compute the eigenvalues of the following matrix</p>
+        
+          
+    $$\begin{equation}
+           \begin{pmatrix}x&amp;y\\
+y&amp;z\end{pmatrix},
+    \end{equation}$$
+    
+        
+        <p>where 
+           \(x\)
+    ={=(1+{rand1}*(5-1))}, 
+           \(y\)
+    ={=(1+{rand2}*(5-1))} and 
+           \(z\)
+    ={=(1+{rand3}*(5-1))}.</p>
+      
+      
+      
+      
+      
+      
+      
+      
+    
+  ]]></text></questiontext><answer format="html" fraction="50.0"><text><![CDATA[
+        {=((-((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))+sqrt((((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))))/(2*(1)))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="50.0"><text><![CDATA[
+        {=((-((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-sqrt((((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))))/(2*(1)))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="-6.25"><text><![CDATA[
+        {=(((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="-6.25"><text><![CDATA[
+        {=(-((1+{rand1}*(5-1))+(1+{rand3}*(5-1))))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="-6.25"><text><![CDATA[
+        {=(((-((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))+sqrt((((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))))/(2*(1)))+((-((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-sqrt((((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))))/(2*(1))))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>false</single><answer format="html" fraction="-6.25"><text>aucune de ces réponses n'est correcte</text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><dataset_definitions><dataset_definition><status><text>private</text></status><name><text>rand2</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.08</value></dataset_item><dataset_item><number>2</number><value>0.17</value></dataset_item><dataset_item><number>3</number><value>0.3</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand3</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.68</value></dataset_item><dataset_item><number>2</number><value>0.61</value></dataset_item><dataset_item><number>3</number><value>0.26</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand1</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.3</value></dataset_item><dataset_item><number>2</number><value>0.17</value></dataset_item><dataset_item><number>3</number><value>0.0</value></dataset_item></dataset_items></dataset_definition></dataset_definitions></question>
   <question type="category"><category><text>$course$/test_tikz/tikz</text></category></question>
   <question type="multichoice"><name><text>tikz:Q1</text></name><questiontext format="html"><text><![CDATA[
     

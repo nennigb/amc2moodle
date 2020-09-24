@@ -37,11 +37,13 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use enumerate and itemize (but without the tag `\item[tag]`)
   -  Automatically add an answer like *there is no good answer* if there is no good answer.
   -  Like in auto-multiple-choice, all answers are Shuffled by default, you can keep answers ordered by using `\begin{choices}[o]` or `\begin{responses}[o]`.
+  -  Pass some options or modify your tex file only for `amc2moodle` using "magic comments" (see below). 
   -  Use `\AMCnumericChoices` to create moodle `numerical` question.
   -  Use `\AMCOpen` to create moodle `essay` question.
   -  Use `\QuestionIndicative` to create moodle `description` question.
-  -  Use user's command defined in the LaTeX file.
-  -  Use `\usepackage[utf8]{inputenc}` for accents
+  -  Use `fp` package to create moodle calculated question (experimental)
+  -  Use user's commands defined in the LaTeX file.
+  -  Use `\usepackage[utf8]{inputenc}` for accents.
   -  Use packages that are supported by `LaTeXML`. See the list [here](http://dlmf.nist.gov/LaTeXML/manual/included.bindings). Instead you need to add a binding to LaTeXML.
   -  Use `tikz`. `LaTeXML` generates `svg` content, embedded in the question or answer html text.
   -  Use `mhchem` package for chemical equation. Because this package is not yet supported by LaTeXML, the rendering is delegated to `mathjax`. To use it, your moodle admin need to add `mhchem` to the TeX extensions of `mathjax`:
@@ -102,7 +104,6 @@ For instance if `m=-0.5` and `b=1`, a student who ticks all the wrong answers ge
 Another difference is that moodle 3 use tabulated grades like: 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10 and their multiple. **If your grade are not conform to that you must use: 'Nearest grade if not listed' in import option in the moodle question bank**. But check at least that the sum of good answer give 100% !
 
 
-
 ### Categories
 By default, the imported questions are all created in `$course$/filein`. When the category flag is used, the AMC command `element` is used to create subcategories and the argument `catname` is used instead of `filein`.
 Each question is then placed in `$course$/catname/elementName`.
@@ -111,11 +112,47 @@ Each question is then placed in `$course$/catname/elementName`.
 ### Feedback
 Feedback are present, in a certain way, in `automuliplechoice` with the `\explain` command. This part is not yet implemented here. However it could be easy to add it at the response or question level as other fields and bypass them for real `automuliplechoice` test.
 
+## Passing options and "magic comments"
+Options can be passed to `amc2moodle` using the `amc2moodle` internal command `\SetOptions{option_name}{value}`. To avoid LaTeX compilation problem with `automuliplechoice`, you need to comment it. Another possibility is to use "magic comments" prefix `%amc2moodle` to pass options to `amc2moodle` and to keep LaTeX backward compatibility, for instance:
+```
+%amc2moodle \SetOptions{nitems}{10}
+```
+Such line are ignored in standard LaTeX processing and uncommented for `amc2moodle` workflow.
+Another possibility is to use "magic comments" to add some specific TeX code/text to moodle question (link to external file or video url, change in scoring, remove or add answers).
 
 ### Numerical questions
 These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` questions in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical questions, but it is not used here. 
 For question with floating point operations, **you need to comment `\usepackage{fp}` during the conversion** (required internally by AMC). If you need to realize computation in the question, prefer `\pgfmathparse` that is handled by LaTeXML.
 
+### Parametrized (calculated) questions
+These questions are possible in AMC in several ways but `amc2moodle` currently supports only the use for `fp` package. When `fp` is used to create an random parameter, the question will be converted and map into moodle `CalculatedMulti` question.
+Only a part of `fp` syntax is supported `\FPset`, `\FPrandom`, `\FPseed` (ignored), `\FPpi`, `\FPeval` and `\FPprint` (other command can be easilly defined in `fp.sty.ltxml` using `\FPeval`).
+To define an expression, the general purpose command `\FPeval` should be use
+```
+\FPeval{\a}{trunc(1+random*(10-1), 1)} % uniform in [1, 10]
+\FPeval{\b}{2.5+3}
+```
+in `amc2moodle` this command will affect the expression to the output variable. To map them into moodle, only expression printed with `\FPprint` will appear in moodle calculated question text.
+
+The moodle jocker will be automatically created at each call of `random` in `\FPeval` or with `\FPrandom`. Currently, the jocker are created used python random generator and results will be different from those obtained by `fp`. If required the jocker value can be changed in the output xml file in the `dataset_definitions` node.
+
+Moodle expected that the answer will contains only mathematical expression thus `amc2moodle` will also expect `choices` environnement defined like
+```
+\begin{choices}
+   \correctchoice{\FPprint{\FPeval{\out}{\a * \b}\out}}
+   \wrongchoice{\FPprint{\FPeval{\out}{\a + \b}\out}}
+\end{choices}
+``` 
+It is noteworthy that there is NO `$x=$` or additional things...
+The moodle wildcard, cannot be replaced in equations rendered by mathjax.
+
+More example are available in the test suite.
+
+This fonctionnaly is **experimental** and may possibly have side effects with other usage of `fp` in the question definition.
+
+Only private datasets are currently supported.
+
+> Supported options : `decimalNumber` (number of decimal place in random number), `nitems` (number of variants for each random parameter)
 
 ### Open Question
 These questions defined in AMC with `\AMCOpen` are converted into `essay` questions in moodle. Only information about the number of lines is passed to moodle, other options (mostly use for text formating) are skipped.
@@ -124,3 +161,5 @@ These questions defined in AMC with `\AMCOpen` are converted into `essay` questi
 Provide a description of a problem that can be common to several questions. It is useful to define notation, pictures, equations. Since, it is not a *real* question, the `choices` environment is not provided. In this case, the question will be converted by `amc2moodle` into moodle `description` question type.
 To use it in AMC, do not forget to use `\QuestionIndicative` to tell AMC not to count points for this question (with a 0-point scoring).
 > In AMC it is also possible to use `element` content to do share text between questions of the same group, but it will be ignored by `amc2moodle` (too open to parse it).
+
+

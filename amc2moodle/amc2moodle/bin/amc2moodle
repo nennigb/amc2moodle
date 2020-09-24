@@ -61,10 +61,14 @@ def run():
                         help='''No use of system temporary directory, use
                                 input directory instead.''',
                         required=False, action="store_true")
-    parser.add_argument("--version",
+    parser.add_argument("-v", "--version",
                         help='''Show the current version of moodle2amc''',
                         action="version",
                         version="%(prog)s v{version}".format(version=amdlpkg.__version__))
+    parser.add_argument("--disable-magic",
+                        help='''Disable magic comments (default : enable).''',
+                        required=False, default=False, dest='magic_flag',
+                        action="store_true")
 
     # Get input args
     args = parser.parse_args()
@@ -78,6 +82,7 @@ def run():
     indentFlag = args.prettify
     tempDir = not args.notemp
     catname = args.catname
+    magic_flag = not(args.magic_flag)
 
     # check input file
     fileInOk = False
@@ -99,7 +104,8 @@ def run():
     if fileInOk:
         a2m.amc2moodle(fileInput=fileIn, fileOutput=fileOut,
                        keepFlag=keepFlag, catname=catname,
-                       indentXML=indentFlag, usetempdir=tempDir)
+                       indentXML=indentFlag, usetempdir=tempDir,
+                       magic_flag=magic_flag)
     else:
         # exit with error status
         sys.exit(1)

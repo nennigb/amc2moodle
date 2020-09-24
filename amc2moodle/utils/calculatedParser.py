@@ -13,7 +13,8 @@ from pyparsing import Word, alphas, nums, alphas, alphanums, Char, oneOf,\
                       Forward, Optional, ParseResults, _flatten
 
 
-__all__ = ['CalculatedParserToFP', 'CreateCalculatedParser']
+__all__ = ['CalculatedParserToFP', 'CalculatedParserFromFP',
+           'CreateCalculatedParser']
 
 # TODO create test suite
 # TODO create CalculatedParserToPGF
@@ -53,7 +54,6 @@ FP_EVAL_FUNCTION = {'atan': 'arctan',
                     'atan': 'arctan',
                     'sqrt': 'sqrt',  # need to use root
                     'abs': 'abs',
-                    'pow': 'pow',
                     'exp': 'exp',
                     'log': 'ln',
                     'min': 'min',
@@ -67,6 +67,26 @@ FP_UNSUPPORTED = {'atan2', 'atanh', 'bindec', 'decbin', 'decoct', 'deg2rad',
 
 FP_MAX = 999999999999999999.999999999999999999
 
+
+# FP to moodle
+MDL_FUNCTION = {'arctan': 'atan',
+                'pow': 'pow',  # need to swap args
+                'sin': 'sin',
+                'arcsin': 'asin',
+                'cos': 'cos',
+                'arccos': 'acos',
+                'tan': 'tan',
+                'arctan': 'atan',
+                'root': 'sqrt',  # need to use sqrt or pow
+                'abs': 'abs',
+                'exp': 'exp',
+                'ln': 'log',
+                'min': 'min',
+                'max': 'max',
+                'clip': '',
+                'neg': '-'}
+
+MDL_UNSUPPORTED = {'clip'}
 
 ''' Usefull info for pgfmathparse
 http://tug.ctan.org/tex-archive/graphics/pgf/base/doc/pgfmanual.pdf p 1033
@@ -105,6 +125,9 @@ class CalculatedParser(ABC):
     def grammar(self):
         """ Define the parser grammar.
         """
+        # Ignore TeX commands between delimiters $$, \(,  \)
+        tex_eq = (Literal(r'\(') | Literal(r'$$') | Literal(r'\[')) + ... + (Literal(r'\)') | Literal(r'$$') | Literal(r'\]'))
+
         # Define elemtary stuff
         leftAc = Literal('{').suppress()
         rightAc = Literal('}').suppress()
@@ -125,6 +148,7 @@ class CalculatedParser(ABC):
         # may contain almost everything
         variable = Combine(leftAc + Word(alphas, alphanums + "_") + rightAc)('name')
         variable.setParseAction(self.variable_hook)
+        variable.ignore(tex_eq)
         # arithmetic operators
         minus = Literal('-')
         arithOp = oneOf("+ * /") | minus
@@ -136,7 +160,8 @@ class CalculatedParser(ABC):
         atom.setParseAction(self.atom_hook)
         # Finalize postponed elements...
         expr << atom + ZeroOrMore(arithOp + atom)
-        function << fnname + Group(lpar + ZeroOrMore(expr) + Optional(Literal(',') + expr) + rpar)
+        # Need to group arguments for swapping them
+        function << fnname + Group(lpar + Group(ZeroOrMore(expr)) + Optional(Literal(',') + Group(expr)) + rpar)
         # Define equation
         equation = equal + expr + rightAc
         equation.setParseAction(self.equation_hook)
@@ -271,7 +296,7 @@ class CalculatedParserToFP(CalculatedParser):
         out = tokens.asList().copy()
         # print('In hook :' , tokens)
         # start wit pathological case
-        # sqrt(x) doen't exist in FP, neead to use pow(x, 2)
+        # sqrt(x) doen't exist in FP, neead to use root(x, 2)
         if tokens.name == 'sqrt':
             out[0] = 'root'
             # TODO better to use dequee for left side op
@@ -297,8 +322,148 @@ class CalculatedParserToFP(CalculatedParser):
         return out
 
 
+class CalculatedParserFromFP(CalculatedParser):
+    """ Define the class for parsing LaTeXML/FP expression into moodle.
+
+
+    Normally only hooks have to be given.
+
+    Only equation are usefull here
+    """
+    # string to use for variable replacement in render
+    varformat = '{name}'
+
+    def __init__(self):
+        # store all wildcards encounter during the parsing
+        self.wildcards = set()
+
+    def grammar(self):
+        """ Define the parser grammar for FP syntaxe. Modified from base class.
+        """
+        # Define elemtary stuff
+        leftAc = Literal('{').suppress()
+        rightAc = Literal('}').suppress()
+        lpar = Literal('(')
+        rpar = Literal(')')
+        integer = Word(nums)            # simple unsigned integer
+        real = Regex(r"[+-]?\d+(:?\.\d*)?(:?[eE][+-]?\d+)?")
+        # add extra input parameter to the parseaction to keep in mind all variable
+        real.setParseAction(self.real_hook)
+        number = real | integer
+
+        # Define function
+        fnname = Word(alphas, alphanums + "_")('name')
+        # Require expr to finalize the def
+        function = Forward()
+        function.setParseAction(self.function_hook)
+
+        # Normally, no variable excepted random*, pi ...
+        # may contain almost everything
+        variable = Word(alphas, alphanums + "_")('name')
+        variable.setParseAction(lambda t : self.variable_hook(self.wildcards, t))
+        # arithmetic operators
+        minus = Literal('-')
+        arithOp = oneOf("+ * /") | minus
+        # Require atom to finalize the def
+        expr = Forward()
+        # Define atom
+        atom = number | (0, None)*minus + (Group(lpar + expr + rpar) | function | variable)
+        atom.setParseAction(self.atom_hook)
+        # Finalize postponed elements...
+        expr << atom + ZeroOrMore(arithOp + atom)
+        function << fnname + Group(lpar + Group(ZeroOrMore(expr)) + Optional(Literal(',') + Group(expr)) + rpar)
+        # Define equation
+        equal = Literal('fp{').suppress()
+        equation = equal + expr + rightAc
+        equation.setParseAction(self.equation_hook)
+        return equation, variable
+
+    def render(self, s):
+        """ Render the input string s to the targeted moodle output.
+        """
+        # create the parser
+        equation, variable = self.grammar()
+        # parse and replace 'equation'
+        out = equation.transformString(s)
+
+        return out
+
+    @staticmethod
+    def variable_hook(wildcards, tokens):
+        """ Change variable name for moodle interpreter.
+        """
+        out = tokens.asList()
+        if out[0] == 'pi':
+            # pi is a function in moodle
+            return 'pi()'
+        else:
+            # return the moodle variable format
+            wildcards.add(out[0])
+            return '{' + out[0] +'}'
+
+    @staticmethod
+    def atom_hook(tokens):
+        """ Change unary minus into neg(exp) at atom level.
+        """      
+        return tokens
+
+    @staticmethod
+    def equation_hook(tokens):
+        """ Render 'equation' expression for moodle interpreter.
+        """
+        out = []
+        for tok in tokens:
+            if isinstance(tok, ParseResults):
+                out += tok.asList()
+            elif isinstance(tok, list):
+                out += tok
+            else:
+                out.append(tok)
+        # call ParseResults _flatten to un-nest the list before the final rendering
+        out = ''.join(_flatten(out))
+        return "{=" + out + "}"
+
+    @staticmethod
+    def function_hook(tokens):
+        """ Modify the moodle function API to conform to FP api.
+        """
+        # to check : ceil; (floor 	Arrondit à l'entier inférieur ); (ceil 	Arrondit à l'entier supérieur )
+        # possible with playing with trunc(#1:#2) or round()
+        out = tokens.asList().copy()
+        # start wit pathological case
+        # try to use sqrt
+        if tokens.name == 'root':
+            try:
+                # is it possible to evaluate the exponent
+                expo = float(''.join(out[1][1]))
+                if abs(expo - 2) < 1e-12:
+                    out[0] = 'sqrt'
+                    out[1] = ['(', out[1][3], ')']
+            except :
+                # use pow with 1/nth
+                out[0] = 'pow'
+                # take the inverse of the exponent
+                out[1][1] = ['1', '/', '(' , out[1][1] , ')']
+                # need to swap arg order
+                out[1][1], out[1][3] = out[1][3], out[1][1]
+        elif tokens.name == 'pow':
+            out = tokens.asList()
+            out[1][1], out[1][3] = out[1][3], out[1][1]
+        # other name are just rename
+        elif tokens.name in MDL_FUNCTION.keys():
+            out[0] = MDL_FUNCTION[tokens.name]
+        # check that only valid expression are used
+        elif tokens.name in MDL_UNSUPPORTED:
+            print("Unsupported *function* '{}' by `moodle` interpreter in the expression.".format(tokens.name))
+            out = tokens
+        else:
+            print("Unsupported *function* '{}' in the expression.".format(tokens.name))
+            out = tokens
+        return out
+
 # dict of all available question
-PARSER_FACTORY = {'xml2fp': CalculatedParserToFP}
+PARSER_FACTORY = {'xml2fp': CalculatedParserToFP,
+                  'fp2xml': CalculatedParserFromFP}
 
 def CreateCalculatedParser(ptype):
     """ Factory function for creating the CalculatedParser* objects.
@@ -320,17 +485,20 @@ def CreateCalculatedParser(ptype):
         raise KeyError(" 'qtype' argument should be in {}".format(PARSER_FACTORY.keys() ) )
 
 if __name__=="__main__":
-    #s=" {a} et de largeur {b} and Formula in the text {={a}*{b}}."
-    # It is also possible to use float {={a}*({b}+2.3)/10.0}.</p><p>Accolade should not be used for number {=2.5*2.2}<br></p><p><br></p>]]></text>"
-    # s = 'bvnv {x} blabla and {b} and {=pi()*2} or {=pow(2, 3)*2} or {=atan(-3.0e-5)} or {={x}*2.123} again {=2+({a}*{b})+sin(({b}+2.2e3)/2)}'
-    #s = '{=1+(1/(1+(1/(1+1/(1+1/(1+1/(1+1/(1))))))))}'
-    # s = '{=sqrt(3+1) +atan(2.01*{x}*pi())} and {=sin(-5.7e30*{x})} or {=(pi()*1e-3)/12}'
-    # s = '{=-(max(3, 2)+2*{x})}'
-    # s = '{=1+1}'
+    # Basic example of usage
+    # moodle2amc
     s= "<text><![CDATA[<p><b>Moodle</b> and <b>fp</b> latex package syntax is not always equivalent. Here some test for pathological cases.</p><p>Let {x} and {y} some real number.<br></p><ul><li>argument of 'pow' function are in a different order {=pow({x},2)}</li><li>the 'sqrt' function doesn't exist, need 'root(n, x)' in fp, {=sqrt(({x}-{y})*({x}+{y}))}</li><li>'pi' is a function in moodle, {=sin(1.5*pi())}</li><li>test with '- unary' expression {=-{x}+(-{y}+2)}<br></li></ul>]]></text>"
     parser = CreateCalculatedParser('xml2fp')
     out = parser.render(s)
-    print(out)
+    print('> moodle2amc:\n', out)
 
+    # amc2moodle
+    #s= "fp{(sin(3) + clip((trunc(1+rand0*(10-1), 1))+(trunc(1+rand1*(10-1), 1))))}"
+    s= "blabla fp{ ( root(2, 3.0+1.0) + sin(pi+rand0) + arctan(rand1)) } blabla"
+    parser = CreateCalculatedParser('fp2xml')
+    out = parser.render(s)
+    print('> amc2moodle:\n', out)
+
+    print('> wildcards set:', parser.wildcards)
     
-    
+

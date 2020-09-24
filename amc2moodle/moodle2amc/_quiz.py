@@ -293,6 +293,8 @@ class Quiz:
               "In case of trouble, you may need to check for :\n" + \
               u"  - unicode character like euro € currency symbol  \n" + \
               "  - latex special character like '{', '_', '&', ... \n" + \
+              "  - possible problems with embedded 'equation' environnement inside matjax delimiters:\n"\
+              "    ex :  $$\\begin{equation}... Remove '$$' in output TeX file  \n" + \
               "  - strange html tags \n" +\
               "  - check the scoring \n" +\
               "  - ..."
