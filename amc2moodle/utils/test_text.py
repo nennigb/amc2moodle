@@ -22,14 +22,18 @@
 import amc2moodle.utils.text as text
 import unittest
 
-
+# Run by utils.test 
 class TestText(unittest.TestCase):
     """ Define calculated question parser test cases for unittest.
     """
+    @classmethod
+    def setUpClass(cls):
+        print('\n> Tests of ', cls.__name__)
+
     def setUp(self):
         """ Define the test cases.
         """
-        # # define the [input, output] for each test cases
+        # Define the [input, output] for each test cases
         self.case = {'accent': ['óëàéèïí', 'oeaeeii'],                   # check for accents
                      'non_ascii': ['œæÆß€¿Œ', 'oeaeAEss Euros?OE'],      # check for non ascii (without accent)
                      'non_alphanum': ['Label:a/b@[c]%-2', 'Label:a b c -2'],  # check for non letter
@@ -61,8 +65,6 @@ class TestText(unittest.TestCase):
         self.assertEqual(out, self.case['label'][1])
 
 
-
 if __name__ == '__main__':
     # run unittest test suite
-    print('> Running text utils tests...')
     unittest.main()
