@@ -361,8 +361,8 @@
 
 <!-- question: 10079  -->
   <question type="calculatedmulti">
-    <name>
-      <text>Calculée</text>
+    <name>      
+      <text>Calculée</text> <!-- Check for accent cleaning  -->
     </name>
     <questiontext format="html">
       <text><![CDATA[<p>Quelle est l'aire d'un rectangle de longueur {a} et de largeur {b}&nbsp;?</p><p>Formula in the text {={a}*{b}}. It is also possible to use float {={a}*({b}+2.3)/10.0}.</p><p>Accolade should not be used for number {=2.5*2.2}<br></p><p><br></p>]]></text>
