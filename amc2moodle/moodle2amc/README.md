@@ -44,6 +44,7 @@ quiz.convert(fileOut)
 ### What you cannot do
 
   - Connect AMC to moodle database. Whereas [moodle-mod-automultiplechoice plugin](https://github.com/UGA-DAPI/moodle-mod-automultiplechoice) which is an interface to use AMC within Moodle, `moodle2amc` just convert a moodle XML file obtained after moodle question bank export into AMC LaTeX format. 
+  - moodle gift format is **not supported**
 
 ### Grading strategy
 
