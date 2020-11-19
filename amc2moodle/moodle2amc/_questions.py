@@ -35,6 +35,7 @@ import urllib
 import math
 import sys
 from ..utils.calculatedParser import *
+from amc2moodle.utils.text import clean_q_name
 
 # list of supported moodle question type for
 SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay', 'description',
@@ -83,7 +84,8 @@ class Question(ABC):
         """ Init class from an etree Element.
         """
         self.q = q
-        self.name = q.find('name/text').text
+        # Remove accent and non ascii chars for amc compatibility
+        self.name = clean_q_name(q.find('name/text').text)
         self.qtype = None
         self.fileCreated = []
         self.gStrategy = GRADING_STRATEGY
