@@ -128,7 +128,10 @@
 </tr>
 </tbody>
 </table>
-<br><br><p></p>]]></text>
+<br><br>
+<p>
+</p>
+]]></text>
     </questiontext>
     <generalfeedback format="html">
       <text><![CDATA[<p>global feedback<br></p>]]></text>
@@ -201,6 +204,57 @@
       </feedback>
     </answer>
   </question>
+
+  
+<!-- question: CODE  -->
+  <question type="multichoice">
+    <name>
+      <text>code</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>This is inline code <code>x = sqrt(3)</code> and here and code block
+<pre><code>
+a = 2
+b = a + 3.14
+</code>
+</pre>
+In html, it is generally recommanded to use &lt;code&gt; is an inline tag and &lt;pre&gt;&lt;code&gt; tag for blocks.
+</p>
+]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text><![CDATA[<p>global feedback<br></p>]]></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <correctfeedback format="html">
+      <text>Votre réponse est correcte.</text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+      <text>Votre réponse est partiellement correcte.</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+      <text>Votre réponse est incorrecte.</text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>wrong answer<br></p>]]></text>
+      <feedback format="html">
+        <text><![CDATA[<p>this the feedback of question 1<br></p>]]></text>
+      </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+      <text><![CDATA[<p>the good answer</p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+  </question>
+  
  <!-- Example of description question --> 
   <question type="description">
     <name>
@@ -216,7 +270,7 @@
     <penalty>0</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-  </question>
+  </question>  
   
   
   <!-- question: 0  -->
@@ -581,6 +635,153 @@
     <number_of_items>1</number_of_items>
 </dataset_definition>
 </dataset_definitions>
+  </question>
+
+
+<!-- question: 0  -->
+  <question type="category">
+    <category>
+        <text>$course$/moodle2amc/alternative-format</text>
+    </category>
+  </question>
+<!-- question: with markdown -->
+  <question type="multichoice">
+    <name>
+      <text>markdown</text>
+    </name>
+    <questiontext format="markdown">
+      <text><![CDATA[
+Go to your editor preferences (via the user menu) and select 'Plain text area',
+then in the question box, select Markdown format.
+
+# Main title
+
+## Basic text formatting
+
+a *single* word
+***a sequence of words***
+in**distinguish**able
+
+  - top level bullet one
+    * sub-bullet  
+    * sub-bullet 2 
+  - top level bullet two
+
+Now numbered list
+
+  1. numbered point one
+  2. numbered point two
+
+
+## More advanced features
+test for link [here](https://docs.moodle.org/310/en/Markdown)
+
+Are table supported ?
+
+Markdown | Less | Pretty
+--- | --- | ---
+*Still* | `renders` | **nicely**
+1 | 2 | 3
+
+> Blockquotes are very handy in email to emulate reply text.
+> This line is part of the same quote.
+
+```python
+import markdown
+markdown.markdown(text, extensions=['extra'])
+```
+
+
+]]></text>
+    </questiontext>
+    <generalfeedback format="moodle_auto_format">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <showstandardinstruction>0</showstandardinstruction>
+    <correctfeedback format="html">
+      <text>Your answer is correct.</text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+      <text>Your answer is partially correct.</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+      <text>Your answer is incorrect.</text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="0" format="markdown">
+      <text>**yes**</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text>non</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+      <text><![CDATA[<b>perhaps</b>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+  </question>
+
+<!-- plain_text -->
+   <question type="multichoice">
+    <name>
+      <text>plain text</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Nothing but plain text</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <showstandardinstruction>0</showstandardinstruction>
+    <correctfeedback format="html">
+      <text>Your answer is correct.</text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+      <text>Your answer is partially correct.</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+      <text>Your answer is incorrect.</text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="100" format="plain_text">
+      <text>yes</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="markdown">
+      <text>**no**</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text>no in html</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
   </question>
 
 
