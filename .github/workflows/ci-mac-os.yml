@@ -48,7 +48,8 @@ jobs:
         brew install latexml
         
     - name: Update $PATH
-      run: echo ::add-path::/Library/TeX/texbin
+      # run: echo ::add-path::/Library/TeX/texbin # depreciated
+      run: echo "/Library/TeX/texbin" >> $GITHUB_PATH
       
     - name: Add fonts (required by moodle2amc tests)
       run: |

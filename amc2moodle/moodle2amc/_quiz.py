@@ -24,6 +24,7 @@ from xml.sax.saxutils import unescape
 import subprocess
 import os
 from ._questions import *
+from amc2moodle.utils.text import clean_q_name
 
 
 # output latex File
@@ -222,12 +223,18 @@ class Quiz:
                 # create a simpler catname for amc
                 catname = '-'.join(mdl_catname.split('/')[1:])
                 # sanitize catname (remove %)
-                catname = catname.replace('%', 'perc ')
+                catname = catname.replace('%', 'perc. ')
+                # Remove accent and non ascii chars for amc compatibility
+                catname = clean_q_name(catname)
                 # store name and say no question in it for now
                 cat_dict.update({catname: 0})
             else:
                 # Standard question
+                # qname can be in CDATA or not. '.text' works for both.
                 qname = question.find('name/text').text
+                # Remove accent and non ascii chars for amc compatibility  (just for logging here)
+                # for tex conversion, it is done in Question __init__
+                qname = clean_q_name(qname)
                 if qtype in SUPPORTED_QUESTION_TYPE:
                         print("> Reshape question '{}' of type '{}'.".format(qname, qtype))
                         # if no encounter category name before this question,

@@ -23,6 +23,8 @@ from amc2moodle.utils.calculatedParser import *
 from io import StringIO
 import unittest
 from unittest.mock import patch
+# import also text test
+from amc2moodle.utils.test_text import *
 
 
 class TestSuiteCalculatedParserToFP(unittest.TestCase):
@@ -68,7 +70,7 @@ class TestSuiteCalculatedParserToFP(unittest.TestCase):
         """ Tests if input XML file yields reference LaTeX file and warning are
         printed.
         """
-        print('\n> test for', self.__class__.__name__)
+        print('\n> Tests of' , self.__class__.__name__)
         # Create the parser
         parser = CreateCalculatedParser('xml2fp')
         for e, ref, expectedwarn in self.expr:
@@ -110,7 +112,7 @@ class TestSuiteCalculatedParserFromFP(unittest.TestCase):
         """ Tests if input XML file yields reference LaTeX file and warning are
         printed.
         """
-        print('\n> test for', self.__class__.__name__)
+        print('\n> Tests of', self.__class__.__name__)
         # Create the parser
         parser = CreateCalculatedParser('fp2xml')
         for e, ref, expectedwarn in self.expr:
@@ -130,5 +132,5 @@ class TestSuiteCalculatedParserFromFP(unittest.TestCase):
 
 if __name__ == '__main__':
     # run unittest test suite
-    print('> Running parsing tests...')
+    print('> Running utils submodule tests...')
     unittest.main()
