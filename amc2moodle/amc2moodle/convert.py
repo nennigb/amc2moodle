@@ -901,7 +901,12 @@ class AMCQuiz:
                  'ltx_centering': 'center'}
 
         for Ii in Ilist:
-            img_name = Ii.attrib['candidates'].split(',')[-1]   #get the last candidates
+            try:
+                img_name = Ii.attrib['candidates'].split(',')[-1]   # get the last candidates
+            except KeyError as e:
+                print('WARNING : No Image file candidates. ',
+                      'Probably due to a wrong path : {}'.format(Ii.attrib['graphic']))
+                raise e
             ext = img_name.split('.')[-1]
             # not all attrib are mandatory... check if they exist before using them
             # try for class
