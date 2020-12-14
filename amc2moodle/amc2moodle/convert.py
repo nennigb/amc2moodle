@@ -61,6 +61,7 @@ MOO_DEFAULT_GRADE = 1.
 
 # default size for image ²
 DEFAULT_IMG_WIDTH = '200pt'
+DEFAULT_IMG_RESOLUTION = 100
 
 # calculated
 CALCULATED_DEFAULT_PARSER = 'fp2xml'
@@ -93,28 +94,40 @@ class ImageCustom:
     TODO : create to abstract class to define the common interface.
     """
 
-    def __init__(self, fileIn=None, fileOut=None):
+    def __init__(self, fileIn=None, fileOut=None,
+                 resolution=DEFAULT_IMG_RESOLUTION):
+        """ Initialize the class.
+
+        Parameters
+        ----------
+        fileIn : string.
+            The full input file name.
+        fileOut : string.
+            The full output file name.
+        resolution : int, optional
+            The resolution used in image convertion.
+        """
         if fileIn is not None and fileOut is not None:
-            self.convertImage(fileIn, fileOut)
+            self.convertImage(fileIn, fileOut, resolution)
 
-
-    def convertImage(self, fileIn, fileOut):
+    def convertImage(self, fileIn, fileOut, resolution):
         """ Image conversion with wand.
         """
-        im = wandImage(filename=fileIn)
+        im = wandImage(filename=fileIn, resolution=resolution)
         # remove timestamp from png (keep checksum unchanged for test)
         im.artifacts['png:exclude-chunks'] = 'date,time'
         im.strip()
         # for (k, v) in im.artifacts.items():
         #     print(k, v)
-        print("   Conversion from {} to {}.".format(os.path.splitext(fileIn)[1],
-                                                    os.path.splitext(fileOut)[1]
-                                                    ))
+        print("   Conversion from {} to {} (imgResolution={}).".format(
+                                                    os.path.splitext(fileIn)[1],
+                                                    os.path.splitext(fileOut)[1],
+                                                    resolution))
         im.save(filename=fileOut)
         im.close()
 
 
-def encodeImg(Ii, pathin, pathout):
+def encodeImg(Ii, pathin, pathout, resolution=DEFAULT_IMG_RESOLUTION):
     """ Convert image to png and encode it in base64 text.
 
     Parameters
@@ -122,9 +135,10 @@ def encodeImg(Ii, pathin, pathout):
     Ii : element tree
         The xml element containing the image information (path, ...). This
         element is modified.
-
     pathin, pathout : string
         the input and output path
+    resolution : Int
+        The resolution used in image convertion.
     """
 
     ext = Ii.attrib['ext']
@@ -139,7 +153,7 @@ def encodeImg(Ii, pathin, pathout):
         # im.write(pathF + img_name)
         img_path = os.path.join(pathout, img_name_out)
         im = ImageCustom(os.path.join(pathF, img_name_in),
-                         img_path)
+                         img_path, resolution)
     else:
         img_name_out = Ii.attrib['name'] + '.' + ext
         img_path = os.path.join(pathF, img_name_out)
@@ -172,6 +186,7 @@ class AMCQuestion(ABC):
         self.Qi = Qi
         self.name = Qi.find('name/text').text
         self.context = context
+        self._options_dict = dict()
 
     def __repr__(self):
         """ Change string representation.
@@ -194,7 +209,9 @@ class AMCQuestion(ABC):
         # inclusion des images dans les questions & réponses
         Ilist = self.Qi.xpath(".//file")
         for Ii in Ilist:
-            Ii = encodeImg(Ii, self.context.pathin, self.context.wdir)
+            Ii = encodeImg(Ii, self.context.pathin, self.context.wdir,
+                           int(self._setWithOptionsOrDefault('imgResolution',
+                                                             DEFAULT_IMG_RESOLUTION)))
 
     @abstractmethod
     def _scoring(self):
@@ -205,7 +222,7 @@ class AMCQuestion(ABC):
         """
         Qi = self.Qi
         optlist = Qi.xpath(".//options")
-        self._options_dict = dict()
+
         for opt in optlist:
             # the option name is in 'role' atrtibute
             # the option value is in
@@ -222,16 +239,13 @@ class AMCQuestion(ABC):
         else:
             return default_value
 
-
     def convert(self):
         """ Run all questions convertion steps.
         """
         print(" * processing {} question '{}'...".format(self.__class__.__name__, self.name))
-        self._encodeImg()
         self._options()
+        self._encodeImg()
         self._scoring()
-
-
 
 
 class AMCQuestionSimple(AMCQuestion):
