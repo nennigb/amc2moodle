@@ -120,6 +120,10 @@ Options can be passed to `amc2moodle` using the `amc2moodle` internal command `\
 Such line are ignored in standard LaTeX processing and uncommented for `amc2moodle` workflow.
 Another possibility is to use "magic comments" to add some specific TeX code/text to moodle question (link to external file or video url, change in scoring, remove or add answers).
 
+Currently, accessible **general options** are :
+  - `imgResolution`, to change de quality of images. It applyes only for images that are converted into png.
+other specific options are given in each question type sections.
+
 ### Numerical questions
 These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` questions in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical questions, but it is not used here. 
 For question with floating point operations, **you need to comment `\usepackage{fp}` during the conversion** (required internally by AMC). If you need to realize computation in the question, prefer `\pgfmathparse` that is handled by LaTeXML.
