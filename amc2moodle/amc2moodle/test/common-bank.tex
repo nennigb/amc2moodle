@@ -27,6 +27,7 @@
 %===================================================================
 % questions à réponse multiple
 % pas de bonne réponse, on doit ajouter un champ "aucune de ces réponses n'est correcte"
+% test for `\explain`.
 \element{cat1}{
   \begin{questionmult}{Qmult:Aucune}  \bareme{e=-0.5,b=1,m=-1.,p=-0.5} % never put b<1,
     Quel fruit possède un noyau?
@@ -36,6 +37,7 @@
       \mauvaise{le Kiwi}
       %    \mauvaise{En allant à $$ \int_0^2 x \mathrm{d} x $$ la ligne}
     \end{reponseshoriz}
+    \explain{Fruits grow on trees $x^3$, most of the \emph{time}.}
   \end{questionmult}
 }
 %
