@@ -110,7 +110,7 @@ Each question is then placed in `$course$/catname/elementName`.
 
 
 ### Feedback
-Feedback are present, in a certain way, in `automuliplechoice` with the `\explain` command. This part is not yet implemented here. However it could be easy to add it at the response or question level as other fields and bypass them for real `automuliplechoice` test.
+In a certain way, feedback are present in `automuliplechoice` with the `\explain` command. This command is mapped to the question level element `<generalfeedback>` in moodle XML.
 
 ## Passing options and "magic comments"
 Options can be passed to `amc2moodle` using the `amc2moodle` internal command `\SetOptions{option_name}{value}`. To avoid LaTeX compilation problem with `automuliplechoice`, you need to comment it. Another possibility is to use "magic comments" prefix `%amc2moodle` to pass options to `amc2moodle` and to keep LaTeX backward compatibility, for instance:

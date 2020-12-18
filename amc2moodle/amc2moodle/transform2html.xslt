@@ -92,6 +92,14 @@ Changement de l'organisation des questions
         <xsl:for-each select=".//note[@class='amc_numeric_choices']">
           <xsl:copy-of select="."/>
         </xsl:for-each>
+		<!-- Support for explain        -->
+        <xsl:for-each select=".//note[@class='amc_explain']">
+          <generalfeedback format="html">          		
+      	     <xsl:copy>
+                      <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text><xsl:apply-templates/><xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
+             </xsl:copy>
+	      </generalfeedback>
+        </xsl:for-each>
         <!-- mise en forme html, équation, tableau -->
         <questiontext format="html">
 
@@ -240,6 +248,8 @@ equation
 <xsl:template match="text[@class='amc_bareme']">
 </xsl:template>
 <xsl:template match="note[@class='amc_options']">
+</xsl:template>
+<xsl:template match="note[@class='amc_explain']">
 </xsl:template>
 
 
