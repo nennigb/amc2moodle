@@ -37,7 +37,8 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use enumerate and itemize (but without the tag `\item[tag]`)
   -  Automatically add an answer like *there is no good answer* if there is no good answer.
   -  Like in auto-multiple-choice, all answers are Shuffled by default, you can keep answers ordered by using `\begin{choices}[o]` or `\begin{responses}[o]`.
-  -  Pass some options or modify your tex file only for `amc2moodle` using "magic comments" (see below). 
+  -  Pass some options or modify your tex file only for `amc2moodle` using "magic comments" (see below).
+  -  Use feedback
   -  Use `\AMCnumericChoices` to create moodle `numerical` question.
   -  Use `\AMCOpen` to create moodle `essay` question.
   -  Use `\QuestionIndicative` to create moodle `description` question.
@@ -111,13 +112,23 @@ Each question is then placed in `$course$/catname/elementName`.
 
 ### Feedback
 In a certain way, feedback are present in `automuliplechoice` with the `\explain` command. This command is mapped to the question level element `<generalfeedback>` in moodle XML.
+For other feedbacks supported in moodle XML format, you can use the magic comment combined the following `amc2moodle` latex commands:
+  - `\AddXMLQElement{element_name}{text content}` to add text (html) the element `element_name` at the **Question** level
+  - `\AddXMLAElement{element_name}{text content}` to add text (html) the element `element_name` at the **Answer** level
+For instance,
+```
+%amc2moodle \AddXMLQElement{partiallycorrectfeedback}{This is \textbf{partially} correct !} % in the question
+%amc2moodle \AddXMLAElement{feedback}{This is an \emph{answer} feedback !} % in the answer
+```
+at answer level the feedback is called `feedback`. However, at question level, there are several possibilities :
+`generalfeedback`, `correctfeedback`,  `partiallycorrectfeedback`, `incorrectfeedback`... See [moodle XML doc](https://docs.moodle.org/30/en/Moodle_XML_format) for more details.
 
 ## Passing options and "magic comments"
 Options can be passed to `amc2moodle` using the `amc2moodle` internal command `\SetOptions{option_name}{value}`. To avoid LaTeX compilation problem with `automuliplechoice`, you need to comment it. Another possibility is to use "magic comments" prefix `%amc2moodle` to pass options to `amc2moodle` and to keep LaTeX backward compatibility, for instance:
 ```
 %amc2moodle \SetOptions{nitems}{10}
 ```
-Such line are ignored in standard LaTeX processing and uncommented for `amc2moodle` workflow.
+Such line are ignored in standard LaTeX processing and uncommented for `amc2moodle` workflow. It is noteworthy that the prefix should be at the beginning of the line.
 Another possibility is to use "magic comments" to add some specific TeX code/text to moodle question (link to external file or video url, change in scoring, remove or add answers).
 
 ### Numerical questions
