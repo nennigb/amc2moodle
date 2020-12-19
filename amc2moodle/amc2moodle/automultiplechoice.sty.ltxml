@@ -96,6 +96,11 @@ DefConstructor('\explain{}', '<ltx:note class="amc_explain">#1</ltx:note>');
 # OPTIONS
 DefConstructor('\SetOption{}{}',"<ltx:note class='amc_options' role='#1'>#2</ltx:note>"); 
 
+# Add html text element `tag` to XML tree. May be included in question (Q) or answer (A) level
+# \AddXML*Element{tag}{text content}
+DefConstructor('\AddXMLQElement{}{}',"<ltx:note class='amc_XMLQElement' role='#1'>#2</ltx:note>"); 
+DefConstructor('\AddXMLAElement{}{}',"<ltx:note class='amc_XMLAElement' role='#1'>#2</ltx:note>"); 
+
 
 # ===================================================================
 # MISE EN FORME PAPIER
