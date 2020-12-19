@@ -253,6 +253,23 @@ class TestSuiteNoTikz(unittest.TestCase):
             # the test is ok if ok != 0
             self.assertNotEqual(ok, 0)
 
+    def test_feedback_in_Qmult_Aucune(self):
+        """ Check if feedback elements are there and in the good place.
+        """
+        qname = 'Qmult:Aucune'
+        ok = -1
+
+        # question name and nitems value
+        for q in self.tree.iterfind(".//question[@type='multichoice']"):
+            if q.find('name/text').text == qname:
+                ok += 1  # crash if not found
+                if len(q.findall('generalfeedback')) == 0:
+                    ok += 1  # crash if not found
+                if len(q.findall('partiallycorrectfeedback')) == 0:
+                    ok += 1  # crash if not found
+                if len(q.findall('answer/feedback')) == 0:
+                    ok += 1  # crash if not found
+        self.assertEqual(ok, 0)
 
 class TestSuiteOther(unittest.TestCase):
     """ Define test cases for unittest. Just check the process finish normally.
