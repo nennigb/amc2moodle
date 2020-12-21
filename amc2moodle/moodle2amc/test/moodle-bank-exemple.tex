@@ -84,6 +84,9 @@ sys2 & 2 kg & - & 1.5 m\\
  
 
 
+
+
+
   \begin{choices}
     \wrongchoice{wrong answer}
     \correctchoice{the good answer is obviously a weird table
@@ -138,6 +141,31 @@ stuff1 & stuff2\\
 
 % -----------------------------------------------------------------------------
 \element{moodle2amc}{
+  \begin{question}{code}\label{q:code}   
+    This is inline code \texttt{x = sqrt(3)} and here and code block
+
+ 
+\begin{alltt}
+
+a = 2
+b = a + 3.14
+
+
+\end{alltt}
+
+In html, it is generally recommanded to use <code> is an inline tag and <pre><code> tag for blocks.
+
+
+  \begin{choices}
+    \wrongchoice{wrong answer}
+    \correctchoice{the good answer}
+
+  \end{choices}
+
+  \end{question}}
+
+% -----------------------------------------------------------------------------
+\element{moodle2amc}{
   \begin{question}{ProblemDescription}\label{q:ProblemDescription}   
     \QuestionIndicative
 Provide a \textbf{description} of a problem that can be common to several questions. It is useful to define notation, pictures, equations \(\int_0^1 x \mathrm{d} x = 0\)...
@@ -150,7 +178,7 @@ Provide a \textbf{description} of a problem that can be common to several questi
 Here \(x\) is an integer, test for \textbf{exact} match, only.
 
 % need \usepackage{fp} for floatting point computation 
-\AMCnumericChoices{150}{exact = 0, scoreexact = 1, sign = false, decimals = 0, digits = 3}   
+\AMCnumericChoices{150}{exact = 0, decimals = 0, sign = false, digits = 3, scoreexact = 1}   
 
   \end{questionmultx}}
 
@@ -160,7 +188,7 @@ Here \(x\) is an integer, test for \textbf{exact} match, only.
     Give an approximated value for \(\pi\) up to 3 digits?
 
 % need \usepackage{fp} for floatting point computation 
-\AMCnumericChoices{3.141592653589793}{exact = 1, scoreexact = 1, sign = false, decimals = 3, digits = 4}   
+\AMCnumericChoices{3.141592653589793}{exact = 1, decimals = 3, sign = false, digits = 4, scoreexact = 1}   
 
   \end{questionmultx}}
 
@@ -170,7 +198,7 @@ Here \(x\) is an integer, test for \textbf{exact} match, only.
     Let \(z=3+2\mathrm{i}\). What is the imaginary part ?
 
 % need \usepackage{fp} for floatting point computation 
-\AMCnumericChoices{2}{exact = 0, scoreexact = 1, sign = false, decimals = 0, digits = 1}   
+\AMCnumericChoices{2}{exact = 0, decimals = 0, sign = false, digits = 1, scoreexact = 1}   
 
   \end{questionmultx}}
 
@@ -180,16 +208,16 @@ Here \(x\) is an integer, test for \textbf{exact} match, only.
     Give an approximated value for \(\sqrt{2}\) up to 3 digits ?
 
 % need \usepackage{fp} for floatting point computation 
-\AMCnumericChoices{1.4142135623730951}{exact = 1, scoreexact = 1, sign = false, decimals = 3, approx = 100, digits = 4, scoreapprox = 0.5}   
+\AMCnumericChoices{1.4142135623730951}{decimals = 3, scoreapprox = 0.5, sign = false, digits = 4, scoreexact = 1, exact = 1, approx = 100}   
 
   \end{questionmultx}}
 
 % -----------------------------------------------------------------------------
 \element{moodle2amc-calculated}{
-  \begin{question}{Calculee}\label{q:Calculee}
+  \begin{question}{Calculee}\label{q:Calculee}   
     \FPeval{\a}{trunc(1+random*(10-1), 1)} % uniform in [1, 10]
 \FPeval{\b}{trunc(1+random*(10-1), 1)} % uniform in [1, 10]
-Quelle est l'aire d'un rectangle de longueur \FPprint{\a } et de largeur \FPprint{\b } ?
+Quelle est l'aire d'un rectangle de longueur \FPprint{\a } et de largeur \FPprint{\b } ?
 Formula in the text \FPprint{\FPeval{\out}{clip(\a *\b )}\out}. It is also possible to use float \FPprint{\FPeval{\out}{clip(\a *(\b +2.3)/10.0)}\out}.
 Accolade should not be used for number \FPprint{\FPeval{\out}{clip(2.5*2.2)}\out}
 
@@ -230,6 +258,115 @@ test formatting on variable \textbf{\FPprint{\x }}
 
   \end{question}}
 
+% -----------------------------------------------------------------------------
+\element{moodle2amc-alternative-format}{
+  \begin{question}{markdown}\label{q:markdown}   
+    Go to your editor preferences (via the user menu) and select 'Plain text area',
+then in the question box, select Markdown format.
+
+{\LARGE\bfseries Main title}
+
+{\Large\bfseries Basic text formatting}
+
+a \emph{single} word
+\textbf{\emph{a sequence of words}}
+in\textbf{distinguish}able
+
+ 
+\begin{itemize}
+
+  \item top level bullet one 
+\begin{itemize}
+
+  \item sub-bullet  
+
+  \item sub-bullet 2 
+
+
+\end{itemize} 
+
+
+
+  \item top level bullet two
+
+
+\end{itemize} 
+
+Now numbered list
+
+ 
+\begin{enumerate}
+
+  \item numbered point one
+
+  \item numbered point two
+
+
+\end{enumerate} 
+
+{\Large\bfseries More advanced features}
+
+test for link \href{https://docs.moodle.org/310/en/Markdown}{here} 
+
+Are table supported ?
+
+        
+\begin{center}
+	
+  \begin{tabular}{ccc}
+  \hline
+  
+
+Markdown & Less & Pretty\\   
+
+  \hline
+
+
+\emph{Still} & \texttt{renders} & \textbf{nicely}\\   
+
+1 & 2 & 3\\   
+
+  \hline
+
+	
+  \end{tabular}\\
+ 
+\end{center}
+ 
+\begin{quote}
+Blockquotes are very handy in email to emulate reply text.
+This line is part of the same quote.
+
+\end{quote}
+ 
+\begin{alltt}
+import markdown
+markdown.markdown(text, extensions=['extra'])
+
+\end{alltt}
+
+  \begin{choices}
+    \wrongchoice{\textbf{yes}}
+    \wrongchoice{non}
+    \correctchoice{\textbf{perhaps}}
+
+  \end{choices}
+
+  \end{question}}
+
+% -----------------------------------------------------------------------------
+\element{moodle2amc-alternative-format}{
+  \begin{question}{plain text}\label{q:plain text}   
+    Nothing but plain text
+  \begin{choices}
+    \correctchoice{yes}
+    \wrongchoice{\textbf{no}}
+    \wrongchoice{no in html}
+
+  \end{choices}
+
+  \end{question}}
+
 % ============================================================================
 \exemplaire{1}{    	% nombre de sujet différent
 
@@ -253,9 +390,10 @@ Nom et prénom :
 
 % mélange et catégorie (groupe dans ACM)
 \cleargroup{allquestions}
+\copygroup{moodle2amc-calculated}{allquestions}
+\copygroup{moodle2amc-alternative-format}{allquestions}
 \copygroup{moodle2amc-num}{allquestions}
 \copygroup{moodle2amc}{allquestions}
-\copygroup{moodle2amc-calculated}{allquestions}
 % Shuffling is commented for testing
 %\melangegroupe{allquestions}
 \restituegroupe{allquestions}}

@@ -36,6 +36,7 @@ import math
 import sys
 from ..utils.calculatedParser import *
 from amc2moodle.utils.text import clean_q_name
+import markdown
 
 # list of supported moodle question type for
 SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay', 'description',
@@ -114,6 +115,29 @@ class Question(ABC):
         q = etree.fromstring(qstring)
         return cls(q)
 
+    def format2tex(self, cdata_content, text_format):
+        """ Convert `cdata_content` with `text_format` format into tex.
+
+        'html', 'plain_text', 'moodle_auto_format' are treated in the same way
+        since plain text is recommanded to put raw html.
+        'markdown' require a specific preprocessing.
+
+        """
+
+        if text_format in ('html', 'plain_text', 'moodle_auto_format'):
+            text = self.html2tex(cdata_content)
+        elif text_format == 'markdown':
+            # First convert markdown into html and
+            cdata_content = (cdata_content.replace('<text><![CDATA[', '')
+                                          .replace(']]></text>', ''))
+            cdata_content = markdown.markdown(cdata_content,
+                                              extensions=['extra'])
+            text = self.html2tex(unescape('<text>' + cdata_content + '</text>'))
+        else:
+            print("> Unsupported format '{}'. Try with html filter.".format(text_format))
+            text = self.html2tex(cdata_content)
+        return text
+
     def html2tex(self, cdata_content):
         """ Convert CDATA field into latex text.
 
@@ -139,7 +163,8 @@ class Question(ABC):
                          .replace('<br>', ''))
 
         parser = etree.HTMLParser(recover=True)
-        tree_content = etree.fromstring(unescape(cdata_content), parser)
+        tree_content = etree.fromstring(cdata_content, parser)
+        # tree_content = etree.fromstring(unescape(cdata_content), parser)
         self._img_check(tree_content)
 
         # transform with XSLT into XSLT (tree) for all other element
@@ -147,7 +172,6 @@ class Question(ABC):
         # convert to XML (more suitable for search)
         tree_text = etree.XML(etree.tostring(xslt_content,
                               encoding='utf8').decode('utf-8'))
-
         return tree_text
 
     def _img_check(self, tree_content):
@@ -217,11 +241,11 @@ class Question(ABC):
     def question(self):
         """ Get question text.
         """
-        # perhaps not so obvious and will require to extract cdata
+        # check for question format (markdown, html, text)
+        text_format = self.q.find('questiontext').attrib['format'].lower()
         cdata_content = etree.tostring(self.q.find('questiontext/text'),
                                        encoding='utf8').decode('utf-8')
-        text = self.html2tex(cdata_content)
-
+        text = self.format2tex(cdata_content, text_format)
         return text
 
     @abstractmethod
@@ -285,8 +309,8 @@ class QuestionMultichoice(Question):
         amc_choices = etree.Element('choices')
         # loop over all answers
         for i, ans in enumerate(self.q.findall('.//answer')):
-            # bool use to check if html parsing (CDATA) is needed
-            html = ans.attrib['format'].lower() == 'html'
+            # Get format for parsing (CDATA) is needed
+            text_format = ans.attrib['format'].lower()
             # TODO how to integrate the scoring aspect
             if self.gStrategy == 'std':
                 # the fraction (scoring) field is not allways at the same place
@@ -302,13 +326,10 @@ class QuestionMultichoice(Question):
                 else:
                     tag = 'wrongchoice'
             amc_ans = etree.Element(tag, attrib={'order': str(i)})
-            if html:
-                cdata_content = etree.tostring(ans.find('text'), encoding='utf8').decode('utf-8')
-                text = self.html2tex(cdata_content)
-                amc_ans.append(text)
-            else:
-                latex = etree.tostring(ans.find('text'), encoding='utf8').decode('utf-8')
-                amc_ans.text = latex
+            # parse answer text
+            cdata_content = etree.tostring(ans.find('text'), encoding='utf8').decode('utf-8')
+            text = self.format2tex(cdata_content, text_format)
+            amc_ans.append(text)
             # store in a list
             amc_choices.append(amc_ans)
 
@@ -362,7 +383,7 @@ class QuestionEssay(Question):
 class QuestionNumerical(Question):
     """ Multiple choice question (question or questionmult).
 
-    Whereas Moodle, AMC does not support multiple answer for numerical 
+    Whereas Moodle, AMC does not support multiple answer for numerical
     questions, excepted to
         - yield different grade if the rounding is too loose
     The following behaviors are ignored:
@@ -388,7 +409,7 @@ class QuestionNumerical(Question):
         return amcqtype
 
     def answers(self):
-        """ Create and parse answers. 
+        """ Create and parse answers.
         """
         # eg: \AMCnumericChoices{3.141592653589793}{digits=6, decimals=5, sign=true}
         amc_choices = etree.Element('AMCnumericChoices')
@@ -567,7 +588,7 @@ class QuestionCalculatedMulti(Question):
 
 
     def question(self):
-        """ Get question text. Overwrite the class method to add a header that 
+        """ Get question text. Overwrite the class method to add a header that
         define the random variable.
         """
 
@@ -638,7 +659,7 @@ Q_FACTORY = {'multichoice': QuestionMultichoice,
 
 def CreateQuestion(qtype, question):
     """ Factory function for creating the Questions* objects.
-    
+
 
     Parameters
     ----------

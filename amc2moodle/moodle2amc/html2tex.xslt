@@ -70,22 +70,25 @@
 <xsl:template match="u">\underline{<xsl:apply-templates/>}</xsl:template>
 
 <xsl:template match="em">\emph{<xsl:apply-templates/>}</xsl:template>
+
+<xsl:template match="tt">\texttt{<xsl:apply-templates/>}</xsl:template>
 <!-- require ulem package -->
 <xsl:template match="strike">\sout{<xsl:apply-templates/>}</xsl:template>
 
 
-<!-- code style -->
+<!-- code style: use the standard convention :<code> is for inline and
+<pre><code> is for block. The same convention is used for markdown parser.
+For tex rendering <pre> or <pre>/<code> is 'alltt'; <code> is 'texttt'
+note verb in not possible with amc-->
 <xsl:template match="pre"> 
 \begin{alltt}
 <xsl:apply-templates/>
 \end{alltt}
 </xsl:template>
 
-<xsl:template match="code"> 
-\begin{alltt}
-<xsl:apply-templates/>
-\end{alltt}
-</xsl:template>
+<xsl:template match="pre/code"><xsl:apply-templates/></xsl:template>
+
+<xsl:template match="code">\texttt{<xsl:apply-templates/>}</xsl:template>
 
 <!-- template for simple table -->
 <xsl:template match="table">        
@@ -151,5 +154,22 @@
 			 </xsl:choose>]{<xsl:value-of select = "@src"/>} </xsl:template>
 
 <xsl:template match="picture"><xsl:apply-templates/></xsl:template>
+
+<!-- Markdown extra tags -->
+<xsl:template match="h1">{\LARGE\bfseries <xsl:apply-templates/>}
+</xsl:template>
+<xsl:template match="h2">{\Large\bfseries <xsl:apply-templates/>}
+</xsl:template>
+<xsl:template match="h3">{\large\bfseries <xsl:apply-templates/>}
+</xsl:template>
+<xsl:template match="h4">{\bfseries <xsl:apply-templates/>}
+</xsl:template>
+<xsl:template match="h5">{\itshape <xsl:apply-templates/>}
+</xsl:template>
+<xsl:template match="h6">{\itshape <xsl:apply-templates/>}
+</xsl:template>
+
+<xsl:template match="blockquote">\begin{quote}<xsl:apply-templates/>\end{quote}</xsl:template>
+
 
 </xsl:stylesheet>

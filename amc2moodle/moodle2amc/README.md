@@ -38,6 +38,7 @@ quiz.convert(fileOut)
   - Recover moodle category in your LaTeX file. The _category_ names are map into _groups_, defined with the environnements `\element{}{}`. In AMC _groups_ can be used to pick or randomize questions just like in moodle.
   - Use the output LaTeX file into AMC to finalize your exam or use the joined `automultiplechoice.sty` file to compile AMC draft file
   - Extract all figures imbedded in the moodle XML file or from the moodle question bank.
+  - Use `markdown` formating as text format in moodle XML (not tested with images)
   - Tested on moodle 3.x
 
 
