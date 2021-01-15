@@ -99,7 +99,8 @@ class TestSuiteNoTikz(unittest.TestCase):
             print(' > Converted XML is identical to the ref.')
 
         # open, parse and store the the converted file tree
-        cls.tree = etree.parse(fileOut)
+        parser = etree.XMLParser(strip_cdata=False)
+        cls.tree = etree.parse(fileOut, parser)
         #self.assertTrue(equiv, 'The converted file is different from the ref.')
 
     def question_fields(self, qname, target_ans_sum,
@@ -270,6 +271,25 @@ class TestSuiteNoTikz(unittest.TestCase):
                 if len(q.findall('answer/feedback')) == 0:
                     ok += 1  # crash if not found
         self.assertEqual(ok, 0)
+
+    def test_escape(self):
+        """ Check if <, >, & are well escaped in output xml.
+        """
+        # Question name must contain the string in q_dict
+        q_dict = {'with-int': '&lt;',          # check <, >, & are well escaped
+                  'calc:area': '<b>area</b>'}  # check that CDATA html content is not escaped
+        tree = self.tree
+        # # Loop over questions of q_dict
+        for qname, value in q_dict.items():
+            for q in tree.iterfind(".//question"):
+                if q.attrib['type'] != 'category':
+                    if q.find('name/text').text == qname:
+                        for text in q.findall('.//questiontext/text'):
+                            text_str = etree.tostring(text).decode('utf8')
+                            present = value in text_str
+                            # the test is ok if present is True
+                            self.assertTrue(present)
+                        break
 
 class TestSuiteOther(unittest.TestCase):
     """ Define test cases for unittest. Just check the process finish normally.
