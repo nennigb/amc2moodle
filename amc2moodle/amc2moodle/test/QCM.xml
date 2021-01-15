@@ -32,9 +32,8 @@
            \(N\)
      points donnés, un <tt>polynôme</tt> de degré <b>strictement</b> égal à 
            \(N-1\)
-    . Pour trouver les coefficients on doit résoudre un <em>problème</em></p>
-      
-      
+    . Pour trouver les coefficients on doit résoudre un <em>problème</em>
+</p>
         <p style="text-align:center; "><img style="vertical-align:text-bottom; margin: 0 .5em;" src="@@PLUGINFILE@@/schema_interpL.png" width="216.81pt" options="width=216.81pt"/></p>
       
       
@@ -99,7 +98,7 @@ le Kiwi]]></text></answer><shuffleanswers>false</shuffleanswers><answernumbering
     
   ]]></text></questiontext><answer format="html" fraction="33.333333333333336"><text><![CDATA[ Ou en <tt>C</tt> using <tt>alltt</tt> package
 <p><pre>
-int s=-2; <br/>for (int i=0;i<4; i++)<text font="serif">{</text> <br/>s=i*i+s; <br/><text font="serif">}</text>
+int s=-2; <br/>for (int i=0;i&lt;4; i++)<text font="serif">{</text> <br/>s=i*i+s; <br/><text font="serif">}</text>
 </pre></p>
 ]]></text></answer><answer format="html" fraction="33.333333333333336"><text><![CDATA[
            \(\lvert-10-2\rvert\)
@@ -114,9 +113,9 @@ int s=-2; <br/>for (int i=0;i<4; i++)<text font="serif">{</text> <br/>s=i*i+s; <
      ]]></text></answer><answer format="html" fraction="33.333333333333336"><text><![CDATA[Avec une équation matricielle
 
     $$\begin{equation}
-           \mathrm{det}\begin{pmatrix}1&2\\
--1&10\end{pmatrix}=\begin{vmatrix}1&2\\
--1&10\end{vmatrix}
+           \mathrm{det}\begin{pmatrix}1&amp;2\\
+-1&amp;10\end{pmatrix}=\begin{vmatrix}1&amp;2\\
+-1&amp;10\end{vmatrix}
     \end{equation}$$
     
 ]]></text></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>false</single><answer format="html" fraction="-6.25"><text>aucune de ces réponses n'est correcte</text></answer></question>
@@ -197,13 +196,13 @@ Test for itemize html rendering,</p>
         <p>Here is a test for <tt>mhchem</tt>-LaTeXpackage. This package is not yet supported by LaTeXML, thus the rendering is delegated to <tt>mathjax</tt>. To use it, you need to add <tt>mhchem</tt> in the <tt>mathjax</tt> moodle plugin (ask to admin, see details in README file).</p>
       
       
-        <p>A complicated chemical equation \(\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}\), the same written in math mode : <i>\(\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}\)</i>, combine with other math operator 
-           \(K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}\)
+        <p>A complicated chemical equation \(\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}\), the same written in math mode : <i>\(\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}\)</i>, combine with other math operator 
+           \(K=\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}\)
      and finally placed in the equation environment</p>
         
           
     $$\begin{equation}
-           K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}
+           K=\ce{Hg^2+ -&gt;[I-] HgI2 -&gt;[I-] [Hg^{II}I4]^2-}
     \end{equation}$$
     
         
@@ -211,7 +210,7 @@ Test for itemize html rendering,</p>
         
       
     
-  ]]></text></questiontext><answer format="html" fraction="100.0"><text><![CDATA[a simpler one \(\ce{CO2 + C -> 2 CO}\).]]></text></answer><answer format="html" fraction="-50.0"><text><![CDATA[Wrong Choice! ]]></text></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>true</single></question>
+  ]]></text></questiontext><answer format="html" fraction="100.0"><text><![CDATA[a simpler one \(\ce{CO2 + C -&gt; 2 CO}\).]]></text></answer><answer format="html" fraction="-50.0"><text><![CDATA[Wrong Choice! ]]></text></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>true</single></question>
   <question type="category"><category><text>$course$/test_tikz/num</text></category></question>
   <question type="numerical"><name><text>with-int</text></name><questiontext format="html"><text><![CDATA[
     
@@ -219,7 +218,7 @@ Test for itemize html rendering,</p>
         <p>Combien de fois le programme suivant affiche-t-il <tt>"x"</tt> ?</p>
       
       
-        <p><tt>for (int i = 4; i < 24; ++i)<br/> for (int j = i + 2; j - 1 > 0; --j)<br/>  puts("x");</tt></p>
+        <p><tt>for (int i = 4; i &lt; 24; ++i)<br/> for (int j = i + 2; j - 1 &gt; 0; --j)<br/>  puts("x");</tt></p>
       
       
     
@@ -279,7 +278,7 @@ Test for itemize html rendering,</p>
         {=((((1)+{rand2}*(10-1))*(1+{rand1}*(10-1))))}
       ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="-50.0"><text><![CDATA[
         {=((((1)+{rand2}*(10-1))+(1+{rand1}*(10-1))))}
-      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>true</single><dataset_definitions><dataset_definition><status><text>private</text></status><name><text>rand1</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.798</value></dataset_item><dataset_item><number>2</number><value>0.876</value></dataset_item><dataset_item><number>3</number><value>0.993</value></dataset_item><dataset_item><number>4</number><value>0.004</value></dataset_item><dataset_item><number>5</number><value>0.063</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand4</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.606</value></dataset_item><dataset_item><number>2</number><value>0.385</value></dataset_item><dataset_item><number>3</number><value>0.627</value></dataset_item><dataset_item><number>4</number><value>0.143</value></dataset_item><dataset_item><number>5</number><value>0.214</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand3</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.538</value></dataset_item><dataset_item><number>2</number><value>0.318</value></dataset_item><dataset_item><number>3</number><value>0.658</value></dataset_item><dataset_item><number>4</number><value>0.757</value></dataset_item><dataset_item><number>5</number><value>0.169</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand2</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.489</value></dataset_item><dataset_item><number>2</number><value>0.375</value></dataset_item><dataset_item><number>3</number><value>0.601</value></dataset_item><dataset_item><number>4</number><value>0.891</value></dataset_item><dataset_item><number>5</number><value>0.765</value></dataset_item></dataset_items></dataset_definition></dataset_definitions></question>
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>true</single><dataset_definitions><dataset_definition><status><text>private</text></status><name><text>rand4</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.856</value></dataset_item><dataset_item><number>2</number><value>0.754</value></dataset_item><dataset_item><number>3</number><value>0.091</value></dataset_item><dataset_item><number>4</number><value>0.745</value></dataset_item><dataset_item><number>5</number><value>0.369</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand2</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.469</value></dataset_item><dataset_item><number>2</number><value>0.251</value></dataset_item><dataset_item><number>3</number><value>0.719</value></dataset_item><dataset_item><number>4</number><value>0.435</value></dataset_item><dataset_item><number>5</number><value>0.705</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand1</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.983</value></dataset_item><dataset_item><number>2</number><value>0.031</value></dataset_item><dataset_item><number>3</number><value>0.84</value></dataset_item><dataset_item><number>4</number><value>0.783</value></dataset_item><dataset_item><number>5</number><value>0.338</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand3</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.455</value></dataset_item><dataset_item><number>2</number><value>0.578</value></dataset_item><dataset_item><number>3</number><value>0.895</value></dataset_item><dataset_item><number>4</number><value>0.044</value></dataset_item><dataset_item><number>5</number><value>0.891</value></dataset_item></dataset_items></dataset_definition></dataset_definitions></question>
   <question type="category"><category><text>$course$/test_tikz/calc</text></category></question>
   <question type="calculatedmulti"><name><text>eig</text></name><questiontext format="html"><text><![CDATA[
     
@@ -319,7 +318,7 @@ y&amp;z\end{pmatrix},
         {=(-((1+{rand1}*(5-1))+(1+{rand3}*(5-1))))}
       ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="-6.25"><text><![CDATA[
         {=(((-((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))+sqrt((((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))))/(2*(1)))+((-((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-sqrt((((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))))/(2*(1))))}
-      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>false</single><answer format="html" fraction="-6.25"><text>aucune de ces réponses n'est correcte</text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><dataset_definitions><dataset_definition><status><text>private</text></status><name><text>rand2</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.0</value></dataset_item><dataset_item><number>2</number><value>0.81</value></dataset_item><dataset_item><number>3</number><value>0.12</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand3</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.51</value></dataset_item><dataset_item><number>2</number><value>0.5</value></dataset_item><dataset_item><number>3</number><value>0.82</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand1</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.94</value></dataset_item><dataset_item><number>2</number><value>0.16</value></dataset_item><dataset_item><number>3</number><value>0.09</value></dataset_item></dataset_items></dataset_definition></dataset_definitions></question>
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>false</single><answer format="html" fraction="-6.25"><text><![CDATA[aucune de ces réponses n'est correcte]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><dataset_definitions><dataset_definition><status><text>private</text></status><name><text>rand2</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.03</value></dataset_item><dataset_item><number>2</number><value>0.38</value></dataset_item><dataset_item><number>3</number><value>0.16</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand1</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.78</value></dataset_item><dataset_item><number>2</number><value>0.24</value></dataset_item><dataset_item><number>3</number><value>0.19</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand3</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.38</value></dataset_item><dataset_item><number>2</number><value>0.24</value></dataset_item><dataset_item><number>3</number><value>0.95</value></dataset_item></dataset_items></dataset_definition></dataset_definitions></question>
   <question type="category"><category><text>$course$/test_tikz/tikz</text></category></question>
   <question type="multichoice"><name><text>tikz:Q1</text></name><questiontext format="html"><text><![CDATA[
     
