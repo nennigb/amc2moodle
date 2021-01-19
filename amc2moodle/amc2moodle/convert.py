@@ -516,10 +516,23 @@ class _Calculated:
             # of CDATA tag '<![CDATA[\n    '
             # this markup is ignored and transform.xslt process normally the elements
             # see orig_text.getchildren()[0]
+            # XSLT transform remove CDATA
 
-            orig_text.text = parsed_text  # works, CDATA already included
+            # To protect them from xslt rename into
+            orig_text.tag = 'text'
+            # `cdata` element are marked in transform.xslt <xsl:output> as
+            # cdata-section-elements="cdata" and CDATA are added in the output
+            # now need to remove `cdata` elements at the end of the conversion
+            cdata = etree.fromstring('<cdata>' + parsed_text + '</cdata>',
+                                    etree.XMLParser(strip_cdata=False))
+            orig_text.append(cdata)
+
+
             # orig_text.text = etree.CDATA(parsed_text)  # doesn't work ??!!
-
+            # Change behavior to avoid lxml unescape chars
+            # orig_text.text = etree.CDATA(parsed_text.replace('<![CDATA[', '')
+            #                                         .replace(']]>', ''))
+            # orig_text.text = etree.fromstring(parsed_text)
             # etree.dump(Qi)
         return parser.wildcards
 
@@ -820,8 +833,15 @@ class AMCQuiz:
         # apply XSLT transformation
         self.tree = transform(self.tree)
 
+        # Need to remove `cdata` elements introduced in calculated question
+        for cdata in self.tree.findall('.//text/cdata'):
+            # copy `cdata` content on CDATA in `text`
+            cdata.getparent().text = etree.CDATA(cdata.text)
+            # Remove the now useless `cdata` element
+            cdata.getparent().remove(cdata)
+
         # Save output
-        s = unescape(etree.tostring(self.tree, pretty_print=True, encoding="utf-8").decode('utf-8'))
+        s = etree.tostring(self.tree, pretty_print=True, encoding="utf-8").decode('utf-8')
         if (self.deb == 1):
             print(etree.tostring(self.tree, pretty_print=True, encoding="utf-8"))
         with open(fileout, 'w') as f:
@@ -839,6 +859,9 @@ class AMCQuiz:
         """
 
         # Parse the input xml file
+        # the default behavior is to strip CDATA to avoid it, use
+        # parser = etree.XMLParser(strip_cdata=False)
+        # tree = etree.parse(self.xml, parser)
         tree = etree.parse(self.xml)
 
         # remove namespace
