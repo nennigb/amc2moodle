@@ -43,10 +43,10 @@ jobs:
         brew install imagemagick
 
         # install brew latex packages, libs and lateXML
-        brew cask install basictex        
+        brew install --cask basictex
 
         brew install latexml
-        
+
     - name: Update $PATH
       # run: echo ::add-path::/Library/TeX/texbin # depreciated
       run: echo "/Library/TeX/texbin" >> $GITHUB_PATH
