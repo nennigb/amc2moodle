@@ -46,7 +46,7 @@
     \begin{center}
       \begin{tabular}{ccc}
         \hline
-        12                       & 2                                                    & $2^3$ \\
+        12                       & 2                                    & $2^3$ \\
         \multicolumn{2}{c}{Deux} & \includegraphics[height=16pt]{4.png}         \\
         \hline
       \end{tabular}
@@ -112,81 +112,123 @@
 
 % Test for itemize and enumerate and partial scoring
 \element{cat1}{
-\begin{question}{itemize-enumerate} \scoring{m=0,p=0}
-Test for itemize html rendering,
-\begin{itemize}
-   \item first item
-   \item Second item blablabla
-\end{itemize}
-test for enumerate html rendering,
-\begin{enumerate}
-  \item The first item $x^2$ with math
-  \item The second \textbf{item } with bold
-\end{enumerate}
+  \begin{question}{itemize-enumerate} \scoring{m=0,p=0}
+    Test for itemize html rendering,
+    \begin{itemize}
+      \item first item
+      \item Second item blablabla
+    \end{itemize}
+    test for enumerate html rendering,
+    \begin{enumerate}
+      \item The first item $x^2$ with math
+      \item The second \textbf{item } with bold
+    \end{enumerate}
     \begin{choices}
       \correctchoice{1 bullet list and 1 ordered list\\ Remarks: tags in item are ignored.}
       \wrongchoice{
         \begin{enumerate}
-        \item The first item $x^2$
-        \item The second \textbf{item}
+          \item The first item $x^2$
+          \item The second \textbf{item}
         \end{enumerate}
-    }
+      }
     \end{choices}
-\end{question}
+  \end{question}
 }
 
 
 % Test for mhchem support with mathjax
 \element{mhchem}{
-\begin{question}{mathjax-mhchem}
-Here is a test for \texttt{mhchem}-\LaTeX package. This package is not yet supported by LaTeXML, thus the rendering is delegated to \texttt{mathjax}. To use it, you need to add \texttt{mhchem} in the \texttt{mathjax} moodle plugin (ask to admin, see details in README file).
+  \begin{question}{mathjax-mhchem}
+    Here is a test for \texttt{mhchem}-\LaTeX package. This package is not yet supported by LaTeXML, thus the rendering is delegated to \texttt{mathjax}. To use it, you need to add \texttt{mhchem} in the \texttt{mathjax} moodle plugin (ask to admin, see details in README file).
 
 
-A complicated chemical equation \ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}, the same written in math mode : $\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}$, combine with other math operator $K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}$ and finally placed in the equation environment
-\begin{equation*}
-K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}
-\end{equation*}
-% the answers
+    A complicated chemical equation \ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}, the same written in math mode : $\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}$, combine with other math operator $K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}$ and finally placed in the equation environment
+    \begin{equation*}
+      K=\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}
+    \end{equation*}
+    % the answers
     \begin{choices}
       \correctchoice{a simpler one \ce{CO2 + C -> 2 CO}.}
       \wrongchoice{Wrong Choice! }
     \end{choices}
-\end{question}
+  \end{question}
 }
 
 % Test for numerical question [other example in numerical.tex]
 \element{num}{
-\begin{questionmultx}{with-int}
-Combien de fois le programme suivant affiche-t-il \texttt{"x"} ?
+  \begin{questionmultx}{with-int}
+    Combien de fois le programme suivant affiche-t-il \texttt{"x"} ?
 
-\texttt{for (int i = 4; i < 24; ++i)\\
-\hspace*{1em}for (int j = i + 2; j - 1 > 0; -{}-j)\\
-\hspace*{2em}puts("x");}
+    \texttt{for (int i = 4; i < 24; ++i)\\
+    \hspace*{1em}for (int j = i + 2; j - 1 > 0; -{}-j)\\
+    \hspace*{2em}puts("x");}
 
-\AMCnumericChoices{290}{digits=3,sign=false,scoreexact=2,scoreapprox=1,approx=10}
-\end{questionmultx}}
+    \AMCnumericChoices{290}{digits=3,sign=false,scoreexact=2,scoreapprox=1,approx=10}
+  \end{questionmultx}}
 
 
 % Test for open question
 \element{open}{
-  \begin{question}{Essai}\label{q:Essai}   
+  \begin{question}{Essai}\label{q:Essai}
     Explain in few words the aim of this course.
-% It is possible to add more granularity with partially correct answer using \wrongchoice[P]{p}\scoring{0.5}
-\AMCOpen{lines=2}{    \correctchoice[OK]{OK}    \wrongchoice[F]{F}}
+    % It is possible to add more granularity with partially correct answer using \wrongchoice[P]{p}\scoring{0.5}
+    \AMCOpen{lines=2}{    \correctchoice[OK]{OK}    \wrongchoice[F]{F}}
   \end{question}
 }
 
 % Test for Description question
 \element{desc}{
-\begin{question}{pb-description} \QuestionIndicative
-Provide a description of a problem that can be common to several questions. It is useful to define notation, pictures
-\begin{center}
-\includegraphics[height=32pt]{4.png}
-\end{center}
-equations $\int_0^1 x \mathrm{d} x = 0$\dots. Since, it is not a \emph{real} question, the \texttt{choices} environment is not provided. In this case, the question will be converted by \texttt{amc2moodle} into moodle \texttt{description} question type.
+  \begin{question}{pb-description} \QuestionIndicative
+    Provide a description of a problem that can be common to several questions. It is useful to define notation, pictures
+    \begin{center}
+      \includegraphics[height=32pt]{4.png}
+    \end{center}
+    equations $\int_0^1 x \mathrm{d} x = 0$\dots. Since, it is not a \emph{real} question, the \texttt{choices} environment is not provided. In this case, the question will be converted by \texttt{amc2moodle} into moodle \texttt{description} question type.
 
-To use it in AMC, do not forget to use \texttt{QuestionIndicative} to tell AMC not to count points for this question (with a 0-point scoring).
+    To use it in AMC, do not forget to use \texttt{QuestionIndicative} to tell AMC not to count points for this question (with a 0-point scoring).
 
-% the associated scoring is \bareme{b=0,m=0,e=0,v=0} cf AMC doc
-\end{question}
+    % the associated scoring is \bareme{b=0,m=0,e=0,v=0} cf AMC doc
+  \end{question}
+}
+
+
+%===================================================================
+% grande image
+\element{check-pic}{
+  \begin{question}{Qsimple:large-pic}
+    Soit une image un peu lourde, peut-on vérifier le rendu
+
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{./Figures/other/large.png}
+    \end{center}
+
+    \begin{reponses}
+      \bonne{c'est du lourd}
+      \mauvaise{ou pas}
+    \end{reponses}
+  \end{question}
+  \begin{question}{Qsimple:medium-pic}
+    Soit une image moyennement lourde, peut-on vérifier le rendu
+
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{./Figures/other/medium.JPG}
+    \end{center}
+
+    \begin{reponses}
+      \bonne{ça passe}
+      \mauvaise{ou pas}
+    \end{reponses}
+  \end{question}
+  \begin{question}{Qsimple:vec-pic}
+    Soit une image vectorielle, peut-on vérifier le rendu
+
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{./Figures/other/vect.JPG}
+    \end{center}
+
+    \begin{reponses}
+      \bonne{ça passe}
+      \mauvaise{ou pas}
+    \end{reponses}
+  \end{question}
 }
