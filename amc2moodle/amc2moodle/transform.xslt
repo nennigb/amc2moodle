@@ -27,7 +27,7 @@
 
 
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-  <xsl:output method="xml" indent="yes"/>
+  <xsl:output method="xml" indent="yes" cdata-section-elements="cdata"/>
 
 <!-- template identité -->
 <xsl:template match="@* | node()">
@@ -90,12 +90,16 @@
 	</question>
 </xsl:template>
 
+<!--\FPprint yields to calculatedmulti question type-->
+<xsl:template match="note[@class='amc_questioncalcmult' or @class='amc_questionmultcalcmult']">
+	<question type="calculatedmulti">
+	  <xsl:apply-templates />
+	</question>
+</xsl:template>
+
 <!--TODO Need to add other type like description, calculated... -->
 
-<!-- template netoyage champ globaux mise en forme-->
-<xsl:template match="para|inline-para">
-    <xsl:apply-templates/>
-</xsl:template>
+
 
 
 

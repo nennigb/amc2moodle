@@ -3,7 +3,7 @@
 <!-- question: 0  -->
   <question type="category">
     <category>
-        <text>$course$/Défaut pour BN1/moodle2amc</text>
+        <text>$course$/moodle2amc</text>
 
     </category>
   </question>
@@ -82,6 +82,18 @@
         <text></text>
       </feedback>
     </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>This a wrong <strong>strong</strong> answer.<br></p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>This a wrong <em>emphasis</em> answer.<br></p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
   </question>
 
 <!-- question: 9537  -->
@@ -116,7 +128,10 @@
 </tr>
 </tbody>
 </table>
-<br><br><p></p>]]></text>
+<br><br>
+<p>
+</p>
+]]></text>
     </questiontext>
     <generalfeedback format="html">
       <text><![CDATA[<p>global feedback<br></p>]]></text>
@@ -189,5 +204,585 @@
       </feedback>
     </answer>
   </question>
+
+  
+<!-- question: CODE  -->
+  <question type="multichoice">
+    <name>
+      <text>code</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>This is inline code <code>x = sqrt(3)</code> and here and code block
+<pre><code>
+a = 2
+b = a + 3.14
+</code>
+</pre>
+In html, it is generally recommanded to use &lt;code&gt; is an inline tag and &lt;pre&gt;&lt;code&gt; tag for blocks.
+</p>
+]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text><![CDATA[<p>global feedback<br></p>]]></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <correctfeedback format="html">
+      <text>Votre réponse est correcte.</text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+      <text>Votre réponse est partiellement correcte.</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+      <text>Votre réponse est incorrecte.</text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>wrong answer<br></p>]]></text>
+      <feedback format="html">
+        <text><![CDATA[<p>this the feedback of question 1<br></p>]]></text>
+      </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+      <text><![CDATA[<p>the good answer</p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+  </question>
+  
+ <!-- Example of description question --> 
+  <question type="description">
+    <name>
+      <text>ProblemDescription</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[Provide a <strong>description</strong> of a problem that can be common to several questions. It is useful to define notation, pictures, equations \(\int_0^1 x \mathrm{d} x = 0\)...]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+  </question>  
+  
+  
+  <!-- question: 0  -->
+  <question type="category">
+    <category>
+        <text>$course$/moodle2amc/num</text>
+    </category>
+  </question>
+
+  <!-- Example of numerical question  -->
+  <question type="numerical">
+    <name>
+      <text>num:int</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Find \(x\) such \(2x-300=0\) ? <br></p><p>Here \(x\) is an integer, test for <strong>exact</strong> match, only.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>150</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>
+
+  <!-- Example of numerical question  -->
+  <question type="numerical">
+    <name>
+      <text>num:float</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Give an approximated value for \(\pi\) up to 3 digits?</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>3.141592653589793</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.001</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>
+ 
+    <!-- Example of numerical question with 2 answer (usefull for feedback)  -->
+  <question type="numerical">
+    <name>
+      <text>num:2ans</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Let \(z=3+2\mathrm{i}\). What is the imaginary part ?</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>2</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0</tolerance>
+    </answer>
+    <answer fraction="0" format="moodle_auto_format">
+      <text>3</text>
+      <feedback format="html">
+        <text><![CDATA[<p>No, this is the real part</p>]]></text>
+      </feedback>
+      <tolerance>0</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>
+
+    <!-- Example of numerical question with 2 rounding levels  -->
+  <question type="numerical">
+    <name>
+      <text>num:2rounding</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Give an approximated value for \(\sqrt{2}\) up to 3 digits ?</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>1.4142135623730951</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.001</tolerance>
+    </answer>
+    <answer fraction="50" format="moodle_auto_format">
+      <text>1.4142135623730951</text>
+      <feedback format="html">
+        <text><![CDATA[<p>Be careful with rounding.</p>]]></text>
+      </feedback>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>  
+
+<!-- question: 0  -->
+  <question type="category">
+    <category>
+        <text>$course$/moodle2amc/calculated</text>
+    </category>
+  </question>
+
+<!-- question: 10079  -->
+  <question type="calculatedmulti">
+    <name>      
+      <text>Calculée</text> <!-- Check for accent cleaning  -->
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Quelle est l'aire d'un rectangle de longueur {a} et de largeur {b}&nbsp;?</p><p>Formula in the text {={a}*{b}}. It is also possible to use float {={a}*({b}+2.3)/10.0}.</p><p>Accolade should not be used for number {=2.5*2.2}<br></p><p><br></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <synchronize>0</synchronize>
+    <single>1</single>
+    <answernumbering>abc</answernumbering>
+    <shuffleanswers>1</shuffleanswers>
+    <correctfeedback>
+      <text>Votre réponse est correcte.</text>
+    </correctfeedback>
+    <partiallycorrectfeedback>
+      <text>Votre réponse est partiellement correcte.</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback>
+      <text>Votre réponse est incorrecte.</text>
+    </incorrectfeedback>
+<answer fraction="100">
+    <text>{={a}*{b}}</text>
+    <tolerance>0.01</tolerance>
+    <tolerancetype>1</tolerancetype>
+    <correctanswerformat>1</correctanswerformat>
+    <correctanswerlength>2</correctanswerlength>
+    <feedback format="html">
+<text><![CDATA[<p>Well done!<br></p>]]></text>
+    </feedback>
+</answer>
+<answer fraction="0">
+    <text>{={a}+{b}}</text>
+    <tolerance>0.01</tolerance>
+    <tolerancetype>1</tolerancetype>
+    <correctanswerformat>1</correctanswerformat>
+    <correctanswerlength>2</correctanswerlength>
+    <feedback format="html">
+<text></text>
+    </feedback>
+</answer>
+<dataset_definitions>
+<dataset_definition>
+    <status><text>private</text>
+</status>
+    <name><text>a</text>
+</name>
+    <type>calculatedsimple</type>
+    <distribution><text>uniform</text>
+</distribution>
+    <minimum><text>1</text>
+</minimum>
+    <maximum><text>10</text>
+</maximum>
+    <decimals><text>1</text>
+</decimals>
+    <itemcount>3</itemcount>
+    <dataset_items>
+        <dataset_item>
+           <number>1</number>
+           <value>6.7</value>
+        </dataset_item>
+        <dataset_item>
+           <number>2</number>
+           <value>5.6</value>
+        </dataset_item>
+        <dataset_item>
+           <number>3</number>
+           <value>6.5</value>
+        </dataset_item>
+    </dataset_items>
+    <number_of_items>3</number_of_items>
+</dataset_definition>
+<dataset_definition>
+    <status><text>private</text>
+</status>
+    <name><text>b</text>
+</name>
+    <type>calculatedsimple</type>
+    <distribution><text>uniform</text>
+</distribution>
+    <minimum><text>1</text>
+</minimum>
+    <maximum><text>10</text>
+</maximum>
+    <decimals><text>1</text>
+</decimals>
+    <itemcount>3</itemcount>
+    <dataset_items>
+        <dataset_item>
+           <number>1</number>
+           <value>8.8</value>
+        </dataset_item>
+        <dataset_item>
+           <number>2</number>
+           <value>3.2</value>
+        </dataset_item>
+        <dataset_item>
+           <number>3</number>
+           <value>4.3</value>
+        </dataset_item>        
+        <dataset_item>
+           <number>11</number>
+           <value>5.4</value>
+        </dataset_item>
+    </dataset_items>
+    <number_of_items>3</number_of_items>
+</dataset_definition>
+</dataset_definitions>
+  </question>
+
+<!-- question: 12656  -->
+  <question type="calculatedmulti">
+    <name>
+      <text>CheckComputation</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p><b>Moodle</b> and <b>fp</b> latex package syntax is not always equivalent. Here some test for pathological cases.</p><p>Let {x} and {y} some real number.<br></p><ul><li>argument of 'pow' function are in a different order "pow({x},2)" = {=pow({x},2)}</li><li>the 'sqrt' function doesn't exist, need 'root(nth, x)' in fp, "sqrt(({x}-{y})*({x}+{y}))" = {=sqrt(({x}-{y})*({x}+{y}))}</li><li>'pi' is a function in moodle, "sin(1.5*pi())" = {=sin(1.5*pi())}</li><li>test with '- unary' expression "-{x}+(-{y}+2)" = {=-{x}+(-{y}+2)}</li><li>test min-max "max({x},{y})" = {=max({x},{y})}</li><li>test nested "log(log({y}+{x})/log({y}+{x}))" = {=log(log({y}+{x})/log({y}+{x}))}</li></ul><p>test formatting on variable <b>{x}</b><br></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <synchronize>0</synchronize>
+    <single>1</single>
+    <answernumbering>abc</answernumbering>
+    <shuffleanswers>1</shuffleanswers>
+    <correctfeedback>
+      <text>Votre réponse est correcte.</text>
+    </correctfeedback>
+    <partiallycorrectfeedback>
+      <text>Votre réponse est partiellement correcte.</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback>
+      <text>Votre réponse est incorrecte.</text>
+    </incorrectfeedback>
+<answer fraction="100">
+    <text>{={x}}</text>
+    <tolerance>0.01</tolerance>
+    <tolerancetype>1</tolerancetype>
+    <correctanswerformat>1</correctanswerformat>
+    <correctanswerlength>2</correctanswerlength>
+    <feedback format="html">
+<text></text>
+    </feedback>
+</answer>
+<answer fraction="0">
+    <text>{=({y}+{x})/({y}+{x})}</text>
+    <tolerance>0.01</tolerance>
+    <tolerancetype>1</tolerancetype>
+    <correctanswerformat>1</correctanswerformat>
+    <correctanswerlength>2</correctanswerlength>
+    <feedback format="html">
+<text></text>
+    </feedback>
+</answer>
+<answer fraction="0">
+    <text>{=log({y}+{x})/log({y}+{x})}</text>
+    <tolerance>0.01</tolerance>
+    <tolerancetype>1</tolerancetype>
+    <correctanswerformat>1</correctanswerformat>
+    <correctanswerlength>2</correctanswerlength>
+    <feedback format="html">
+<text></text>
+    </feedback>
+</answer>
+<dataset_definitions>
+<dataset_definition>
+    <status><text>private</text>
+</status>
+    <name><text>x</text>
+</name>
+    <type>calculatedsimple</type>
+    <distribution><text>uniform</text>
+</distribution>
+    <minimum><text>1</text>
+</minimum>
+    <maximum><text>10</text>
+</maximum>
+    <decimals><text>1</text>
+</decimals>
+    <itemcount>1</itemcount>
+    <dataset_items>
+        <dataset_item>
+           <number>1</number>
+           <value>5.7</value>
+        </dataset_item>
+    </dataset_items>
+    <number_of_items>1</number_of_items>
+</dataset_definition>
+<dataset_definition>
+    <status><text>private</text>
+</status>
+    <name><text>y</text>
+</name>
+    <type>calculatedsimple</type>
+    <distribution><text>uniform</text>
+</distribution>
+    <minimum><text>1</text>
+</minimum>
+    <maximum><text>10</text>
+</maximum>
+    <decimals><text>1</text>
+</decimals>
+    <itemcount>1</itemcount>
+    <dataset_items>
+        <dataset_item>
+           <number>1</number>
+           <value>5.5</value>
+        </dataset_item>
+    </dataset_items>
+    <number_of_items>1</number_of_items>
+</dataset_definition>
+</dataset_definitions>
+  </question>
+
+
+<!-- question: 0  -->
+  <question type="category">
+    <category>
+        <text>$course$/moodle2amc/alternative-format</text>
+    </category>
+  </question>
+<!-- question: with markdown -->
+  <question type="multichoice">
+    <name>
+      <text>markdown</text>
+    </name>
+    <questiontext format="markdown">
+      <text><![CDATA[
+Go to your editor preferences (via the user menu) and select 'Plain text area',
+then in the question box, select Markdown format.
+
+# Main title
+
+## Basic text formatting
+
+a *single* word
+***a sequence of words***
+in**distinguish**able
+
+  - top level bullet one
+    * sub-bullet  
+    * sub-bullet 2 
+  - top level bullet two
+
+Now numbered list
+
+  1. numbered point one
+  2. numbered point two
+
+
+## More advanced features
+test for link [here](https://docs.moodle.org/310/en/Markdown)
+
+Are table supported ?
+
+Markdown | Less | Pretty
+--- | --- | ---
+*Still* | `renders` | **nicely**
+1 | 2 | 3
+
+> Blockquotes are very handy in email to emulate reply text.
+> This line is part of the same quote.
+
+```python
+import markdown
+markdown.markdown(text, extensions=['extra'])
+```
+
+
+]]></text>
+    </questiontext>
+    <generalfeedback format="moodle_auto_format">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <showstandardinstruction>0</showstandardinstruction>
+    <correctfeedback format="html">
+      <text>Your answer is correct.</text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+      <text>Your answer is partially correct.</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+      <text>Your answer is incorrect.</text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="0" format="markdown">
+      <text>**yes**</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text>non</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+      <text><![CDATA[<b>perhaps</b>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+  </question>
+
+<!-- plain_text -->
+   <question type="multichoice">
+    <name>
+      <text>plain text</text>
+    </name>
+    <questiontext format="plain_text">
+      <text>Nothing but plain text</text>
+    </questiontext>
+    <generalfeedback format="plain_text">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <showstandardinstruction>0</showstandardinstruction>
+    <correctfeedback format="html">
+      <text>Your answer is correct.</text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+      <text>Your answer is partially correct.</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+      <text>Your answer is incorrect.</text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="100" format="plain_text">
+      <text>yes</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="markdown">
+      <text>**no**</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text>no in html</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+  </question>
+
 
 </quiz>

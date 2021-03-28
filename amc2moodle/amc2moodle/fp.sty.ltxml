@@ -1,0 +1,56 @@
+# This file propose a basic binding for `fp` LaTeX package for amc2moodle conversion.
+# It will extract expression (without floating point evalution) for remapping them in moodle.
+# Only FPprint command will create a node in the ouptut XML file.
+
+package LaTeXML::Package::pool;  # to put new subs & variables in common pool
+use LaTeXML::Package;            # to load these definitions
+use strict;                      # good style
+use warnings;
+
+# based on discussion https://github.com/brucemiller/LaTeXML/issues/1285
+sub replace {
+   # replace($arg, $repl, $by)
+   # Replace $repl from $arg by $by+\therand and step the counter
+   # The input expression is split using $repl and the replacement are performed on   
+   # substring to control the way the counter is incremented.   
+   my( $arg, $repl, $by) = @_ ;
+   my $str = ToString($arg);
+   # if the token contains the $repl string
+   # Create an array for loop and steping the counter
+   my @spl = split('('.$repl.')', $str); 
+   foreach my $i (@spl){
+     if ($i eq $repl){
+   	   StepCounter('rand');
+       my $byi = $by . ToString(CounterValue('rand'));         
+       $i =~ s/$repl/$byi/g;
+     }
+   }
+   return join('', @spl);
+}
+      
+# Create the FPseed register but useless for the conversion since random generators are different
+DefRegister('\FPseed', Number(0));
+# FPset to define constant 
+DefMacro('\FPset{}{}','\def#1{(#2)}');
+# Create the rand counter to label all 'random' call. Reset the counter at each new question.
+NewCounter('rand', 'questions');
+# FPrand to define a random parameter
+DefMacro('\FPrandom{}{}','\stepcounter{rand}\edef#1{rand\arabic{rand}}');
+# FPeval is just a replacement def, like FPset, 
+DefMacro('\FPeval{}{}', sub {
+  my ($gullet, $arg1, $arg2) = @_;
+  # arbitrary perl goes here, e.g. the 'random' replacement
+  my $out = replace($arg2, 'random', 'rand');
+  # Since each expression are processed symbolically (instead of floatting point evaluation in `fp`) need to add bracket arround all substitution steps
+  $out = '('. $out . ')';
+  DefMacroI($arg1, undef, $out);
+  return;
+  }
+);
+# FPprint will create an element (only operation visible for moodle)
+DefConstructor('\FPprint{}','<ltx:note class="amc_FPprint">#1</ltx:note>');
+# support for pi
+DefMacro('\FPpi','3.141592653589793238');
+# Don't forget this, so perl knows the package loaded.
+1;
+

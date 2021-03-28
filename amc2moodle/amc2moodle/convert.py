@@ -26,10 +26,13 @@ import base64
 import os
 from wand.image import Image as wandImage
 from xml.sax.saxutils import unescape
+from ..utils.calculatedParser import *
+import random
 
 # Define default and global
 SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric',
-                    'amc_questionopen', 'amc_questiondescription')
+                    'amc_questionopen', 'amc_questiondescription',
+                    'amc_questioncalcmult', 'amc_questionmultcalcmult')
 
 # set defaut relative tolerance for float in numerical question to 1%
 DEFAULT_NUMERIC_TOL = 1e-2
@@ -58,7 +61,19 @@ MOO_DEFAULT_GRADE = 1.
 
 # default size for image ²
 DEFAULT_IMG_WIDTH = '200pt'
+DEFAULT_IMG_RESOLUTION = 100
 
+# calculated
+CALCULATED_DEFAULT_PARSER = 'fp2xml'
+# number of decimal in random value
+CALCULATED_DEFAULT_DECIMAL_NUMBER = 3
+# Number of random value for each wildcards
+CALCULATED_DEFAULT_ITEM_NUMBER = 5
+# answer formatting and tolerance
+CALCULATED_TOLERANCETYPE = 1
+CALCULATED_TOLERANCE = 0.01
+CALCULATED_CORRECTANSWERFORMAT = 1
+CALCULATED_CORRECTANSWERLENGTH = 2
 
 # ======================================================================
 # Image processing utilities
@@ -79,28 +94,40 @@ class ImageCustom:
     TODO : create to abstract class to define the common interface.
     """
 
-    def __init__(self, fileIn=None, fileOut=None):
+    def __init__(self, fileIn=None, fileOut=None,
+                 resolution=DEFAULT_IMG_RESOLUTION):
+        """ Initialize the class.
+
+        Parameters
+        ----------
+        fileIn : string.
+            The full input file name.
+        fileOut : string.
+            The full output file name.
+        resolution : int, optional
+            The resolution used in image convertion.
+        """
         if fileIn is not None and fileOut is not None:
-            self.convertImage(fileIn, fileOut)
+            self.convertImage(fileIn, fileOut, resolution)
 
-
-    def convertImage(self, fileIn, fileOut):
+    def convertImage(self, fileIn, fileOut, resolution):
         """ Image conversion with wand.
         """
-        im = wandImage(filename=fileIn)
+        im = wandImage(filename=fileIn, resolution=resolution)
         # remove timestamp from png (keep checksum unchanged for test)
         im.artifacts['png:exclude-chunks'] = 'date,time'
         im.strip()
         # for (k, v) in im.artifacts.items():
         #     print(k, v)
-        print("   Conversion from {} to {}.".format(os.path.splitext(fileIn)[1],
-                                                    os.path.splitext(fileOut)[1]
-                                                    ))
+        print("   Conversion from {} to {} (imgResolution={}).".format(
+                                                    os.path.splitext(fileIn)[1],
+                                                    os.path.splitext(fileOut)[1],
+                                                    resolution))
         im.save(filename=fileOut)
         im.close()
 
 
-def encodeImg(Ii, pathin, pathout):
+def encodeImg(Ii, pathin, pathout, resolution=DEFAULT_IMG_RESOLUTION):
     """ Convert image to png and encode it in base64 text.
 
     Parameters
@@ -108,9 +135,10 @@ def encodeImg(Ii, pathin, pathout):
     Ii : element tree
         The xml element containing the image information (path, ...). This
         element is modified.
-
     pathin, pathout : string
         the input and output path
+    resolution : Int
+        The resolution used in image convertion.
     """
 
     ext = Ii.attrib['ext']
@@ -125,7 +153,7 @@ def encodeImg(Ii, pathin, pathout):
         # im.write(pathF + img_name)
         img_path = os.path.join(pathout, img_name_out)
         im = ImageCustom(os.path.join(pathF, img_name_in),
-                         img_path)
+                         img_path, resolution)
     else:
         img_name_out = Ii.attrib['name'] + '.' + ext
         img_path = os.path.join(pathF, img_name_out)
@@ -158,6 +186,7 @@ class AMCQuestion(ABC):
         self.Qi = Qi
         self.name = Qi.find('name/text').text
         self.context = context
+        self._options_dict = dict()
 
     def __repr__(self):
         """ Change string representation.
@@ -180,182 +209,54 @@ class AMCQuestion(ABC):
         # inclusion des images dans les questions & réponses
         Ilist = self.Qi.xpath(".//file")
         for Ii in Ilist:
-            Ii = encodeImg(Ii, self.context.pathin, self.context.wdir)
+            Ii = encodeImg(Ii, self.context.pathin, self.context.wdir,
+                           int(self._setWithOptionsOrDefault('imgResolution',
+                                                             DEFAULT_IMG_RESOLUTION)))
 
     @abstractmethod
     def _scoring(self):
         pass
 
-    @abstractmethod
     def _options(self):
-        pass
+        """ Look for amc_options elements and store them in _options_dict.
+        """
+        Qi = self.Qi
+        optlist = Qi.xpath(".//options")
+
+        for opt in optlist:
+            # the option name is in 'role' atrtibute
+            # the option value is in
+            self._options_dict[opt.attrib['name']] = opt.text
+            opt.getparent().remove(opt)
+        if optlist:
+            print("   Modified default options with {}:".format(self._options_dict) )
+
+    def _setWithOptionsOrDefault(self, opt_name, default_value):
+        """ Set an option to its value if provided, else use default value.
+        """
+        if opt_name in self._options_dict.keys():
+            return self._options_dict[opt_name]
+        else:
+            return default_value
 
     def convert(self):
         """ Run all questions convertion steps.
         """
         print(" * processing {} question '{}'...".format(self.__class__.__name__, self.name))
-        self._encodeImg()
         self._options()
+        self._encodeImg()
         self._scoring()
-
-
 
 
 class AMCQuestionSimple(AMCQuestion):
     """ Multiple choice question with single good answer.
     """
-    # Simple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
-    amc_bs = {'e': -1, 'b': 1, 'm': -0.5}
-    # Multiple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
-    amc_bm = {'e': -1, 'b': 1, 'm': -0.5, 'p': -1}
-    # valeur par défaut de la note de la question
-    moo_defautgrade = 1.
-
-    # file out for debug purpose
-    filetemp0 = os.path.join(wdir, "temp0.xml")
-    filetemp = os.path.join(wdir, "temp.xml")
-
-    # path of the file
-
-    # path to xslt stylesheet
-    # TODO use pkgutils
-    # 1. remove namespace
-    filexslt_ns = os.path.join(os.path.dirname(__file__),
-                               "transform_ns.xslt")
-    # 2. convert to html, tab, figure, equations
-    filexslt_pre = os.path.join(os.path.dirname(__file__),
-                                "transform2html.xslt")
-    # 3. remane element and finish the job
-    filexslt = os.path.join(os.path.dirname(__file__),
-                            "transform.xslt")
-
-    ##########################################################################
-    # Pré traitement
-    # on parse le fichier xml
-    # Elements are lists
-    # Elements carry attributes as a dict
-    xml = open(os.path.join(wdir, filein), 'r')
-    tree0 = etree.parse(xml)
-
-    # on supprime le namespace
-    # TODO a terme faire autrement
-    xslt_ns = open(filexslt_ns, 'r')
-    xslt_ns_tree = etree.parse(xslt_ns)
-    transform_ns = etree.XSLT(xslt_ns_tree)
-    # applique transformation
-    tree = transform_ns(tree0)
-    # on modifie les element graphic pour gérer les chemins, le taille et la mise en forme.
-    # <graphics candidates="schema_interpL.png" graphic="schema_interpL.png" options="width=216.81pt" xml:id="g1" class="ltx_centering"/>
-    Ilist = tree.xpath(".//graphics")  # que sur attributs ici
-    # conversion des notations d'alignement
-    align = {'ltx_align_right': 'right', 'ltx_align_left': 'left',
-             'ltx_centering': 'center'}
-    # ext extension, path:chemin img, dim [width/height],size, dimension en point
-
-    for Ii in Ilist:
-        img_name = Ii.attrib['candidates'].split(',')[-1]   #get the last candidates
-        ext = img_name.split('.')[-1]
-        # not all attrib are mandatory... check if they exist before using them
-        # try for class
-        if 'class' in Ii.attrib:
-            img_align = Ii.attrib['class']
-        else:
-            img_align = 'ltx_centering'  # default value center !
-        # try for option
-        if 'options' in Ii.attrib:
-            img_options = Ii.attrib['options']
-            img_size = img_options.split('=')[-1]  # il reste pt, mais cela ne semble pas poser de pb
-            img_dim = img_options.split('=')[0]
-        else:
-            img_options = ''
-            img_size = '200pt'
-            img_dim = 'width'
-
-        img_path = os.path.dirname(os.path.normpath(os.path.join(pathin, img_name)))
-
-        name = basename(img_name)
-        # print(name, ext, img_dim, align[img_align])
-        Ii.attrib.update({'ext':ext, 'dim': img_dim, 'size': img_size,
-                          'pathF': img_path, 'align': align[img_align],
-                          'name': name})
-
-    # path
-    # ext
-    # dim = width or height
-    # size :
-    # width options="height=216.81pt"
-    # alig <-> class
-
-    # remise en forme + html + math + image + tableau
-    xslt_pre = open(filexslt_pre, 'r')
-    xslt_pre_tree = etree.parse(xslt_pre)
-    transform_pre = etree.XSLT(xslt_pre_tree)
-    # applique transformation
-    tree = transform_pre(tree)
-    if (deb == 1):
-        # ecriture
-        tree.write(filetemp0, pretty_print=True, encoding="utf-8")
-
-
-    ###########################################################################
-    # Recherche barème par défaut
-    # attribut amc_baremeDefautS et amc_baremeDefautM
-    # on cherche s'il existe un barème par défaut pour question simple
-    bars = tree.xpath("//*[@class='amc_baremeDefautS']")  # que sur attributs ici
-    # bar[0].text contient la chaine de caractère
-    if len(bars) > 0:
-        # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
-        amc_bs = dict(item.split("=") for item in bars[0].text.strip().split(","))
-        print("baremeDefautS :", amc_bs)
-        if (float(amc_bs['b']) < 1):
-            print("WARNING : the grade the good answser in question will be < 100%, put b=1")
-
-    # on cherche s'il existe un barème par défaut pour question multiple
-    barm = tree.xpath("//*[@class='amc_baremeDefautM']")
-    # bar[0].text contient la chaine de caractère
-    if len(barm) > 0:
-        # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
-        amc_bm = dict(item.split("=") for item in barm[0].text.strip().split(","))
-        print("baremeDefautM :", amc_bm)
-        if (float(amc_bm['b']) < 1):
-            print("WARNING : the grade of the good answser(s) in questionmult may be < 100%, put b=1")
-
-
-    ############################################################################
-    # Prise en compte des catégories
-    # <text>$course$/filein/amc_element_tag</text>
-    Clist = tree.xpath("//*[@class='amc_categorie']")
-    for Ci in Clist:
-        if (catflag == 1):
-            Ci.text = "$course$/"+catname.split('.')[0] + "/" + Ci.text
-        else:
-            Ci.text = "$course$/"+catname.split('.')[0]
-
-
-    ###########################################################################
-    # Application du barème dans chaque question
-    # + vérf barème locale : attribut amc_bareme
-    # on suppose que le bareme est au même niveau que des elements amc_bonne
-    # ou amc_mauvaise
-
-    # Question simple
-    # =========================================================================
-    #Qlist = tree.xpath("//text[@class='amc_question']")
-    Qlist = tree.xpath("//*[@class='amc_question']")
-    # calcul nombre de questions total
-    Qtot = len(Qlist)
-    for Qi in Qlist:
-        # on ajoute le champ  <defaultgrade>1.0000000</defaultgrade>
-        etree.SubElement(Qi, "defaultgrade").text = str(moo_defautgrade)
-
-        # inclusion des images dans les questions & réponses
-        Ilist = Qi.xpath(".//file")
-        for Ii in Ilist:
-            Ii = encodeImg(Ii, pathin, wdir)
-
+>
     def _options(self):
         """ Manage options at question levels.
         """
+        # Call generic options search
+        super()._options()
         Qi = self.Qi
         # check local shuffle policy
         Qiwantshuffle = SHUFFLE_ALL
@@ -544,7 +445,7 @@ class AMCQuestionOpen(AMCQuestion):
     """
 
     def _options(self):
-        """ Parse options and create the required elements. 
+        """ Parse options and create the required elements.
         """
         Qi = self.Qi
         amc_open = Qi.find(".//note[@class='amc_open']")
@@ -582,6 +483,181 @@ class AMCQuestionDescription(AMCQuestion):
         pass
 
 
+class _Calculated:
+    """ Customization class for Parametrized Multiple choice question.
+
+    Connot be instanciated, must be used with Mixins
+    """
+
+    def _parsemath(self):
+        """ Parse FP expression and convert them to moodle XML.
+
+        Returns
+        -------
+        wildcards : set
+            The set of all encournters random variables to create the datasets.
+        """
+        Qi = self.Qi
+        # parse fp expressions
+        parser = CreateCalculatedParser(CALCULATED_DEFAULT_PARSER)
+        for orig_text in Qi.xpath(".//questiontext/note|.//note[@class='amc_bonne']/note|.//note[@class='amc_mauvaise']/note"):
+            rawtext = (etree.tostring(orig_text, encoding='utf8')
+                            .decode('utf-8')
+                            .replace('<note>', '')
+                            .replace('</note>', '')
+                            .replace(r'\n', ''))
+            # parse question
+            parsed_text = parser.render(rawtext)
+            # questiontext.getparent().remove(questiontext)
+            orig_text.clear()
+
+            # FIXME this manipulation reveals a problem in the management of CDATA
+            # fields created in transform2html. Since the orig_text.text contains only a part
+            # of CDATA tag '<![CDATA[\n    '
+            # this markup is ignored and transform.xslt process normally the elements
+            # see orig_text.getchildren()[0]
+            # XSLT transform remove CDATA
+
+            # To protect them from xslt rename into
+            orig_text.tag = 'text'
+            # `cdata` element are marked in transform.xslt <xsl:output> as
+            # cdata-section-elements="cdata" and CDATA are added in the output
+            # now need to remove `cdata` elements at the end of the conversion
+            cdata = etree.fromstring('<cdata>' + parsed_text + '</cdata>',
+                                    etree.XMLParser(strip_cdata=False))
+            orig_text.append(cdata)
+
+
+            # orig_text.text = etree.CDATA(parsed_text)  # doesn't work ??!!
+            # Change behavior to avoid lxml unescape chars
+            # orig_text.text = etree.CDATA(parsed_text.replace('<![CDATA[', '')
+            #                                         .replace(']]>', ''))
+            # orig_text.text = etree.fromstring(parsed_text)
+            # etree.dump(Qi)
+        return parser.wildcards
+
+
+    def _addAnswerFields(self):
+        """ Add calcultaed question specific fields to all answers.
+        """
+        Qi = self.Qi
+        # add them to each answer good or wrong
+        for ans in Qi.xpath(".//note[@class='amc_bonne']|.//note[@class='amc_mauvaise']"):
+            tolerance = etree.Element('tolerance')
+            tolerance.text = str(CALCULATED_TOLERANCE)
+
+            tolerancetype = etree.Element('tolerancetype')
+            tolerancetype.text = str(CALCULATED_TOLERANCETYPE)
+
+            correctanswerformat = etree.Element('correctanswerformat')
+            correctanswerformat.text = str(CALCULATED_CORRECTANSWERFORMAT)
+
+            correctanswerlength = etree.Element('correctanswerlength')
+            correctanswerlength.text = str(CALCULATED_CORRECTANSWERLENGTH)
+
+            fields = [tolerance, tolerancetype, correctanswerformat,
+                      correctanswerlength]
+
+            ans.extend(fields)
+
+    def _datasets(self, wildcards):
+        """ Create data set from wildcard uniformly distributed between [0, 1].
+
+        Parameters
+        ----------
+        wildcards : set
+            The set of all encournters random variables to create the datasets.
+        """
+
+        # initialize data global container
+        dataset_definitions = etree.Element('dataset_definitions')
+        for wildcard in wildcards:
+            # initialize data container for each wildcard
+            data = etree.SubElement(dataset_definitions, 'dataset_definition')
+            # create all subelements
+            status = self._SubElement_text(data, 'status', 'private')
+            name = self._SubElement_text(data, 'name', wildcard)
+            indextype = etree.SubElement(data, 'type')
+            indextype.text = 'calculatedsimple'
+
+            # Set all random distirbution parameters
+            # in fp all random parameters are defined between 0 and 1
+            distribution = self._SubElement_text(data, 'distribution', 'uniform')
+            minimum = self._SubElement_text(data, 'minimum', '0')
+            maximum = self._SubElement_text(data, 'maximum', '1')
+            # Decimal number
+            decimal_number = int(self._setWithOptionsOrDefault('decimalNumber', CALCULATED_DEFAULT_DECIMAL_NUMBER))
+            decimals = self._SubElement_text(data, 'decimals', str(decimal_number))
+            # nitems in the dataset
+            nitems = int(self._setWithOptionsOrDefault('nitems', CALCULATED_DEFAULT_ITEM_NUMBER))
+            itemcount = etree.SubElement(data, 'itemcount')
+            itemcount.text = str(nitems)
+            number_of_items = etree.SubElement(data, 'number_of_items')
+            number_of_items.text = str(nitems)
+            # set container for all random values
+            dataset_items = etree.SubElement(data, 'dataset_items')
+            for i in range(0, nitems):
+                # set container for each random value
+                dataset_item =  etree.SubElement(dataset_items, 'dataset_item')
+                number =  etree.SubElement(dataset_item, 'number')
+                # moodle indexes start at 1
+                number.text = str(i+1)
+                value =  etree.SubElement(dataset_item, 'value')
+                rand = random.uniform(0, 1)
+                # limit the number of digits
+                rand = round(rand, decimal_number)
+                value.text = str(rand)
+
+        self.Qi.append(dataset_definitions)
+
+    @staticmethod
+    def _SubElement_text(parent, name, value):
+        """ Create a subelement with a text element to store data.
+
+        Parameters
+        ----------
+        parent : etree
+            The parent of the element to create.
+        name : string
+            name of the element.
+        value : string
+            the value store in <text>.
+
+        Returns
+        -------
+        se : etre
+            The subelement.
+        """
+        se = etree.SubElement(parent, name)
+        etree.SubElement(se, 'text').text = value
+        return se
+
+    def _scoring(self):
+        """ Compute the scoring.
+        """
+        # and call AMCQuestionSimple scoring method
+        super()._scoring()
+        # parse fp expressions
+        wildcards = self._parsemath()
+        print('   Found {} wildcards.'.format(len(wildcards)))
+        # TODO add a test to check that all wildcards starts with rand!
+        # to control substitution
+        # Add calcultaed question specific fields to all answers.
+        self._addAnswerFields()
+        # create the dataset
+        self._datasets(wildcards)
+
+
+class AMCQuestionCalcMult(_Calculated, AMCQuestionSimple):
+    """ Parametrized Multiple choice question with single good answer.
+    """
+    pass
+
+
+class AMCQuestionMultCalcMult(_Calculated, AMCQuestionMult):
+    """ Parametrized Multiple choice question with multiple good answers.
+    """
+    pass
 
 
 # dict of all available question
@@ -589,7 +665,9 @@ Q_FACTORY = {'amc_questionmult': AMCQuestionMult,
              'amc_question': AMCQuestionSimple,
              'amc_questionnumeric': AMCQuestionNumeric,
              'amc_questionopen': AMCQuestionOpen,
-             'amc_questiondescription': AMCQuestionDescription}
+             'amc_questiondescription': AMCQuestionDescription,
+             'amc_questioncalcmult': AMCQuestionCalcMult,
+             'amc_questionmultcalcmult': AMCQuestionMultCalcMult}
 
 
 def CreateQuestion(qtype, Qi, context):
@@ -644,7 +722,7 @@ class Context():
         return "The context state is " + options
 
 
-class AMCQuiz(ABC):
+class AMCQuiz:
     """ Class to handle conversion from XML file obtain with LaTeXML
     to moodle XML.
 
@@ -709,7 +787,7 @@ class AMCQuiz(ABC):
         """ Change string representation.
         """
         rep = ("Instance of {}. {} have be converted."
-               .format(self.__class__.__name__, self.name, self.Qtot))
+               .format(self.__class__.__name__, self.Qtot))
         return rep
 
     def __str__(self):
@@ -754,11 +832,20 @@ class AMCQuiz(ABC):
         transform = etree.XSLT(etree.parse(self.filexslt))
         # apply XSLT transformation
         self.tree = transform(self.tree)
-        if (self.deb == 1):
-            print(etree.tostring(self.tree, pretty_print=True, encoding="utf-8"))
+
+        # Need to remove `cdata` elements introduced in calculated question
+        for cdata in self.tree.findall('.//text/cdata'):
+            # copy `cdata` content on CDATA in `text`
+            cdata.getparent().text = etree.CDATA(cdata.text)
+            # Remove the now useless `cdata` element
+            cdata.getparent().remove(cdata)
 
         # Save output
-        self.tree.write(fileout, pretty_print=True, encoding="utf-8")
+        s = etree.tostring(self.tree, pretty_print=True, encoding="utf-8").decode('utf-8')
+        if (self.deb == 1):
+            print(etree.tostring(self.tree, pretty_print=True, encoding="utf-8"))
+        with open(fileout, 'w') as f:
+            f.write(s)
 
         # summary
         print('\n')
@@ -772,6 +859,9 @@ class AMCQuiz(ABC):
         """
 
         # Parse the input xml file
+        # the default behavior is to strip CDATA to avoid it, use
+        # parser = etree.XMLParser(strip_cdata=False)
+        # tree = etree.parse(self.xml, parser)
         tree = etree.parse(self.xml)
 
         # remove namespace
@@ -834,7 +924,12 @@ class AMCQuiz(ABC):
                  'ltx_centering': 'center'}
 
         for Ii in Ilist:
-            img_name = Ii.attrib['candidates'].split(',')[-1]   #get the last candidates
+            try:
+                img_name = Ii.attrib['candidates'].split(',')[-1]   # get the last candidates
+            except KeyError as e:
+                print('WARNING : No Image file candidates. ',
+                      'Probably due to a wrong path : {}'.format(Ii.attrib['graphic']))
+                raise e
             ext = img_name.split('.')[-1]
             # not all attrib are mandatory... check if they exist before using them
             # try for class
@@ -886,7 +981,7 @@ class AMCQuiz(ABC):
 
 
     def _exportContext(self):
-        """ Export environnement variable as a Context object. 
+        """ Export environnement variable as a Context object.
         """
         context = Context(pathin=self.pathin, wdir=self.wdir,
                           amc_bm=self.amc_bm, amc_bs=self.amc_bs,
@@ -948,7 +1043,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
     # load input latexml xml file
     with open(os.path.join(wdir, filein), 'r') as xml:
         # instanciate the Quiz object
-        quiz = AMCQuiz(xml, pathin, wdir, catname)
+        quiz = AMCQuiz(xml, pathin, wdir, catname, deb)
         # run the conversion and save the output
         quiz.toMoodle(os.path.join(pathout, fileout))
 

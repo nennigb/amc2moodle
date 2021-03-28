@@ -48,7 +48,7 @@
 <!-- template for answers-->
 <xsl:template match="choices">
   \begin{choices}
-	<xsl:apply-templates />
+<xsl:apply-templates />
   \end{choices}
 </xsl:template>
 
@@ -58,16 +58,21 @@
 
 <xsl:template match="correctchoice"> 
     <xsl:choose>
-        <xsl:when test="@label">    \correctchoice[<xsl:value-of select = "@label"/>]{<xsl:value-of select = "text"/>}</xsl:when>
-        <xsl:otherwise>    \correctchoice{<xsl:value-of select = "text"/>}</xsl:otherwise>
+        <xsl:when test="@label">    \correctchoice[<xsl:value-of select = "@label"/>]{<xsl:value-of select = "text"/>}<xsl:text>&#xa;</xsl:text></xsl:when>
+        <xsl:otherwise>    \correctchoice{<xsl:value-of select = "text"/>}<xsl:text>&#xa;</xsl:text></xsl:otherwise>
     </xsl:choose>    
 </xsl:template>
   
 <xsl:template match="wrongchoice"> 
     <xsl:choose>
-        <xsl:when test="@label">    \wrongchoice[<xsl:value-of select = "@label"/>]{<xsl:value-of select = "text"/>}</xsl:when>
-        <xsl:otherwise>    \wrongchoice{<xsl:value-of select = "text"/>}</xsl:otherwise>
+        <xsl:when test="@label">    \wrongchoice[<xsl:value-of select = "@label"/>]{<xsl:value-of select = "text"/>}<xsl:text>&#xa;</xsl:text></xsl:when>
+        <xsl:otherwise>    \wrongchoice{<xsl:value-of select = "text"/>}<xsl:text>&#xa;</xsl:text></xsl:otherwise>
     </xsl:choose>    
+</xsl:template>
+
+<xsl:template match="AMCnumericChoices">
+% need \usepackage{fp} for floatting point computation 
+\AMCnumericChoices{<xsl:value-of select = "@target"/>}{<xsl:value-of select = "text()"/>}   
 </xsl:template>
 
 <!-- template for header/footer -->

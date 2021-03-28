@@ -75,10 +75,14 @@ Changement de l'organisation des questions
 		</name>
 
         <!-- barème local -->
-       <xsl:for-each select=".//text[@class='amc_bareme']">
+        <xsl:for-each select=".//text[@class='amc_bareme']">
           <bareme>
                 <xsl:value-of select="text()"/>
          </bareme>
+        </xsl:for-each>
+        <!-- general options -->
+        <xsl:for-each select=".//note[@class='amc_options']">
+          <options><xsl:attribute name="name"><xsl:value-of select="@role"/></xsl:attribute><xsl:value-of select="text()"/></options>
         </xsl:for-each>
         <!-- Support for options in \begin{choices} -->
         <xsl:for-each select=".//note[@class='amc_choices_options']">
@@ -88,10 +92,25 @@ Changement de l'organisation des questions
         <xsl:for-each select=".//note[@class='amc_numeric_choices']">
           <xsl:copy-of select="."/>
         </xsl:for-each>
+		<!-- Support for explain        -->
+        <xsl:for-each select=".//note[@class='amc_explain']">
+          <generalfeedback format="html">          		
+      	     <xsl:copy>
+                      <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text><xsl:apply-templates/><xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
+             </xsl:copy>
+	      </generalfeedback>
+        </xsl:for-each>
+        <!-- Support for AddXMLQElement at Question level        -->
+        <xsl:for-each select=".//note[@class='amc_XMLQElement']">
+           <xsl:element name="{@role}">          		
+             <xsl:attribute name="format">html</xsl:attribute>
+      	     <xsl:copy>
+                <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text><xsl:apply-templates/><xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
+             </xsl:copy>
+	       </xsl:element>
+        </xsl:for-each>
         <!-- mise en forme html, équation, tableau -->
         <questiontext format="html">
-
-
         <!-- prise en comte des images en 2 étapes stockage et placement
         boucle pour trouver les fichiers graphiques contenus dans la question (et les reponses!!)-->
         <xsl:for-each select=".//graphics">
@@ -114,9 +133,7 @@ Changement de l'organisation des questions
 
 
             <xsl:copy>
-               <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>
-                   <xsl:apply-templates />
-               <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
+               <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text><xsl:apply-templates /><xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
             </xsl:copy>
         </questiontext>
 
@@ -125,12 +142,20 @@ Changement de l'organisation des questions
        on boucle sur les réponses <xsl:for-each select="//note[@class='amc_mauvaise']">-->
         <xsl:for-each select=".//note[starts-with(@class, 'amc_bonne') or starts-with(@class, 'amc_mauvaise')]">
               <note>
-              <xsl:attribute name="class"><xsl:value-of select="@class"/></xsl:attribute>
-                   <xsl:copy>
-                      <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>
-                        <xsl:apply-templates/>
-                      <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
-                   </xsl:copy>
+                <xsl:attribute name="class"><xsl:value-of select="@class"/></xsl:attribute>
+                <!-- Support for AddXMLAElement at Answer level        -->
+                <xsl:for-each select=".//note[@class='amc_XMLAElement']">
+                  <xsl:element name="{@role}">          		
+                    <xsl:attribute name="format">html</xsl:attribute>
+      	            <xsl:copy>
+                        <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text><xsl:apply-templates/><xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
+                    </xsl:copy>
+	              </xsl:element>
+                </xsl:for-each>
+                <!-- Copy answer text-->
+                <xsl:copy>
+                   <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text><xsl:apply-templates/><xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
+                </xsl:copy>
 
                    <!-- prise en compte des images en 2 étapes stockage et placement
                     boucle pour trouver les fichiers graphiques contenus dans la question-->
@@ -147,11 +172,9 @@ Changement de l'organisation des questions
                             <xsl:attribute name="align"><xsl:value-of select="@align"/></xsl:attribute>
                             <xsl:apply-templates/>
                          </file>
-                      </xsl:for-each>
-
+                      </xsl:for-each>			   
               </note>
-       </xsl:for-each>
-
+       </xsl:for-each>       
   </note>
 </xsl:template>
 
@@ -206,7 +229,10 @@ A faire : <center> </center>,  small caps, sf, sl, sc
 Single <br/> does the trick  -->
 <xsl:template match="break"><br/></xsl:template>
 
-
+<!-- template netoyage champ globaux mise en forme-->
+<xsl:template match="para|inline-para">
+    <xsl:apply-templates/>
+</xsl:template>
 
 <!-- #############################################################
 
@@ -236,8 +262,12 @@ equation
 </xsl:template>
 <xsl:template match="text[@class='amc_bareme']">
 </xsl:template>
-
-
+<xsl:template match="note[@class='amc_options']">
+</xsl:template>
+<xsl:template match="note[@class='amc_explain']">
+</xsl:template>
+<xsl:template match="note[@class='amc_XMLQElement' or @class='amc_XMLAElement']">
+</xsl:template>
 
 <!-- #############################################################
 
@@ -318,6 +348,9 @@ to change the bullet in html
 <xsl:template match="tags">
 </xsl:template>
 
+
+<xsl:template match="note[@class='amc_FPprint']">fp{<xsl:apply-templates/>}</xsl:template>
+
 <!--- ###########################################################
        Include Here new template for supported package
 - mhchem through mathjax
@@ -326,6 +359,7 @@ to change the bullet in html
 <!--mhchem-->
 <!-- called outside math env only since raw tex are used in Math mode-->
 <xsl:template match="note[@class='mhchem']">\(\<xsl:value-of select="@role"/>{<xsl:apply-templates/>}\)</xsl:template>
+
 
 
 

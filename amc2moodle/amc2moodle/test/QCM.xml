@@ -8,6 +8,7 @@
 <?latexml package="graphicx"?>
 <?latexml package="automultiplechoice" options="francais,bloc,completemulti"?>
 <?latexml package="mhchem"?>
+<?latexml package="fp"?>
 <?latexml package="tikz"?>
 <?latexml RelaxNGSchema="LaTeXML"?>
 <quiz>
@@ -31,9 +32,8 @@
            \(N\)
      points donnés, un <tt>polynôme</tt> de degré <b>strictement</b> égal à 
            \(N-1\)
-    . Pour trouver les coefficients on doit résoudre un <em>problème</em></p>
-      
-      
+    . Pour trouver les coefficients on doit résoudre un <em>problème</em>
+</p>
         <p style="text-align:center; "><img style="vertical-align:text-bottom; margin: 0 .5em;" src="@@PLUGINFILE@@/schema_interpL.png" width="216.81pt" options="width=216.81pt"/></p>
       
       
@@ -45,16 +45,23 @@
 <p style="text-align:left; "><img style="vertical-align:text-bottom; margin: 0 .5em;" src="@@PLUGINFILE@@/tinymonk.png" height="85.358268pt" options="height=85.358268pt"/></p>
 ]]></text><file align="right" dim="height" encoding="base64" ext="pdf" name="tinymonk.png" path="/" pathF="" size="56.905512pt">iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAMAAAA4Nk+sAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAGqUExURS0tLTExMTIyMjU1NTc3N1dXV2NjY1tbW1hYWFxcXEREREJCQj8/P0FBQR4eHhcXFxUVFRQUFDAwMDY2NlZWVlBQUE1NTVJSUnd3d0hISCQkJBsbGx0dHRoaGiAgIElJSSwsLEdHR3h4eCUlJSEhIScnJzQ0NCsrKzs7O0BAQI2Njbq6uq6urmZmZi8vLygoKCIiIjw8PEtLS52dnZqamn5+fmpqahgYGHJycjk5OV9gX1FRUSkpKYiIiKqqqk5OTkVFRTo6OlVVVXNzc4yMjIODg21tbVlZWUxMTD4+PkZGRmFhYWRkZHR0dHx8fGhoaFRUVImJiZWVlXZ2dnBwcH19fWtra2JiYo+Pj5CQkIqKiqKiopiYmGlpaZGRkYCAgHt7e5eXl6mpqdbW1ZycnKWlpYeHh2xsbG9vb4KCgo6OjoGBgYSEhMXFxdra2q+vr4aGhn9/f3p6el5eXm5ubtfX19TU1IWFhWVlZaioqMHBwWdnZ5SUlKamps/Pz1paWri4uKenp11dXby8vMvLyxAQEBISEnFxcdPT06Ojo5ubm09PT5KSkv///wNOX1IAAAABYktHRI0bDOLVAAAACXBIWXMAAABIAAAASABGyWs+AAAB+UlEQVQozw3OaUPScBwA4N/+G4gcAzaujYEbxwYkZ4UbzBiiEngVCggmdiAoZXlVFhZqQueHjrfPqwcAQzih088YZo0ms9lCkFab3W4HoDDa4bS43B6GANbL+Ug/Z7VNmTDM8UjwBIxBvz8UIsM0IUpAoQjpY6OxB/NxKZFMBlMk509ngBKRjws7Hz56nMWSFIaCqRDHUYDhonchyMhKLh/lVVpBajjlJ6es8CnOrJcXnxQUxBMWDdQgCwgvLuEJrbS8slp+OpNOVKpVJPLTSHFtjRKV9Y1NnZbfMooVoWxGAMSz5zVGpbTtnbpcbsgMqlSbOVCNu8uxVpKlyu29Fx7dVt1Fa8I+SKVO6+DlqzSLv37TPez1j44LRIQAZ3sweLsjv5No3cn7vQ+n8XVdEUuC3Iv1zs6PmqLj4vLjp1r386pFEmmQD3orx+dyA6texb58PaydZg0KkiB+5NnOXiwNTUKjf/3t+mwwf5X2c+CaXW9s6apGF2HA1dnu9+VWbiSxoLpGzkzBidwVfVQimVYnVlo0MrAgqoAQLuIFev/SGbjZ3QjcdgSw21LeBRLT0pm5u+aw0R/+uG9vbsB4Yg0jQsKEiNsxGjnc/M9fv4//wGQy9vo4zBwxWfKjv1E1FG7d39RhMh5PUjwk8EhEYIqsqob525N//wGSrmVMh8fhcAAAAABJRU5ErkJggg==</file><file align="left" dim="height" encoding="base64" ext="pdf" name="tinymonk.png" path="/" pathF="" size="85.358268pt">iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAMAAAA4Nk+sAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAGqUExURS0tLTExMTIyMjU1NTc3N1dXV2NjY1tbW1hYWFxcXEREREJCQj8/P0FBQR4eHhcXFxUVFRQUFDAwMDY2NlZWVlBQUE1NTVJSUnd3d0hISCQkJBsbGx0dHRoaGiAgIElJSSwsLEdHR3h4eCUlJSEhIScnJzQ0NCsrKzs7O0BAQI2Njbq6uq6urmZmZi8vLygoKCIiIjw8PEtLS52dnZqamn5+fmpqahgYGHJycjk5OV9gX1FRUSkpKYiIiKqqqk5OTkVFRTo6OlVVVXNzc4yMjIODg21tbVlZWUxMTD4+PkZGRmFhYWRkZHR0dHx8fGhoaFRUVImJiZWVlXZ2dnBwcH19fWtra2JiYo+Pj5CQkIqKiqKiopiYmGlpaZGRkYCAgHt7e5eXl6mpqdbW1ZycnKWlpYeHh2xsbG9vb4KCgo6OjoGBgYSEhMXFxdra2q+vr4aGhn9/f3p6el5eXm5ubtfX19TU1IWFhWVlZaioqMHBwWdnZ5SUlKamps/Pz1paWri4uKenp11dXby8vMvLyxAQEBISEnFxcdPT06Ojo5ubm09PT5KSkv///wNOX1IAAAABYktHRI0bDOLVAAAACXBIWXMAAABIAAAASABGyWs+AAAB+UlEQVQozw3OaUPScBwA4N/+G4gcAzaujYEbxwYkZ4UbzBiiEngVCggmdiAoZXlVFhZqQueHjrfPqwcAQzih088YZo0ms9lCkFab3W4HoDDa4bS43B6GANbL+Ug/Z7VNmTDM8UjwBIxBvz8UIsM0IUpAoQjpY6OxB/NxKZFMBlMk509ngBKRjws7Hz56nMWSFIaCqRDHUYDhonchyMhKLh/lVVpBajjlJ6es8CnOrJcXnxQUxBMWDdQgCwgvLuEJrbS8slp+OpNOVKpVJPLTSHFtjRKV9Y1NnZbfMooVoWxGAMSz5zVGpbTtnbpcbsgMqlSbOVCNu8uxVpKlyu29Fx7dVt1Fa8I+SKVO6+DlqzSLv37TPez1j44LRIQAZ3sweLsjv5No3cn7vQ+n8XVdEUuC3Iv1zs6PmqLj4vLjp1r386pFEmmQD3orx+dyA6texb58PaydZg0KkiB+5NnOXiwNTUKjf/3t+mwwf5X2c+CaXW9s6apGF2HA1dnu9+VWbiSxoLpGzkzBidwVfVQimVYnVlo0MrAgqoAQLuIFev/SGbjZ3QjcdgSw21LeBRLT0pm5u+aw0R/+uG9vbsB4Yg0jQsKEiNsxGjnc/M9fv4//wGQy9vo4zBwxWfKjv1E1FG7d39RhMh5PUjwk8EhEYIqsqob525N//wGSrmVMh8fhcAAAAABJRU5ErkJggg==</file></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>true</single></question>
   <question type="category"><category><text>$course$/test_tikz/cat1</text></category></question>
-  <question type="multichoice"><name><text>Qmult:Aucune</text></name><questiontext format="html"><text><![CDATA[
+  <question type="multichoice"><name><text>Qmult:Aucune</text></name><generalfeedback format="html"><text><![CDATA[Fruits grow on trees 
+           \(x^{3}\)
+    , most of the <em>time</em>.]]></text></generalfeedback><partiallycorrectfeedback format="html"><text><![CDATA[This is <b>partially</b> correct !]]></text></partiallycorrectfeedback><questiontext format="html"><text><![CDATA[
     
       
         <p> Quel fruit possède un noyau?
  
 
+
+
+
 </p>
       
     
-  ]]></text></questiontext><answer format="html" fraction="-33.333333333333336"><text><![CDATA[La pomme]]></text></answer><answer format="html" fraction="-33.333333333333336"><text><![CDATA[La tomate]]></text></answer><answer format="html" fraction="-33.333333333333336"><text><![CDATA[le Kiwi]]></text></answer><shuffleanswers>false</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>false</single><answer format="html" fraction="100.0"><text>aucune de ces réponses n'est correcte</text></answer></question>
+  ]]></text></questiontext><answer format="html" fraction="-33.333333333333336"><text><![CDATA[La pomme]]></text></answer><answer format="html" fraction="-33.333333333333336"><text><![CDATA[La tomate]]></text></answer><answer format="html" fraction="-33.333333333333336"><feedback format="html"><text><![CDATA[This is an <b>answer</b> feedback !]]></text></feedback><text><![CDATA[
+
+le Kiwi]]></text></answer><shuffleanswers>false</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>false</single><answer format="html" fraction="100.0"><text>aucune de ces réponses n'est correcte</text></answer></question>
   <question type="category"><category><text>$course$/test_tikz/cat2</text></category></question>
   <question type="multichoice"><name><text>Qmult:TabVerbMacro</text></name><questiontext format="html"><file align="center" dim="height" encoding="base64" ext="png" name="4.png" path="/" pathF="" size="16.0pt">iVBORw0KGgoAAAANSUhEUgAAACsAAAAzCAYAAAAO2PE2AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAPYQAAD2EBqD+naQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASdSURBVGiBzZlbaB1VFIa/fZq0pa0xJlpKWhsraoO0TVOhRbzE3hBrQSKCVB8EIyXGFysU7JNPKgUFLw/FhwgipghVvIBFbQUfilSokkbTKtFSL9WI0caS5FjT/D7sPWafk5k5Zy4x+WExe/Zas+afvdesNXs2kgBtBr0H2iKJuSSgZf+1XUc32DNQP2g3aNEsk1wAehlUBN3nk33JIxvIMGg/qHkWiLaA+jwuAyATKD8KIRvIBOgtUPv/RLQTNFrGYbM/smdjyPrSB3oEVJ8zQQO6G/RJyD17puzQItBklWQDuehmoxvUlIHkYufjm4j7DIEaAnsDagO+ID0E9AFfAicDkfi93NAYlgIbPNkCXBHj+wGJg/69diUc1Wpl0s3AOOgC6K+E1x8un4kaoDnDqMbBALVOkmIC6C7vLAD1GUnNBN6XOFPeOVfJHgjrLBAf4FVgBBjI5qIUg8CRMEXGkT0GtDkZSu+mFK9IKEKn4+ne9oOCWgGCNYJLeWSQIqgxOi+jb5M7/VgwzxFF8E5e6a43voigc8kcfi9o8Ijekmdu3h1HtuBuWiXGgA7gD69vT9KYjMOJOGUBuFS9ry5sZfXRkJhRBP4B+uMMEpB9DXjdtf2itDAFr1D0S1yMMygAk5X9nAYec+1WYK+ny41sbAhAVSNbBO4HRoGrgHeBGzx9TWp2ZThdyaCKkX0C+9VngF7sd89yT/93anZlmKhkUGFkP2CqTO8Btrn2lZ7NeDpq01ExHGPIDgOdrr0OeMbT+RmgmI7adFRMoTVEPtGjwK/YF6gXWODpfLLnvHYROAR8hc3Hm3IlC+jE9Eryhlehng2pNMOefqvgRcEuQaPXXyv4Okn16qq8ZkOfl140JKh3N1wpGA9x/IJHKkpWCX5MQvapSmRDwmAfcN61n8ZO/3fYNHgE+BD4IWSGGoF24HZ3XF/FrJZgTRU2Ojb1dH0C443OJsGSCiO4UXBUMJH1I2Yg4cgeojTOj3ttA7QAG7Ev0puufy12RZ0Z1xvD/LiSW0NJ6moDVmO/rppce73r3wDUObsLHtnRPIgGXFqwFSjSYGTqtMNJJVyGjdFh7IPlhlZiyBZg+p+T6rDKHUdirRJiR5wyA9lmd/w53eXh2GEM86OUBexcpsA17vhTusvDUQdsjVLmMLJF4Ld0LsIR+dJkINvqtT9L5yIc9xhDIUyRgexNwDzXPprORTiWAveGKTLE7GLgLtc+m85FNPZF9KsxfYk8JegUDGYttWFyZ3m5NaACdhkcGieziE8l7vA7ChKTlP61mCtoN4ab/Y5gNFPG7YyjJHYDskkywhj2/+YgcIocV4wh2GkMa4OTYNEfR3YceBt4FRtHJQtMlxNXYr+YVmMT8Dbg6hzIGuBJ4EEAt7ZRT8jb+CeoC3R5yj2uG0GPgw6DxjJkhQnQtf4O4/4yg19A63LcQVwI2g56DnQyBeEDPtm9nuIM6Lo8tztDyDeBHnIzGrW76EsRtMxIwhgeBnqwOxnbpZKfATMOt/N4K3Abdp20HFgBLPHMng/IdmB/De6U5k7ONYY6LOkVQH1Atgk4L+W7Rskb/wJ+MRR3+5VIKgAAAABJRU5ErkJggg==</file><text><![CDATA[
     
@@ -240,6 +247,78 @@ Test for itemize html rendering,</p>
       
     
   ]]></text></questiontext></question>
+  <question type="category"><category><text>$course$/test_tikz/calc</text></category></question>
+  <question type="calculatedmulti"><name><text>calc:area</text></name><questiontext format="html"><text><![CDATA[
+    
+      
+        <p>What is the <b>area</b> of rectangle of height {=((1)+{rand2}*(10-1))} and width {=(1+{rand1}*(10-1))} ?</p>
+      
+      
+        <p>We recall that 
+           \(\pi=\)
+    3.141592653589793238.</p>
+      
+      
+        <p>Check for random labels : {=({rand3}*{rand4})}</p>
+      
+      
+        <p>Check nested expression :
+ {=((1+(pi()+(1))/(pi()-(1))))} =? 2.933884413848519720</p>
+      
+      
+        <p>Check for power and trigo :
+
+           \(\sin(0.5)^{2}+\cos(0.5)^{2}\)
+     =  {=(pow(cos(0.5),1+1)+pow(sin(0.5),2))} =? 1</p>
+      
+      
+      
+    
+  ]]></text></questiontext><answer format="html" fraction="100.0"><text><![CDATA[
+        {=((((1)+{rand2}*(10-1))*(1+{rand1}*(10-1))))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="-50.0"><text><![CDATA[
+        {=((((1)+{rand2}*(10-1))+(1+{rand1}*(10-1))))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>true</single><dataset_definitions><dataset_definition><status><text>private</text></status><name><text>rand4</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.856</value></dataset_item><dataset_item><number>2</number><value>0.754</value></dataset_item><dataset_item><number>3</number><value>0.091</value></dataset_item><dataset_item><number>4</number><value>0.745</value></dataset_item><dataset_item><number>5</number><value>0.369</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand2</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.469</value></dataset_item><dataset_item><number>2</number><value>0.251</value></dataset_item><dataset_item><number>3</number><value>0.719</value></dataset_item><dataset_item><number>4</number><value>0.435</value></dataset_item><dataset_item><number>5</number><value>0.705</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand1</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.983</value></dataset_item><dataset_item><number>2</number><value>0.031</value></dataset_item><dataset_item><number>3</number><value>0.84</value></dataset_item><dataset_item><number>4</number><value>0.783</value></dataset_item><dataset_item><number>5</number><value>0.338</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand3</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>3</text></decimals><itemcount>5</itemcount><number_of_items>5</number_of_items><dataset_items><dataset_item><number>1</number><value>0.455</value></dataset_item><dataset_item><number>2</number><value>0.578</value></dataset_item><dataset_item><number>3</number><value>0.895</value></dataset_item><dataset_item><number>4</number><value>0.044</value></dataset_item><dataset_item><number>5</number><value>0.891</value></dataset_item></dataset_items></dataset_definition></dataset_definitions></question>
+  <question type="category"><category><text>$course$/test_tikz/calc</text></category></question>
+  <question type="calculatedmulti"><name><text>eig</text></name><questiontext format="html"><text><![CDATA[
+    
+      
+        <p>Compute the eigenvalues of the following matrix</p>
+        
+          
+    $$\begin{equation}
+           \begin{pmatrix}x&amp;y\\
+y&amp;z\end{pmatrix},
+    \end{equation}$$
+    
+        
+        <p>where 
+           \(x\)
+    ={=(1+{rand1}*(5-1))}, 
+           \(y\)
+    ={=(1+{rand2}*(5-1))} and 
+           \(z\)
+    ={=(1+{rand3}*(5-1))}.</p>
+      
+      
+      
+      
+      
+      
+      
+      
+    
+  ]]></text></questiontext><answer format="html" fraction="50.0"><text><![CDATA[
+        {=((-((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))+sqrt((((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))))/(2*(1)))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="50.0"><text><![CDATA[
+        {=((-((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-sqrt((((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))))/(2*(1)))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="-6.25"><text><![CDATA[
+        {=(((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="-6.25"><text><![CDATA[
+        {=(-((1+{rand1}*(5-1))+(1+{rand3}*(5-1))))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><answer format="html" fraction="-6.25"><text><![CDATA[
+        {=(((-((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))+sqrt((((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))))/(2*(1)))+((-((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-sqrt((((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))*((-((1+{rand1}*(5-1))+(1+{rand3}*(5-1)))))-4*(1)*((1+{rand1}*(5-1))*(1+{rand3}*(5-1))-(1+{rand2}*(5-1))*(1+{rand2}*(5-1))))))/(2*(1))))}
+      ]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>false</single><answer format="html" fraction="-6.25"><text><![CDATA[aucune de ces réponses n'est correcte]]></text><tolerance>0.01</tolerance><tolerancetype>1</tolerancetype><correctanswerformat>1</correctanswerformat><correctanswerlength>2</correctanswerlength></answer><dataset_definitions><dataset_definition><status><text>private</text></status><name><text>rand2</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.03</value></dataset_item><dataset_item><number>2</number><value>0.38</value></dataset_item><dataset_item><number>3</number><value>0.16</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand1</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.78</value></dataset_item><dataset_item><number>2</number><value>0.24</value></dataset_item><dataset_item><number>3</number><value>0.19</value></dataset_item></dataset_items></dataset_definition><dataset_definition><status><text>private</text></status><name><text>rand3</text></name><type>calculatedsimple</type><distribution><text>uniform</text></distribution><minimum><text>0</text></minimum><maximum><text>1</text></maximum><decimals><text>2</text></decimals><itemcount>3</itemcount><number_of_items>3</number_of_items><dataset_items><dataset_item><number>1</number><value>0.38</value></dataset_item><dataset_item><number>2</number><value>0.24</value></dataset_item><dataset_item><number>3</number><value>0.95</value></dataset_item></dataset_items></dataset_definition></dataset_definitions></question>
   <question type="category"><category><text>$course$/test_tikz/tikz</text></category></question>
   <question type="multichoice"><name><text>tikz:Q1</text></name><questiontext format="html"><text><![CDATA[
     
