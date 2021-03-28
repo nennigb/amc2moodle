@@ -35,7 +35,9 @@ jobs:
         
         # install ubuntu package
         sudo apt-get update
-        sudo apt-get install imagemagick
+        # need to add ghostscript explicitly (only 'recommanded' by imagemagick package)
+        # but 'libmagickwand-dev' is installed
+        sudo apt-get install ghostscript imagemagick
         # move policy file
         sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
         # texlive-fonts-recommended (bophook in texlive-latex-extra) required by moodle2amc test
