@@ -3,7 +3,8 @@
 \element{cat1}{
   \begin{question}{Qsimple:img}
     On souhaite faire passer \textit{exactement}, par $N$ points donnés, un \texttt{polynôme} de degré \textbf{strictement} égal à $N-1$. Pour trouver les coefficients on doit résoudre un \emph{problème}
-
+    % Use "magic comments" to set imgResolution amc2moodle.
+    %amc2moodle \SetOption{imgResolution}{72}  
     \begin{center}
       \includegraphics[width=0.5\textwidth]{./Figures/other/schema_interpL.png}
     \end{center}
@@ -27,17 +28,24 @@
 %===================================================================
 % questions à réponse multiple
 % pas de bonne réponse, on doit ajouter un champ "aucune de ces réponses n'est correcte"
+% test for `\explain`.
+% magic comment for feeback at question and answer level
 \element{cat1}{
   \begin{questionmult}{Qmult:Aucune}  \bareme{e=-0.5,b=1,m=-1.,p=-0.5} % never put b<1,
     Quel fruit possède un noyau?
     \begin{reponseshoriz}[o] % keep answers order
       \mauvaise{La pomme}
       \mauvaise{La tomate}
-      \mauvaise{le Kiwi}
+      \mauvaise{
+        %amc2moodle \AddXMLAElement{feedback}{This is an \textbf{answer} feedback !}
+        le Kiwi}
       %    \mauvaise{En allant à $$ \int_0^2 x \mathrm{d} x $$ la ligne}
     \end{reponseshoriz}
+    \explain{Fruits grow on trees $x^3$, most of the \emph{time}.}
+    %amc2moodle \AddXMLQElement{partiallycorrectfeedback}{This is \textbf{partially} correct !}
   \end{questionmult}
 }
+
 %
 % il y a des bonne réponses et un tableau, verbatim, macro
 \element{cat2}{
@@ -193,42 +201,119 @@
 
 
 %===================================================================
-% grande image
+% large picture
 \element{check-pic}{
   \begin{question}{Qsimple:large-pic}
-    Soit une image un peu lourde, peut-on vérifier le rendu
-
+    Let consider a large picture, can we render it with a sufficient quality?
+    %amc2moodle \SetOption{imgResolution}{72}  
     \begin{center}
-      \includegraphics[width=0.5\textwidth]{./Figures/other/large.png}
+      \includegraphics[width=0.5\textwidth]{./Figures/other/large.JPG}
     \end{center}
 
     \begin{reponses}
-      \bonne{c'est du lourd}
-      \mauvaise{ou pas}
+      \bonne{great}
+      \mauvaise{or not}
     \end{reponses}
   \end{question}
+  %medium-size picture
   \begin{question}{Qsimple:medium-pic}
-    Soit une image moyennement lourde, peut-on vérifier le rendu
-
+    Let consider a medium-size picture, can we render it with a sufficient quality?
+    %amc2moodle \SetOption{imgResolution}{100}  
     \begin{center}
       \includegraphics[width=0.5\textwidth]{./Figures/other/medium.JPG}
     \end{center}
 
     \begin{reponses}
-      \bonne{ça passe}
-      \mauvaise{ou pas}
+      \bonne{great}
+      \mauvaise{or not}
     \end{reponses}
   \end{question}
+  %vectorial picture
   \begin{question}{Qsimple:vec-pic}
-    Soit une image vectorielle, peut-on vérifier le rendu
-
+    Let consider a vectorial picture, can we render it with a sufficient quality?
+    %amc2moodle \SetOption{imgResolution}{200}  
     \begin{center}
-      \includegraphics[width=0.5\textwidth]{./Figures/other/vect.JPG}
+      \includegraphics[width=0.5\textwidth]{./Figures/other/vect.pdf}
     \end{center}
 
     \begin{reponses}
-      \bonne{ça passe}
-      \mauvaise{ou pas}
+      \bonne{great}
+      \mauvaise{or not}
     \end{reponses}
   \end{question}
+}
+
+% Test for calculated question
+\element{calc}{
+  \begin{question}{calc:area}\label{q:Calculated}
+    % Moodle requires at least one wild card in answer formula or question text
+    \FPseed=1 %  Defined but unused, because different random generator are used. 
+    \FPset{\x}{1}
+
+    \FPrandom{\y}
+
+    \FPeval{\a}{\x+random*(10-1)} % uniform in [1, 10]
+    \FPeval{\b}{1+\y*(10-1)} % uniform in [1, 10]
+    \FPeval{\c}{random * random}
+
+    What is the \textbf{area} of rectangle of height \FPprint{\a} and width \FPprint{\b} ?
+
+    We recall that $\pi=$\FPpi .
+
+    Check for random labels : \FPprint{\c}
+
+    Check nested expression :
+    \FPeval{\nest}{ (1 + (pi+\x)/(pi-\x)) } \FPprint{\nest} =? 2.933884413848519720
+
+    Check for power and trigo :
+    % x^n -> pow(n, x)
+    $\sin(0.5)^2+\cos(0.5)^2$ = \FPeval{\trigo}{ pow(1+1, cos(0.5)) + pow(2, sin(0.5))} \FPprint{\trigo} =? 1
+
+
+    %Check FPseed : \the\FPseed
+
+    \begin{choices}
+      \correctchoice{\FPprint{\FPeval{\out}{clip(\a *\b )}\out}}
+      \wrongchoice{\FPprint{\FPeval{\out}{clip(\a +\b )}\out}}
+    \end{choices}
+  \end{question}
+}
+
+% -----------------------------------------------------------------------------
+\element{calc}{
+  \begin{questionmult}{eig}\label{q:eig}
+    % Define the random matrix parameter
+    \FPeval{\x}{1+random*(5-1)} % uniform in [1, 5]
+    \FPeval{\y}{1+random*(5-1)} % uniform in [1, 5]
+    \FPeval{\z}{1+random*(5-1)} % uniform in [1, 5]
+    Compute the eigenvalues of the following matrix
+    % moodle wilcards cannot be replaced inside equation 
+    \begin{equation}
+      \begin{pmatrix}
+        x & y \\
+        y & z
+      \end{pmatrix},
+    \end{equation}
+    where $x$=\FPprint{\x}, $y$=\FPprint{\y} and $z$=\FPprint{\z}.
+    % Define the characteristic polynomial coef
+    \FPeval{\a}{1}
+    \FPeval{\b}{neg(\x+\z)}
+    \FPeval{\c}{\x*\z-\y*\y}
+    % Résolution. Note \FPlsolve is not supported in amc2moodle
+    \FPeval{\disc}{(\b)*(\b) - 4*\a*\c}
+    \FPeval{\eigone}{(neg(\b) + root(2,\disc))/(2*\a)}
+    \FPeval{\eigtwo}{(neg(\b) - root(2,\disc))/(2*\a)}
+
+    % Use "magic comments" to set nitems and decimalNumber in amc2moodle
+    %amc2moodle \SetOption{nitems}{3}
+    %amc2moodle \SetOption{decimalNumber}{2}
+
+    \begin{choices}
+      \correctchoice{\FPprint{\eigone}}
+      \correctchoice{\FPprint{\eigtwo}}
+      \wrongchoice{\FPprint{\disc}}
+      \wrongchoice{\FPprint{\b}}
+      \wrongchoice{\FPeval{\out}{\eigone+\eigtwo}\FPprint{\out}}
+    \end{choices}
+  \end{questionmult}
 }

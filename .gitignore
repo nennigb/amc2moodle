@@ -1,0 +1,42 @@
+# Byte-code
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+*.egg-info/
+build/
+
+# pdoc
+html/
+*.html
+*.dot
+
+# AMC
+*.amc
+
+# LaTeX
+*.spl
+*.tex.bak
+*.aux
+*.glo
+*.idx
+*.log
+*.toc
+*.ist
+*.acn
+*.acr
+*.alg
+*.bbl*
+*.blg*
+*.dvi
+*.glg
+*.gls
+*.ilg
+*.ind
+*.lof
+*.lot
+*.maf
+*.mtc
+*.mtc1
+*.out
+*.synctex*

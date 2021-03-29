@@ -18,12 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from amc2moodle.amc2moodle import convert
+from ..amc2moodle import convert
+from ..utils.flatex import Flatex
 import subprocess
 import sys
 import os
 from importlib import util  # python 3.x
-import shutil
 import tempfile
 from distutils.dir_util import copy_tree
 
@@ -69,8 +69,12 @@ def getPathFile(fileIn):
 class amc2moodle:
     """ Main class to invoke LaTeX to moodle XML conversion.
     """
+    # tag for magic comments
+    magictag = '%amc2moodle '
+
     def __init__(self, fileInput, fileOutput=None, keepFlag=False,
-                 catname='amc', indentXML=False, usetempdir=True, deb=0):
+                 catname='amc', indentXML=False, usetempdir=True,
+                 magic_flag=True, deb=0):
         """ Initialize the object.
 
         Parameters
@@ -87,6 +91,8 @@ class amc2moodle:
             Run XML indentatation program. The default is False.
         usetempdir : bool, optional
             Store all intermediate file in temp directory. The default is True.
+        magic_flag : bool, optional
+            Enable magic comment.The default is True.
         deb : int, optional
             Store all intermediate file for debugging.
 
@@ -115,14 +121,15 @@ class amc2moodle:
             # encapsulate data
             self.keepFlag = keepFlag
             self.catname = catname
-            self.input = fileInput
+            self.inputtex = fileInput
             self.deb = deb
+            self.magic_flag = magic_flag
 
             if fileOutput:
                 self.output = fileOutput
             else:
                 # default is input.xml
-                tmp = os.path.splitext(self.input)
+                tmp = os.path.splitext(self.inputtex)
                 self.output = tmp[0] + '.xml'
 
             if usetempdir:
@@ -130,7 +137,7 @@ class amc2moodle:
                 self.tempdir = tempfile.TemporaryDirectory()
             else:
                 # input file directory
-                self.tempdir = tempfile.TemporaryDirectory(dir=getPathFile(self.input),
+                self.tempdir = tempfile.TemporaryDirectory(dir=getPathFile(self.inputtex),
                                                            prefix='amc2moodle')
             # set temporary file
             self.tempxmlfile = os.path.join(self.tempdir.name,
@@ -144,21 +151,26 @@ class amc2moodle:
     def cleanUpTemp(self):
         """ Clean-up temp directory created by tempfile.TemporaryDirectory().
         """
-        self.tempdir.cleanup()
         print(' > Clean-up tempfile.')
+        self.tempdir.cleanup()
+        # remove magictex temp file
+        if not self.keepFlag:
+            os.unlink(self.magictex)
 
     def showData(self):
         """ Show loaded parameters.
         """
+        disable = {True:'enable', False:'disable'}
         print('====== Parameters ======')
-        print(' > path input TeX: %s' % getPathFile(self.input))
-        print(' > input TeX file: %s' % getFilename(self.input))
+        print(' > path input TeX: %s' % getPathFile(self.inputtex))
+        print(' > input TeX file: %s' % getFilename(self.inputtex))
         print(' > temporary directory: %s' % getPathFile(self.tempdir.name))
         print(' > path output TeX: %s' % getPathFile(self.output))
         print(' > output XML file: %s' % getFilename(self.output))
         print(' > temp XML file: %s' % self.tempxmlfile)
         print(' > keep temp files: %s' % self.keepFlag)
         print(' > categorie name: %s' % self.catname)
+        print(' > magic comments: %s' % disable[self.magic_flag])
 
     def endMessage(self):
         """ Show end message explaining moodle inmport procedure.
@@ -174,10 +186,35 @@ class amc2moodle:
               like 1/2, 1/3 etc...
         """)
 
+    def removeMagicComment(self):
+        """ Remove magic comments prefix to enable amc2moodle dedicated LaTeX
+        commands.
+        """
+
+        pathin = getPathFile(self.inputtex)
+        prefix = os.path.splitext(getFilename(self.inputtex))[0] + '_'
+
+        # Create magitex as persistent temp file in input.tex dir
+        with tempfile.NamedTemporaryFile(mode='w',
+                                         prefix=prefix,
+                                         suffix='_magic.tex',
+                                         dir=pathin,
+                                         delete=False) as m:
+            # Store tempfile name for alter use
+            self.magictex = m.name
+
+        # Merge all included tex files in one and remove magic comments.
+        texpand = Flatex(self.inputtex, self.magictex,
+                         magic_flag=self.magic_flag,
+                         noline=False)
+        texpand.expand()
+        texpand.report()
+
+
     def runLaTeXML(self):
         """ Run LaTeXML on the input TeX file.
         """
-        # run LaTeXML
+        # run LaTeXML on magictex file
         print(' > Running LaTeXML conversion')
         runStatus = subprocess.run([
             'latexml',
@@ -185,7 +222,7 @@ class amc2moodle:
             '--nocomments',
             '--path=%s' % os.path.dirname(__file__),
             '--dest=%s' % self.tempxmlfile,
-            self.input])
+            self.magictex])
         return runStatus.returncode == 0
 
     def runXMLindent(self):
@@ -213,13 +250,20 @@ class amc2moodle:
         """ Build the xml file for Moodle quizz.
         """
         print('====== Build XML =======')
+        # remove magic comment, return magictex
+        if self.magic_flag:
+            print(' > Search for magic comments...')
+        self.removeMagicComment()
+
+
         print(' > Running LaTeXML pre-processing...')
+        # process magictex as tex input
         if self.runLaTeXML():
             # run script
             print(' > Running Python conversion...')
             convert.to_moodle(
                 filein=getFilename(self.tempxmlfile),
-                pathin=getPathFile(self.input),
+                pathin=getPathFile(self.inputtex),
                 workingdir=self.tempdir.name,
                 fileout=getFilename(self.output),
                 pathout=getPathFile(self.output),

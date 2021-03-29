@@ -99,7 +99,8 @@ class TestSuiteNoTikz(unittest.TestCase):
             print(' > Converted XML is identical to the ref.')
 
         # open, parse and store the the converted file tree
-        cls.tree = etree.parse(fileOut)
+        parser = etree.XMLParser(strip_cdata=False)
+        cls.tree = etree.parse(fileOut, parser)
         #self.assertTrue(equiv, 'The converted file is different from the ref.')
 
     def question_fields(self, qname, target_ans_sum,
@@ -223,6 +224,72 @@ class TestSuiteNoTikz(unittest.TestCase):
         # the test is ok if ok==0
         self.assertEqual(ok, 0)
 
+    def check_nitems(self, qname, value):
+        """ Check 'nitems' value in a calculated question.
+
+        qname : string
+            name of the question
+        value : string
+            value of itemcount (n_items option)
+        """
+        tree = self.tree
+        ok = 0
+
+        for q in tree.iterfind(".//question[@type='calculatedmulti']"):
+            if q.find('name/text').text == qname:
+                for data_set in q.iterfind('.//dataset_definitions/dataset_definition/itemcount'):
+                    if data_set.text == str(value):
+                        ok += 1
+        return ok
+
+    def test_nitems_in_calculated(self):
+        """ Check option 'nitems' in calculated questions.
+        """
+        # question name and nitems value
+        q_dict = {'eig': 3,        # set with SetOption
+                  'calc:area': 5}  # default value
+        # loop over questions of q_dict
+        for qname, value in q_dict.items():
+            ok = self.check_nitems(qname, value)
+            # the test is ok if ok != 0
+            self.assertNotEqual(ok, 0)
+
+    def test_feedback_in_Qmult_Aucune(self):
+        """ Check if feedback elements are there and in the good place.
+        """
+        qname = 'Qmult:Aucune'
+        ok = -1
+
+        # question name and nitems value
+        for q in self.tree.iterfind(".//question[@type='multichoice']"):
+            if q.find('name/text').text == qname:
+                ok += 1  # crash if not found
+                if len(q.findall('generalfeedback')) == 0:
+                    ok += 1  # crash if not found
+                if len(q.findall('partiallycorrectfeedback')) == 0:
+                    ok += 1  # crash if not found
+                if len(q.findall('answer/feedback')) == 0:
+                    ok += 1  # crash if not found
+        self.assertEqual(ok, 0)
+
+    def test_escape(self):
+        """ Check if <, >, & are well escaped in output xml.
+        """
+        # Question name must contain the string in q_dict
+        q_dict = {'with-int': '&lt;',          # check <, >, & are well escaped
+                  'calc:area': '<b>area</b>'}  # check that CDATA html content is not escaped
+        tree = self.tree
+        # # Loop over questions of q_dict
+        for qname, value in q_dict.items():
+            for q in tree.iterfind(".//question"):
+                if q.attrib['type'] != 'category':
+                    if q.find('name/text').text == qname:
+                        for text in q.findall('.//questiontext/text'):
+                            text_str = etree.tostring(text).decode('utf8')
+                            present = value in text_str
+                            # the test is ok if present is True
+                            self.assertTrue(present)
+                        break
 
 class TestSuiteOther(unittest.TestCase):
     """ Define test cases for unittest. Just check the process finish normally.

@@ -24,6 +24,7 @@ from xml.sax.saxutils import unescape
 import subprocess
 import os
 from ._questions import *
+from amc2moodle.utils.text import clean_q_name
 
 
 # output latex File
@@ -90,7 +91,9 @@ class Quiz:
                            .decode('utf-8')
                            .replace('<document>\n', '')
                            .replace('<document>', '')
-                           .replace('</document>', ''))
+                           .replace('</document>', '')
+                           .replace('\n}', '}'))
+
         # Write document to file
         with open(texfile, 'w') as f:
             f.write(tex_str)
@@ -103,7 +106,7 @@ class Quiz:
     def _latex_header(self):
         """ Define LaTeX header and newcommand.
         """
-
+        # TODO : select fp only if QuestionNumerical instance ?
         header_text = r"""
         \documentclass[a4paper]{article}
         % -------------------------::== package ==::---------------------------
@@ -119,6 +122,8 @@ class Quiz:
         \usepackage{tikz}
         \usepackage{hyperref}
         \usepackage{ulem} % strike text
+        % fp is needed by AMC for numerical question with float. Need to be commented for amc2moodle usage (fp is not yet supported)
+        \usepackage{fp} 
 
         % -----------------------::== newcommand ==::--------------------------
         \newcommand{\feedback}[1]{}
@@ -167,7 +172,8 @@ class Quiz:
             if number > 0:
                 group_list.append(copy_group % cat)
 
-        melange = "\\melangegroupe{allquestions}\n" + \
+        melange = "% Shuffling is commented for testing\n" + \
+                  "%\\melangegroupe{allquestions}\n" + \
                   "\\restituegroupe{allquestions}"
 
         footer_text = exemplaire_text + ''.join(group_list) + melange + '\n}' \
@@ -217,12 +223,18 @@ class Quiz:
                 # create a simpler catname for amc
                 catname = '-'.join(mdl_catname.split('/')[1:])
                 # sanitize catname (remove %)
-                catname = catname.replace('%', 'perc ')
+                catname = catname.replace('%', 'perc. ')
+                # Remove accent and non ascii chars for amc compatibility
+                catname = clean_q_name(catname)
                 # store name and say no question in it for now
                 cat_dict.update({catname: 0})
             else:
                 # Standard question
+                # qname can be in CDATA or not. '.text' works for both.
                 qname = question.find('name/text').text
+                # Remove accent and non ascii chars for amc compatibility  (just for logging here)
+                # for tex conversion, it is done in Question __init__
+                qname = clean_q_name(qname)
                 if qtype in SUPPORTED_QUESTION_TYPE:
                         print("> Reshape question '{}' of type '{}'.".format(qname, qtype))
                         # if no encounter category name before this question,
@@ -236,7 +248,7 @@ class Quiz:
                 else:
                     print("> Question '{}' of type '{}' is not supported. Skipping.".format(qname, qtype))
 
-        print('  done')
+        print('> done.')
 
         # add footer
         footer = self._latex_footer(cat_dict)
@@ -288,7 +300,10 @@ class Quiz:
               "In case of trouble, you may need to check for :\n" + \
               u"  - unicode character like euro € currency symbol  \n" + \
               "  - latex special character like '{', '_', '&', ... \n" + \
+              "  - possible problems with embedded 'equation' environnement inside matjax delimiters:\n"\
+              "    ex :  $$\\begin{equation}... Remove '$$' in output TeX file  \n" + \
               "  - strange html tags \n" +\
+              "  - check the scoring \n" +\
               "  - ..."
         print(msg)
 

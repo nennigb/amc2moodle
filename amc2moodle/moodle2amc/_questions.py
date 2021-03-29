@@ -19,8 +19,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-__all__ = ['Question', 'QuestionMultichoice', 'CreateQuestion',
-           'SUPPORTED_QUESTION_TYPE']
+__all__ = ['Question', 'QuestionMultichoice',
+           'QuestionEssay', 'QuestionDescription',
+           'QuestionNumerical', 'QuestionCalculatedMulti',
+           'SUPPORTED_QUESTION_TYPE', 'CreateQuestion']
 
 from lxml import etree
 from xml.sax.saxutils import unescape
@@ -30,10 +32,15 @@ from abc import ABC, abstractmethod
 from wand.image import Image
 # decode filemame unsed in moodle
 import urllib
-
+import math
+import sys
+from ..utils.calculatedParser import *
+from amc2moodle.utils.text import clean_q_name
+import markdown
 
 # list of supported moodle question type for
-SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay'}
+SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay', 'description',
+                           'numerical', 'calculatedmulti'}
 
 # possible to use several grading strategy
 GRADING_STRATEGY = 'std'  # good/wrong no specific grading
@@ -52,6 +59,19 @@ LATEX_FILEOUT = 'out.tex'
 CORRECT_LABEL = 'OK'
 WRONG_LABEL = 'F'
 
+# Default parameters for numerical Questions
+DECIMAL = 0      # minimal number of decimal
+SIGN = False     # use sign in AMC
+DIGIT = 1        # minimal number of digit
+SCOREEXACT = 1   # default grade in AMC is 2, 1 in moodle
+EPS = 10*sys.float_info.epsilon  # float precision to avoid log singularity
+
+# Add set for True or false string
+TRUE = {'true', '1'}
+FALSE = {'false', '0'}
+# Default parameters for calculated Questions
+CALCULATED_DEFAULT_PARSER = 'xml2fp'
+
 class Question(ABC):
     """ Define an absract class for all supported questions.
     """
@@ -65,13 +85,13 @@ class Question(ABC):
         """ Init class from an etree Element.
         """
         self.q = q
-        self.name = q.find('name/text').text
+        # Remove accent and non ascii chars for amc compatibility
+        self.name = clean_q_name(q.find('name/text').text)
         self.qtype = None
         self.fileCreated = []
         self.gStrategy = GRADING_STRATEGY
         # save number of svg file per question
         self.svg_id = 0
-
 
     def __repr__(self):
         """ Change string representation.
@@ -95,6 +115,29 @@ class Question(ABC):
         q = etree.fromstring(qstring)
         return cls(q)
 
+    def format2tex(self, cdata_content, text_format):
+        """ Convert `cdata_content` with `text_format` format into tex.
+
+        'html', 'plain_text', 'moodle_auto_format' are treated in the same way
+        since plain text is recommanded to put raw html.
+        'markdown' require a specific preprocessing.
+
+        """
+
+        if text_format in ('html', 'plain_text', 'moodle_auto_format'):
+            text = self.html2tex(cdata_content)
+        elif text_format == 'markdown':
+            # First convert markdown into html and
+            cdata_content = (cdata_content.replace('<text><![CDATA[', '')
+                                          .replace(']]></text>', ''))
+            cdata_content = markdown.markdown(cdata_content,
+                                              extensions=['extra'])
+            text = self.html2tex(unescape('<text>' + cdata_content + '</text>'))
+        else:
+            print("> Unsupported format '{}'. Try with html filter.".format(text_format))
+            text = self.html2tex(cdata_content)
+        return text
+
     def html2tex(self, cdata_content):
         """ Convert CDATA field into latex text.
 
@@ -113,14 +156,15 @@ class Question(ABC):
         <br> are removed (not exml content).
         """
         # remove manually CDATA from the string
+        # FIXME use .text and etree.CDATA(new_text)
         cdata_content = (cdata_content.replace('<text><![CDATA[', '<text>')
                          .replace('%', '\%')
                          .replace(']]></text>', '</text>')
-                         .replace('\n', '')
                          .replace('<br>', ''))
 
         parser = etree.HTMLParser(recover=True)
-        tree_content = etree.fromstring(unescape(cdata_content), parser)
+        tree_content = etree.fromstring(cdata_content, parser)
+        # tree_content = etree.fromstring(unescape(cdata_content), parser)
         self._img_check(tree_content)
 
         # transform with XSLT into XSLT (tree) for all other element
@@ -128,7 +172,6 @@ class Question(ABC):
         # convert to XML (more suitable for search)
         tree_text = etree.XML(etree.tostring(xslt_content,
                               encoding='utf8').decode('utf-8'))
-
         return tree_text
 
     def _img_check(self, tree_content):
@@ -198,11 +241,11 @@ class Question(ABC):
     def question(self):
         """ Get question text.
         """
-        # perhaps not so obvious and will require to extract cdata
+        # check for question format (markdown, html, text)
+        text_format = self.q.find('questiontext').attrib['format'].lower()
         cdata_content = etree.tostring(self.q.find('questiontext/text'),
                                        encoding='utf8').decode('utf-8')
-        text = self.html2tex(cdata_content)
-
+        text = self.format2tex(cdata_content, text_format)
         return text
 
     @abstractmethod
@@ -228,7 +271,9 @@ class Question(ABC):
         qtext = self.question()
         amcq.append(qtext)
         choices = self.answers()
-        amcq.append(choices)
+        # append if there is choices (eg description)
+        if choices != None:
+            amcq.append(choices)
 
         return amcq
 
@@ -244,7 +289,7 @@ class QuestionMultichoice(Question):
         self.q = q
         self.qtype = 'multiplechoice'
 
-    def gettype(self,):
+    def gettype(self):
         """ Determine the amc question type.
         """
         # test if question or questionmult
@@ -264,8 +309,8 @@ class QuestionMultichoice(Question):
         amc_choices = etree.Element('choices')
         # loop over all answers
         for i, ans in enumerate(self.q.findall('.//answer')):
-            # bool use to check if html parsing (CDATA) is needed
-            html = ans.attrib['format'].lower() == 'html'
+            # Get format for parsing (CDATA) is needed
+            text_format = ans.attrib['format'].lower()
             # TODO how to integrate the scoring aspect
             if self.gStrategy == 'std':
                 # the fraction (scoring) field is not allways at the same place
@@ -281,13 +326,10 @@ class QuestionMultichoice(Question):
                 else:
                     tag = 'wrongchoice'
             amc_ans = etree.Element(tag, attrib={'order': str(i)})
-            if html:
-                cdata_content = etree.tostring(ans.find('text'), encoding='utf8').decode('utf-8')
-                text = self.html2tex(cdata_content)
-                amc_ans.append(text)
-            else:
-                latex = etree.tostring(ans.find('text'), encoding='utf8').decode('utf-8')
-                amc_ans.text = latex
+            # parse answer text
+            cdata_content = etree.tostring(ans.find('text'), encoding='utf8').decode('utf-8')
+            text = self.format2tex(cdata_content, text_format)
+            amc_ans.append(text)
             # store in a list
             amc_choices.append(amc_ans)
 
@@ -306,7 +348,7 @@ class QuestionEssay(Question):
         self.q = q
         self.qtype = 'essai'
 
-    def gettype(self,):
+    def gettype(self):
         """ Determine the amc question type.
         """
         amcqtype = 'question'
@@ -338,14 +380,286 @@ class QuestionEssay(Question):
         # print(etree.tostring(amc_open).decode())
         return amc_open
 
+class QuestionNumerical(Question):
+    """ Multiple choice question (question or questionmult).
+
+    Whereas Moodle, AMC does not support multiple answer for numerical
+    questions, excepted to
+        - yield different grade if the rounding is too loose
+    The following behaviors are ignored:
+        - catch classical wrong answer for feedback
+        - support for multiple solution to a problem eg. modulo 2pi
+    The unit handling is not supported.
+    """
+
+    def __init__(self, q):
+        """ Init class from an etree Element.
+        """
+        super().__init__(q)
+        self.q = q
+        self.qtype = 'numerical'
+
+    def gettype(self):
+        """ Determine the amc question type.
+        """
+        # test if question or questionmult
+        amcqtype = 'questionmultx'
+
+
+        return amcqtype
+
+    def answers(self):
+        """ Create and parse answers.
+        """
+        # eg: \AMCnumericChoices{3.141592653589793}{digits=6, decimals=5, sign=true}
+        amc_choices = etree.Element('AMCnumericChoices')
+
+        # Check if there is several answers
+        ans_list = self.q.findall(".//answer")
+        if len(ans_list) > 1:
+            print('  Warning: multiple answers in the moodle question. ')
+
+        # Process the 1st good answer
+        ok_list = self.q.findall(".//answer[@fraction='100']")
+        if len(ok_list) != 1:
+            print('  Warning: Multiple good answer. Take only the first one.')
+        else:
+            ans = ok_list[0]
+            # get and cast the target
+            target = float(ans.find('text').text)
+            if target.is_integer():
+                target = int(target)
+            tolerance = float(ans.find('tolerance').text)
+            # Get sign, if positive use default SIGN
+            if target < 0:
+                sign = True
+            else:
+                sign = SIGN
+            # Estimate required the number of digit for floor(target)
+            digits = max(DIGIT,
+                         math.ceil(math.log10(abs(target))))
+            # Estimate the requiered number of decimal from tolerance
+            # if decimals > 0, need \usepackage{fp} in AMC
+            if abs(tolerance) > EPS:
+                decimals = abs(min(-DECIMAL,
+                                   math.floor(math.log10(abs(tolerance)))))
+            else:
+                decimals = 0
+            # Compute AMC tolerance for exact solution
+            exact = round(tolerance*(10**decimals))
+            # Populate the tree
+            attrib = {'exact': exact,
+                      'decimals': decimals,
+                      'digits': digits + decimals,
+                      'sign': str(sign).lower(),
+                      'scoreexact': SCOREEXACT}
+            # Check for looser bounds and update attrib if needed
+            for a in ans_list:
+                t = float(a.find('text').text)
+                f = float(a.attrib['fraction'])
+                if (a is not(ans)) and (f > 0) and (abs(t-target) < EPS):
+                    print('  Detect two identical targets. ',
+                          'Try to generate approx scoring..')
+                    tolerance_approx = float(a.find('tolerance').text)
+                    scoreapprox = f*SCOREEXACT/100
+                    approx = round(tolerance_approx*(10**decimals))
+                    attrib.update({'scoreapprox': scoreapprox,
+                                   'approx': approx})
+
+            # Prepare the latex rendering
+            amc_choices.text = self._render_dict(attrib)
+            amc_choices.attrib['target'] = str(target)
+
+        return amc_choices
+
+
+    @staticmethod
+    def _render_dict(d):
+        """ Convert a dict in key=val, key=val, ...
+        """
+        out_=''
+        for item in d.items():
+            pair = '{} = {}, '.format(str(item[0]).strip("'"), str(item[1]).strip("'"))
+            out_ += pair
+        out = out_[0:-2]
+        return out
+
+class QuestionDescription(Question):
+    """ Description question.
+    """
+
+    def __init__(self, q):
+        """ Init class from an etree Element.
+        """
+        super().__init__(q)
+        self.q = q
+        self.qtype = 'description'
+
+    def gettype(self):
+        """ Determine the amc question type.
+        """
+        amcqtype = 'question'
+
+        return amcqtype
+
+    def answers(self):
+        """ Create and parse answers, nothing to do here.
+        """
+
+        return None
+
+    def question(self):
+        """ Get question text. Overwrite the class method.
+        """
+        # call the class method and add `\QuestionIndicative`
+        text = super().question()
+        text.text = u"\QuestionIndicative\n" + text.text
+
+        return text
+
+class QuestionCalculatedMulti(Question):
+    """ Moodle Calculated question (question or questionmult).
+    """
+
+    def __init__(self, q):
+        """ Init class from an etree Element.
+        """
+        super().__init__(q)
+        self.q = q
+        self.qtype = 'calculatedmulti'
+
+    def gettype(self):
+        """ Determine the amc question type.
+        """
+        # test if question or questionmult
+        single = self.q.find('single').text
+        if single.lower() in TRUE:
+            amcqtype = 'question'
+        elif single.lower() in FALSE:
+            amcqtype = 'questionmult'
+        else:
+            print(" Unknwon question type in '{}'".format(self.name))
+
+        return amcqtype
+
+    def _dataset(self):
+        """ Parse XML dataset to built question header.
+        """
+        datasets = single = self.q.find('dataset_definitions')
+        jockers = []
+        # Collect jockers datas
+        for data in datasets.iterfind('dataset_definition'):
+            # check if dataset is private (if not, may have inconsistenies)
+            if data.find('status/text').text.lower() !='private':
+                print(" Warining : some variables are shared between question. May leads to inconsistencies.")
+            # get variable name and remove '_' as in CalculatedParser
+            v = data.find('name/text').text
+            v = v.replace('_','')
+            # check distribution law
+            if data.find('distribution/text').text !='uniform':
+                print(" Warining : only 'uniform' distribution is supported.")
+            # Gets bounds
+            vmin = data.find('minimum/text').text
+            vmax = data.find('maximum/text').text
+            ndec = data.find('decimals/text').text
+            # Gets moodle values
+            values = []
+            for value in data.iterfind('dataset_items/dataset_item/value'):
+                values.append(value.text)
+            # store into a dict
+            jockers.append({'name' : v, 'min': vmin, 'max': vmax,
+                           'ndec': ndec, 'values': values})
+
+        # Select the good layout to create moodle variable in LaTeX
+        # TODO add other rules for other rendering strategies
+        if CALCULATED_DEFAULT_PARSER == 'xml2fp':
+            header_line = "\\FPeval{{\\{jname}}}{{trunc({jmin}+random*({jmax}-{jmin}), {jndec})}} % uniform in [{jmin}, {jmax}]"
+
+        header = []
+        # Render all the jockers/variables
+        for j in jockers:
+            header.append(header_line.format(jname=j['name'],
+                                             jmin=j['min'], jmax=j['max'],
+                                             jndec=j['ndec']))
+
+        data_header = '\n'.join(header)
+
+        return data_header
+
+
+    def question(self):
+        """ Get question text. Overwrite the class method to add a header that
+        define the random variable.
+        """
+
+        # extract questiontext text
+        questiontext = self.q.find('questiontext/text')
+        rawtext = questiontext.text
+        # call math expression parser
+        # Create the parser /!\ need to be before latex rendring because of {}
+        parser = CreateCalculatedParser(CALCULATED_DEFAULT_PARSER)
+        # parse question
+        parsed_text = parser.render(rawtext)
+        # update questiontext
+        questiontext.text = etree.CDATA(parsed_text)
+        # call the class method (html2tex)
+        text = super().question()
+        # Create the header containg the definition of random variable
+        header = self._dataset()
+        # Concatenate both
+        text.text = '\n'.join((header, text.text))
+
+        return text
+
+    def answers(self):
+        """ Create and parse answers.
+        """
+        amc_choices = etree.Element('choices')
+        # loop over all answers
+        for i, ans in enumerate(self.q.findall('.//answer')):
+            # TODO how to integrate the scoring aspect
+            if self.gStrategy == 'std':
+                # the fraction (scoring) field is not allways at the same place
+                try:
+                    fraction = ans.find('fraction').text
+                except:
+                    try:
+                        fraction = ans.attrib['fraction']
+                    except:
+                        raise ValueError('fraction not found.')
+                if float(fraction) > 0:
+                    tag = 'correctchoice'
+                else:
+                    tag = 'wrongchoice'
+            amc_ans = etree.Element(tag, attrib={'order': str(i)})
+
+            # call math expression parser
+            cdata_content = etree.tostring(ans.find('text'), encoding='utf8').decode('utf-8')
+            # Create the parser
+            parser = CreateCalculatedParser(CALCULATED_DEFAULT_PARSER)
+            # parse answer
+            text = parser.render(cdata_content)
+            # convert to etree
+            text_tree = etree.fromstring(text)
+            # add to current answer
+            amc_ans.append(text_tree)
+            # store in a list of all answers
+            amc_choices.append(amc_ans)
+
+        return amc_choices
+
+
 
 # dict of all available question
 Q_FACTORY = {'multichoice': QuestionMultichoice,
-             'essay': QuestionEssay}
+             'essay': QuestionEssay,
+             'description': QuestionDescription,
+             'numerical': QuestionNumerical,
+             'calculatedmulti': QuestionCalculatedMulti}
 
 def CreateQuestion(qtype, question):
     """ Factory function for creating the Questions* objects.
-    
+
 
     Parameters
     ----------

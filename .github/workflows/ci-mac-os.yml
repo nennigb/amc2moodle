@@ -48,7 +48,8 @@ jobs:
         brew install latexml
         
     - name: Update $PATH
-      run: echo ::add-path::/Library/TeX/texbin
+      # run: echo ::add-path::/Library/TeX/texbin # depreciated
+      run: echo "/Library/TeX/texbin" >> $GITHUB_PATH
       
     - name: Add fonts (required by moodle2amc tests)
       run: |
@@ -73,7 +74,10 @@ jobs:
         # add automultiplechoice.sty local copy to LaTeX PATH (for this step)
         export TEXINPUTS=.:./amc2moodle/moodle2amc/test:$TEXINPUTS
         python -m amc2moodle.moodle2amc.test
-        
+    - name: Test calculated questions parsers
+      run: |
+        python -m amc2moodle.utils.test
+            
     
     # Store output files
     # amc2moodle
