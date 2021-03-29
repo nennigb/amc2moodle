@@ -124,9 +124,9 @@ at answer level the feedback is called `feedback`. However, at question level, t
 `generalfeedback`, `correctfeedback`,  `partiallycorrectfeedback`, `incorrectfeedback`... See [moodle XML doc](https://docs.moodle.org/30/en/Moodle_XML_format) for more details.
 
 ## Passing options and "magic comments"
-Options can be passed to `amc2moodle` using the `amc2moodle` internal command `\SetOptions{option_name}{value}`. To avoid LaTeX compilation problem with `automuliplechoice`, you need to comment it. Another possibility is to use "magic comments" prefix `%amc2moodle` to pass options to `amc2moodle` and to keep LaTeX backward compatibility, for instance:
+Options can be passed to `amc2moodle` using the `amc2moodle` internal command `\SetOption{option_name}{value}`. To avoid LaTeX compilation problem with `automuliplechoice`, you need to comment it. Another possibility is to use "magic comments" prefix `%amc2moodle` to pass options to `amc2moodle` and to keep LaTeX backward compatibility, for instance:
 ```
-%amc2moodle \SetOptions{nitems}{10}
+%amc2moodle \SetOption{nitems}{10}
 ```
 Such line are ignored in standard LaTeX processing and uncommented for `amc2moodle` workflow. It is noteworthy that the prefix should be at the beginning of the line.
 Another possibility is to use "magic comments" to add some specific TeX code/text to moodle question (link to external file or video url, change in scoring, remove or add answers).

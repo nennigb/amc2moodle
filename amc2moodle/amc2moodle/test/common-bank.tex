@@ -273,3 +273,33 @@ where $x$=\FPprint{\x}, $y$=\FPprint{\y} and $z$=\FPprint{\z}.
 \end{choices}
 \end{questionmult}
 }
+
+%===================================================================
+% check rendering of pictures
+\element{check-pic}{
+    %medium-size picture
+  \begin{question}{Qsimple:medium-pic}
+    Let consider a medium-size picture, can we render it with a sufficient quality?
+    %amc2moodle \SetOption{imgResolution}{100}  
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{./Figures/other/medium.JPG}
+    \end{center}
+    \begin{reponses}
+      \bonne{great}
+      \mauvaise{or not}
+    \end{reponses}
+  \end{question}
+  %vectorial picture
+  \begin{question}{Qsimple:vec-pic}
+    Let consider a vectorial picture, can we render it with a sufficient quality?
+    %amc2moodle \SetOption{imgResolution}{200}  
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{./Figures/other/vect.pdf}
+    \end{center}
+
+    \begin{reponses}
+      \bonne{great}
+      \mauvaise{or not}
+    \end{reponses}
+  \end{question}
+}
