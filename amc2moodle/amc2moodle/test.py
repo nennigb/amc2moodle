@@ -272,6 +272,31 @@ class TestSuiteNoTikz(unittest.TestCase):
                     ok += 1  # crash if not found
         self.assertEqual(ok, 0)
 
+    def test_set_option(self):
+        """ Check if \SetOption and \SetQuizOptions are working.
+        """
+        # Defaut value are French in convert.py, modified by \SetQuizOptions to english
+        # and modified in question 'Qmult:Aucune' to french by \SetOption
+
+        # Check local answer contains 'Aucune de ces réponse n'est correcte.'
+        qnameFr = 'Qmult:Aucune'
+        # Check other answer contains 'None of these answers are correct.'
+        qnameEn = 'pref'
+        # question name and nitems value
+        for q in self.tree.iterfind(".//question[@type='multichoice']"):
+            if q.find('name/text').text == qnameFr:
+                ok = None
+                for ans in q.findall('answer/text'):
+                    if 'Aucune de ces' in etree.tostring(ans).decode('utf8'):
+                        ok = True
+                self.assertTrue(ok)
+            if q.find('name/text').text == qnameEn:
+                ok = None
+                for ans in q.findall('answer/text'):
+                    if 'None of these' in etree.tostring(ans).decode('utf8'):
+                        ok = True
+                self.assertTrue(ok)
+
     def test_escape(self):
         """ Check if <, >, & are well escaped in output xml.
         """
