@@ -36,6 +36,7 @@ SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric',
 
 DEFAULT_IMG_RESOLUTION = 100
 # Dictionnary containing all used options. May be overwritten in Quiz or in Questions.
+# When overwritten, it becomes a string. Need to be carfull when use them.
 DEFAULT_OPTS = {# Set defaut relative tolerance for float in numerical question to 1%
                 'default_numeric_tol': 1e-2,
                 # Shuffle all answsers
@@ -184,7 +185,7 @@ class AMCQuestion(ABC):
         self.Qi = Qi
         self.name = Qi.find('name/text').text
         self.context = context
-        self._options_dict = dict()
+        self.options = context.options.copy()
 
     def __repr__(self):
         """ Change string representation.
@@ -209,33 +210,36 @@ class AMCQuestion(ABC):
         for Ii in Ilist:
             Ii = encodeImg(Ii, self.context.pathin, self.context.wdir,
                            int(self._setWithOptionsOrDefault('imgResolution',
-                                                             DEFAULT_OPTS['default_img_resolution'])))
+                                                             'default_img_resolution')))
 
     @abstractmethod
     def _scoring(self):
         pass
 
     def _options(self):
-        """ Look for amc_options elements and store them in _options_dict.
+        """ Look for amc_options elements and store them in options.
         """
         Qi = self.Qi
         optlist = Qi.xpath(".//options")
 
         for opt in optlist:
-            # the option name is in 'role' atrtibute
-            # the option value is in
-            self._options_dict[opt.attrib['name']] = opt.text
+            # the option name is in 'name' atrtibute
+            self.options[opt.attrib['name']] = opt.text
             opt.getparent().remove(opt)
-        if optlist:
-            print("   Modified default options with {}:".format(self._options_dict) )
+            print("   Modified options '{}' to '{}'".format(opt.attrib['name'],
+                                                            self.options[opt.attrib['name']]) )
 
     def _setWithOptionsOrDefault(self, opt_name, default_value):
         """ Set an option to its value if provided, else use default value.
+
+        Some internal option name `default_value` are too long and for backward compatibility
+        the api option name `opt_name` are not always the same.
+        This function allow to create the local mapping.
         """
-        if opt_name in self._options_dict.keys():
-            return self._options_dict[opt_name]
+        if opt_name in self.options.keys():
+            return self.options[opt_name]
         else:
-            return default_value
+            return self.options[default_value]
 
     def convert(self):
         """ Run all questions convertion steps.
@@ -257,7 +261,7 @@ class AMCQuestionSimple(AMCQuestion):
         super()._options()
         Qi = self.Qi
         # check local shuffle policy
-        Qiwantshuffle = DEFAULT_OPTS['shuffle_all']
+        Qiwantshuffle = bool(self.options['shuffle_all'])
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
         if optlist and 'o' in optlist[0].text.strip().split(","):
             Qiwantshuffle = False
@@ -265,7 +269,7 @@ class AMCQuestionSimple(AMCQuestion):
         etree.SubElement(Qi, "shuffleanswers").text = str(Qiwantshuffle).lower()
 
         # store local answernumbering policy
-        etree.SubElement(Qi, "answernumbering").text = DEFAULT_OPTS['answer_numbering_format']
+        etree.SubElement(Qi, "answernumbering").text = self.options['answer_numbering_format']
 
     def _scoring(self):
         """ Compute the scoring.
@@ -273,7 +277,7 @@ class AMCQuestionSimple(AMCQuestion):
         Qi = self.Qi
         # specific part scoring part
         # add  <defaultgrade>1.0000000</defaultgrade>
-        etree.SubElement(Qi, "defaultgrade").text = str(DEFAULT_OPTS['moo_default_grade'])
+        etree.SubElement(Qi, "defaultgrade").text = str(self.options['moo_default_grade'])
         # add <single>true</single>
         etree.SubElement(Qi, "single").text = 'true'
         # est qu'il y a une bareme local cherche dans les child
@@ -313,7 +317,7 @@ class AMCQuestionMult(AMCQuestionSimple):
         Qi = self.Qi
         # specific part scoring part
         # add  <defaultgrade>1.0000000</defaultgrade>
-        etree.SubElement(Qi, "defaultgrade").text = str(DEFAULT_OPTS['moo_default_grade'])
+        etree.SubElement(Qi, "defaultgrade").text = str(self.options['moo_default_grade'])
         # add <single>false</single>
         etree.SubElement(Qi, "single").text = 'false'
         # est qu'il y a une bareme local cherche dans les child
@@ -344,20 +348,20 @@ class AMCQuestionMult(AMCQuestionSimple):
         # =====================================================================
         # Ajouter les réponses "aucune réponse"
         # Si déjà une bonne réponse on en ajoute une mauvaise
-        if ((DEFAULT_OPTS['amc_autocomplete'] == 1) & (NRb > 0)):
+        if ((self.options['amc_autocomplete'] == 1) & (NRb > 0)):
             aucune = etree.SubElement(Qi, 'note',
                                       attrib={'class': 'amc_mauvaise'})
             aucunec = etree.SubElement(aucune, 'note')
-            aucunec.text = DEFAULT_OPTS['amc_aucune']
+            aucunec.text = self.options['amc_aucune']
             NRm += 1
             Rlistm.append(aucune)
 
         # Si pas de bonne on en ajoute une bonne
-        if ((DEFAULT_OPTS['amc_autocomplete'] == 1) & (NRb == 0)):
+        if ((self.options['amc_autocomplete'] == 1) & (NRb == 0)):
             aucune = etree.SubElement(Qi, 'note',
                                       attrib={'class': 'amc_bonne'})
             aucunec = etree.SubElement(aucune, 'note')
-            aucunec.text = DEFAULT_OPTS['amc_aucune']
+            aucunec.text = self.options['amc_aucune']
             NRb += 1
             Rlistb.append(aucune)
 
@@ -421,7 +425,7 @@ class AMCQuestionNumeric(AMCQuestion):
 
         # if no tolerance specified and float answer, add default tol
         if not(target.is_integer()) and tol == 0:
-            tol = DEFAULT_OPTS['default_numeric_tol'] * target
+            tol = float(self.options['default_numeric_tol']) * target
 
         # good answers [x-tol; x+tol] -> scoreexact/scoreexact
         self._addanswer(Qi, 100, target , tol)
@@ -461,7 +465,7 @@ class AMCQuestionOpen(AMCQuestion):
         """
         Qi = self.Qi
         # add  <defaultgrade>1.0000000</defaultgrade>
-        etree.SubElement(Qi, "defaultgrade").text = str(DEFAULT_OPTS['moo_default_grade'])
+        etree.SubElement(Qi, "defaultgrade").text = str(self.options['moo_default_grade'])
 
 
 class AMCQuestionDescription(AMCQuestion):
@@ -497,7 +501,7 @@ class _Calculated:
         """
         Qi = self.Qi
         # parse fp expressions
-        parser = CreateCalculatedParser(DEFAULT_OPTS['calculated_default_parser'])
+        parser = CreateCalculatedParser(self.options['calculated_default_parser'])
         for orig_text in Qi.xpath(".//questiontext/note|.//note[@class='amc_bonne']/note|.//note[@class='amc_mauvaise']/note"):
             rawtext = (etree.tostring(orig_text, encoding='utf8')
                             .decode('utf-8')
@@ -542,16 +546,16 @@ class _Calculated:
         # add them to each answer good or wrong
         for ans in Qi.xpath(".//note[@class='amc_bonne']|.//note[@class='amc_mauvaise']"):
             tolerance = etree.Element('tolerance')
-            tolerance.text = str(DEFAULT_OPTS['calculated_tolerance'])
+            tolerance.text = str(self.options['calculated_tolerance'])
 
             tolerancetype = etree.Element('tolerancetype')
-            tolerancetype.text = str(DEFAULT_OPTS['calculated_tolerancetype'])
+            tolerancetype.text = str(self.options['calculated_tolerancetype'])
 
             correctanswerformat = etree.Element('correctanswerformat')
-            correctanswerformat.text = str(DEFAULT_OPTS['calculated_correctanswerformat'])
+            correctanswerformat.text = str(self.options['calculated_correctanswerformat'])
 
             correctanswerlength = etree.Element('correctanswerlength')
-            correctanswerlength.text = str(DEFAULT_OPTS['calculated_correctanswerlength'])
+            correctanswerlength.text = str(self.options['calculated_correctanswerlength'])
 
             fields = [tolerance, tolerancetype, correctanswerformat,
                       correctanswerlength]
@@ -585,11 +589,11 @@ class _Calculated:
             maximum = self._SubElement_text(data, 'maximum', '1')
             # Decimal number
             decimal_number = int(self._setWithOptionsOrDefault('decimalNumber',
-                                                               DEFAULT_OPTS['calculated_default_decimal_number']))
+                                                               'calculated_default_decimal_number'))
             decimals = self._SubElement_text(data, 'decimals', str(decimal_number))
             # nitems in the dataset
             nitems = int(self._setWithOptionsOrDefault('nitems',
-                                                       DEFAULT_OPTS['calculated_default_item_number']))
+                                                       'calculated_default_item_number'))
             itemcount = etree.SubElement(data, 'itemcount')
             itemcount.text = str(nitems)
             number_of_items = etree.SubElement(data, 'number_of_items')
@@ -768,9 +772,12 @@ class AMCQuiz:
         self.wdir = wdir
         self.deb = deb
 
+        # Set default options
+        self.options = DEFAULT_OPTS
+
         # default scroring
-        self.amc_bs = DEFAULT_OPTS['amc_bs']
-        self.amc_bm = DEFAULT_OPTS['amc_bm']
+        self.amc_bs = self.options['amc_bs']
+        self.amc_bm = self.options['amc_bm']
 
         # store total number of question
         self.Qtot = 0
@@ -782,6 +789,7 @@ class AMCQuiz:
         # tempFile
         self.tempfile_id = 0
         self.tempBaseName = 'temp_'
+
 
     def __repr__(self):
         """ Change string representation.
@@ -814,6 +822,9 @@ class AMCQuiz:
         if (self.deb == 1):
             # ecriture
             self.tree.write(self._tempfile(), pretty_print=True, encoding="utf-8")
+
+        # Parse Quiz level options
+        self._options()
 
         # Parse quiz level scorings
         self._scoring()
@@ -849,8 +860,8 @@ class AMCQuiz:
 
         # summary
         print('\n')
-        print(" > global 'shuffleanswers' is {}.".format(DEFAULT_OPTS['shuffle_all']))
-        print(" > global 'answerNumberingFormat' is '{}'.".format(DEFAULT_OPTS['answer_numbering_format']))
+        print(" > global 'shuffleanswers' is {}.".format(self.options['shuffle_all']))
+        print(" > global 'answerNumberingFormat' is '{}'.".format(self.options['answer_numbering_format']))
         print(" > {} questions converted...".format(self.Qtot))
 
 
@@ -887,12 +898,14 @@ class AMCQuiz:
     def _options(self):
         """ Find and parse quiz level options.
         """
-        # TODO
+        opts = self.tree.xpath("//*[@class='amc_quiz_options']")
+        for opt in opts:
+            # The option name is in 'name' atrtibute
+            self.options[opt.attrib['role']] = opt.text
 
     def _scoring(self):
         """ Find and convert default scoring.
         """
-
         # look for amc_baremeDefautS and amc_baremeDefautM attribut
         # on cherche s'il existe un barème par défaut pour question simple
         bars = self.tree.xpath("//*[@class='amc_baremeDefautS']")
@@ -948,7 +961,7 @@ class AMCQuiz:
                 img_dim = img_options.split('=')[0]
             else:
                 img_options = ''
-                img_size = DEFAULT_OPTS['default_img_width']
+                img_size = self.options['default_img_width']
                 img_dim = 'width'
 
             img_path = os.path.dirname(os.path.normpath(os.path.join(self.pathin, img_name)))
@@ -989,7 +1002,7 @@ class AMCQuiz:
         """
         context = Context(pathin=self.pathin, wdir=self.wdir,
                           amc_bm=self.amc_bm, amc_bs=self.amc_bs,
-                          deb=self.deb)
+                          deb=self.deb, options=self.options)
         return context
 
     def _tempfile(self):
