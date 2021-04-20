@@ -74,9 +74,22 @@ DEFAULT_OPTS = {# Set defaut relative tolerance for float in numerical question 
                 'calculated_correctanswerformat': 1,
                 'calculated_correctanswerlength': 2,
                 }
+
+
 # ======================================================================
-# Image processing utilities
+# Utilities
 # ======================================================================
+def strtobool(s):
+    """ Convert a string into boolean value if needed.
+    """
+    if isinstance(s, bool):
+        return s
+    elif isinstance(s, str):
+        return s.lower() in ("yes", "true", "t", "1")
+    else:
+        raise ValueError("The argument '{}' must be a string or a boolean.".format(s))
+
+
 def basename(s):
     """ Return basename (without extension) from a path s.
     """
@@ -261,7 +274,7 @@ class AMCQuestionSimple(AMCQuestion):
         super()._options()
         Qi = self.Qi
         # check local shuffle policy
-        Qiwantshuffle = bool(self.options['shuffle_all'])
+        Qiwantshuffle = strtobool(self.options['shuffle_all'])
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
         if optlist and 'o' in optlist[0].text.strip().split(","):
             Qiwantshuffle = False
@@ -860,7 +873,7 @@ class AMCQuiz:
 
         # summary
         print('\n')
-        print(" > global 'shuffleanswers' is {}.".format(self.options['shuffle_all']))
+        print(" > global 'shuffleanswers' is {}.".format(strtobool(self.options['shuffle_all'])))
         print(" > global 'answerNumberingFormat' is '{}'.".format(self.options['answer_numbering_format']))
         print(" > {} questions converted...".format(self.Qtot))
 
@@ -902,6 +915,8 @@ class AMCQuiz:
         for opt in opts:
             # The option name is in 'name' atrtibute
             self.options[opt.attrib['role']] = opt.text
+            print("   Modified Quizz options '{}' to '{}'".format(opt.attrib['role'],
+                                                           self.options[opt.attrib['role']]) )
 
     def _scoring(self):
         """ Find and convert default scoring.
