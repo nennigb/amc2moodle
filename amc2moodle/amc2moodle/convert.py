@@ -240,7 +240,7 @@ class AMCQuestion(ABC):
             self.options[opt.attrib['name']] = opt.text
             opt.getparent().remove(opt)
             print("   Modified options '{}' to '{}'".format(opt.attrib['name'],
-                                                            self.options[opt.attrib['name']]) )
+                                                            self.options[opt.attrib['name']]))
 
     def _setWithOptionsOrDefault(self, opt_name, default_value):
         """ Set an option to its value if provided, else use default value.
@@ -915,8 +915,9 @@ class AMCQuiz:
         for opt in opts:
             # The option name is in 'name' atrtibute
             self.options[opt.attrib['role']] = opt.text
+            opt.getparent().remove(opt)
             print("   Modified Quizz options '{}' to '{}'".format(opt.attrib['role'],
-                                                           self.options[opt.attrib['role']]) )
+                                                           self.options[opt.attrib['role']]))
 
     def _scoring(self):
         """ Find and convert default scoring.
