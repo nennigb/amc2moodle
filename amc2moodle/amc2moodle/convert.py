@@ -361,7 +361,7 @@ class AMCQuestionMult(AMCQuestionSimple):
         # =====================================================================
         # Ajouter les réponses "aucune réponse"
         # Si déjà une bonne réponse on en ajoute une mauvaise
-        if ((self.options['amc_autocomplete'] == 1) & (NRb > 0)):
+        if ((int(self.options['amc_autocomplete']) == 1) & (NRb > 0)):
             aucune = etree.SubElement(Qi, 'note',
                                       attrib={'class': 'amc_mauvaise'})
             aucunec = etree.SubElement(aucune, 'note')
@@ -370,7 +370,7 @@ class AMCQuestionMult(AMCQuestionSimple):
             Rlistm.append(aucune)
 
         # Si pas de bonne on en ajoute une bonne
-        if ((self.options['amc_autocomplete'] == 1) & (NRb == 0)):
+        if ((int(self.options['amc_autocomplete']) == 1) & (NRb == 0)):
             aucune = etree.SubElement(Qi, 'note',
                                       attrib={'class': 'amc_bonne'})
             aucunec = etree.SubElement(aucune, 'note')
