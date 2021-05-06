@@ -236,7 +236,7 @@ class AMCQuestion(ABC):
         optlist = Qi.xpath(".//options")
 
         for opt in optlist:
-            # the option name is in 'name' atrtibute
+            # the option name is in 'name' attribute
             self.options[opt.attrib['name']] = opt.text
             opt.getparent().remove(opt)
             print("   Modified options '{}' to '{}'".format(opt.attrib['name'],
@@ -913,7 +913,7 @@ class AMCQuiz:
         """
         opts = self.tree.xpath("//*[@class='amc_quiz_options']")
         for opt in opts:
-            # The option name is in 'name' atrtibute
+            # The option name is in 'name' attribute
             self.options[opt.attrib['role']] = opt.text
             opt.getparent().remove(opt)
             print("   Modified Quizz options '{}' to '{}'".format(opt.attrib['role'],
