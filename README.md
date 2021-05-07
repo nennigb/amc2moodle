@@ -2,7 +2,7 @@
 [![pypi release](https://img.shields.io/pypi/v/amc2moodle.svg)](https://pypi.org/project/amc2moodle/) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![CI-Ubuntu](https://github.com/nennigb/amc2moodle/workflows/CI-Ubuntu/badge.svg)  ![CI-Mac-OS](https://github.com/nennigb/amc2moodle/workflows/CI-mac-os/badge.svg)
 
 `amc2moodle`, is a suite of tools to convert multiple choice questionnaires (MCQ)
-  - **from** [auto-multiple-choice](https://www.auto-multiple-choice.net) LaTeX quizzes **to** [moodle questions (XML format)](https://docs.moodle.org/38/en/Moodle_XML_format), see details in the [amc2moodle README file](amc2moodle/amc2moodle/README.md).
+  - **from** [auto-multiple-choice](https://www.auto-multiple-choice.net) LaTeX quizzes **to** [moodle questions (XML format)](https://docs.moodle.org/38/en/Moodle_XML_format), see details in the [amc2moodle README file](amc2moodle/amc2moodle/README.md). Since `amc2moodle` use [LaTeXML](https://dlmf.nist.gov/LaTeXML/) to **expands LaTeX commands**, it could be _easily_ adapted to support most of LaTeX capabilities.
   - **from** [moodle questions (XML format)](https://docs.moodle.org/38/en/Moodle_XML_format) **to** [auto-multiple-choice](https://www.auto-multiple-choice.net) LaTeX quizzes, see details in the [moodle2amc README file](amc2moodle/moodle2amc/README.md).
 
 The conversion supports equations, tables, figures and standard text formatting.
@@ -93,6 +93,7 @@ In case of problem, do not hesitate to ask help on [issues](https://github.com/n
   - [moodle](https://www.ctan.org/pkg/moodle) - Generating Moodle quizzes via LaTeX. A package for writing Moodle quizzes in LaTeX. In addition to typesetting the quizzes for proofreading, the package compiles an XML file to be uploaded to a Moodle server.
   - [moodle-mod-automultiplechoice](https://github.com/UGA-DAPI/moodle-mod-automultiplechoice) - An interface to use AMC within Moodle.
   - [flatex](https://github.com/johnjosephhorton/flatex) - A Python script for "flattening" a nested LaTeX document by pulling in all the \input files. Part of this project has been reused in amc2moodle.
+  - [pyexams](https://framagit.org/pang/pyexams),  It allows to eval code inside any jupyter kernel (like Sagemath, sympy, ...) and to export them in the moodle XML format.
 
 ## How to contribute ?
 If you want to contribute to `amc2moodle`, your are welcomed! Don't hesitate to
