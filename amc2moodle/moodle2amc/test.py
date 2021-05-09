@@ -24,7 +24,16 @@ from amc2moodle.moodle2amc import Quiz
 import os
 import unittest
 import pkgutil
+import logging
 
+#manage logging
+logging.basicConfig(level=logging.DEBUG)
+Logger = logging.getLogger("tests_a2m")
+Logger.setLevel(logging.DEBUG)
+# Silence other loggers
+for log_name, log_obj in logging.Logger.manager.loggerDict.items():
+    if "amc2moodle" not in log_name and "tests_a2m" not in log_name:
+        log_obj.disabled = True
 
 
 class TestSuite(unittest.TestCase):

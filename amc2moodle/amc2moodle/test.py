@@ -24,6 +24,16 @@ import os
 import hashlib
 import unittest
 from lxml import etree
+import logging
+
+#manage logging
+logging.basicConfig(level=logging.DEBUG)
+Logger = logging.getLogger("tests_a2m")
+Logger.setLevel(logging.DEBUG)
+# Silence other loggers
+for log_name, log_obj in logging.Logger.manager.loggerDict.items():
+     if "tests_a2m" not in log_name and "amc2moodle" not in log_name:
+          log_obj.disabled = True
 
 # TODO complete test case for Numerical questions
 # TODO Test XML Schema Definition
