@@ -83,7 +83,7 @@ Then the output LaTeX can be edited and included for creating amc exams. Example
 
 
 ## Troubleshooting
-In case of problem, do not hesitate to ask help on [issues](https://github.com/nennigb/amc2moodle/issues)
+In case of problem, do not hesitate to ask help on [issues](https://github.com/nennigb/amc2moodle/issues). Both binaries (`amc2moodle` and `moodle2amc`) write full log in log files based on the name of the input file (`_amc2moodle.log` and `_amc2moodle.log` suffixes are added on these files).
   - 'convert: not authorized..' see ImageMagick policy.xml file see [here](https://stackoverflow.com/questions/52699608/wand-policy-error-error-constitute-c-readimage-412)
   - bugs with tikz-LaTeXML in texlive 2019/2020: please update the following `perl` modules `Parse::RecDescent`, `XML::LibXML` and `XML::LibXSLT` [here](https://github.com/brucemiller/LaTeXML/issues/1279) with `cpan` or `cpanm`in CLI.
 
