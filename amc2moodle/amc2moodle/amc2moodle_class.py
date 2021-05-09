@@ -276,6 +276,14 @@ class amc2moodle:
             Logger.debug(' > Indenting XML output...')
             subprocess.run(['xmllint', self.output,'--format','--output', self.output],
                            stdout=subprocess.DEVNULL)
+    
+    def cleanXML(self):
+        """ Clean final XML file 
+        remove "%" at end of lines 
+        (EXPERIMENTAL)
+        """
+        Logger.warning("Caution: cleaning XML file is experimental")
+        
 
     def runBuilding(self):
         """ Build the xml file for Moodle quizz.
