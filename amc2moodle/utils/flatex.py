@@ -27,6 +27,10 @@ See http://www.gnu.org/licenses/gpl.txt for details.
 
 import os
 import re
+import logging
+
+# activate logger
+Logger = logging.getLogger(__name__)
 
 class Flatex:
     """ Merge all included tex files in one and remove magic comments.
@@ -149,5 +153,6 @@ class Flatex:
         """ Print log info about the expansion.
         """
         if self._magic_comments_number > 0:
-            print('  {} magic comments found,'.format(self._magic_comments_number),
-                  ' in {} tex files.'.format(len(self._included_files_list)))
+            Logger.info('  {0} magic comments found, in {1} tex files.'.format(
+                self._magic_comments_number,
+                len(self._included_files_list)))

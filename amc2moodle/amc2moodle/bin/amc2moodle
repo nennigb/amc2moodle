@@ -23,6 +23,7 @@ from amc2moodle.amc2moodle import amc2moodle_class as a2m
 import argparse
 import os
 import sys
+import logging
 
 
 def run():
@@ -61,10 +62,16 @@ def run():
                         help='''No use of system temporary directory, use
                                 input directory instead.''',
                         required=False, action="store_true")
-    parser.add_argument("-v", "--version",
+    parser.add_argument("-V", "--version",
                         help='''Show the current version of moodle2amc''',
                         action="version",
                         version="%(prog)s v{version}".format(version=amdlpkg.__version__))
+    parser.add_argument("-v", "--verbose",
+                        help='''Show all log messages in CLI''',
+                        required=False, action="store_true")
+    parser.add_argument("-s", "--silent",
+                        help='''Hide all messages in CLI (log file is still written) (override verbosity)''',
+                        required=False, action="store_true")
     parser.add_argument("--disable-magic",
                         help='''Disable magic comments (default : enable).''',
                         required=False, default=False, dest='magic_flag',
@@ -83,22 +90,63 @@ def run():
     tempDir = not args.notemp
     catname = args.catname
     magic_flag = not(args.magic_flag)
+    silentMode = args.silent
+    verboseMode = args.verbose
+
+    # DEFAULT
+    DEFAULT_LOG_FORMATTER = '%(asctime)s [%(levelname)s]: %(message)s '
+    DEFAULT_LOG_DEBUG_FORMATTER = '%(asctime)s-({}-%(name)s) [%(levelname)s]: %(message)s '.format(amdlpkg.__version__)
+    DEFAULT_FMT_TIME = '%H:%M:%S'
+    # create global logger
+    # logging.basicConfig(level=logging.DEBUG)
+    # load root logger
+    rootLogger = logging.getLogger('amc2moodle')
+    rootLogger.setLevel(logging.DEBUG)
+    # create basic stream logger
+    sH = logging.StreamHandler(stream=sys.stdout)
+    sH.setFormatter(logging.Formatter(fmt=DEFAULT_LOG_FORMATTER,datefmt=DEFAULT_FMT_TIME))
+    sH.setLevel(logging.INFO)    
+
+    # activate verbose mode
+    if verboseMode:
+        sH.setLevel(logging.DEBUG)
+        sH.setFormatter(logging.Formatter(fmt=DEFAULT_LOG_DEBUG_FORMATTER))
+
+    # activate silent mode
+    if silentMode:
+        sH.setLevel(logging.ERROR)
+    # add it in the rootLogger
+    rootLogger.addHandler(sH)
+
+    #current logger
+    Logger = rootLogger
 
     # check input file
     fileInOk = False
     if fileIn is not None:
         fileInOk = os.path.exists(fileIn)
+    
+    # declare log file
+    if fileInOk:
+        logFile = os.path.splitext(os.path.basename(fileIn))[0]+'_amc2moodle.log'
+        # create handler for the log file
+        fileHandler = logging.FileHandler(logFile)
+        fileHandler.setLevel(logging.DEBUG)
+        fileHandler.setFormatter(logging.Formatter(DEFAULT_LOG_DEBUG_FORMATTER))
+        # add handler to the current list
+        rootLogger.addHandler(fileHandler)
+
 
     if fileInOk:
-        print('Input file: %s - status: %s' % (fileIn, "OK"))
+        Logger.debug('Input file: %s - status: %s' % (fileIn, "OK"))
     else:
-        print('Input file: %s - status: %s' % (fileIn, "does not exist"))
+        Logger.critical('Input file: %s - status: %s' % (fileIn, "does not exist"))
     if fileOut:
         fileOutOk = not os.path.exists(fileOut)
         if fileOutOk:
-            print('Output file: %s - status: Ok' % fileOut)
+            Logger.debug('Output file: %s - status: Ok' % fileOut)
         else:
-            print('Output file: %s - status: Already exists (will be overwritten)' % fileOut)
+            Logger.warning('Output file: %s - status: Already exists (will be overwritten)' % fileOut)
 
     # run conversion
     if fileInOk:
@@ -109,6 +157,10 @@ def run():
     else:
         # exit with error status
         sys.exit(1)
+
+    #info about the log
+    if fileInOk:
+        Logger.info("Log file of amc2moodle's run: {}".format(logFile))
 
 
 # Run autonomous
