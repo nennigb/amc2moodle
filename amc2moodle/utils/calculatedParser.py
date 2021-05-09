@@ -11,6 +11,7 @@ from abc import ABC, abstractmethod
 from pyparsing import Word, alphas, nums, alphas, alphanums, Char, oneOf,\
                       Suppress, Combine, Regex, Group, ZeroOrMore, Literal,\
                       Forward, Optional, ParseResults, _flatten
+import logging
 
 
 __all__ = ['CalculatedParserToFP', 'CalculatedParserFromFP',
@@ -110,6 +111,8 @@ abs,acos,add,and,array,asin,atan,atan2,bin,ceil,cos,
 '''
 
 
+# activate logger
+Logger = logging.getLogger(__name__)
 
 
 class CalculatedParser(ABC):
@@ -202,9 +205,7 @@ class CalculatedParser(ABC):
         # notpossible to use '_' in tex name
         out = tokens.name.replace('_', '')
         if out.isalpha() == False:
-            print("  Warning the variable '{}' is not".format(out),
-                  "compatible with LaTeX naming convention. You will need",
-                  "to change this name in our tex file.")
+            Logger.warning("  The variable '{}' is not compatible with LaTeX naming convention. You will need to change this name in our tex file.".format(out))
         return "\\" + out +' '
 
     @staticmethod
@@ -214,7 +215,7 @@ class CalculatedParser(ABC):
         # check for overflow
         x = float(tokens[0])
         if abs(x) > FP_MAX:
-            print('  Warning: this number {} will lead to overflow in FP.'.format(x))
+            Logger.warning(" This number {} will lead to overflow in FP.".format(x))
         # if floating point notation, need to convert to fixed point in FP
         if 'e' in tokens[0]:
             # conversion to fixed decimal format
@@ -313,10 +314,10 @@ class CalculatedParserToFP(CalculatedParser):
             out[0] = FP_EVAL_FUNCTION[tokens.name]
         # check that only valid expression are used
         elif tokens.name in FP_UNSUPPORTED:
-            print("Unsupported *function* '{}' by `fp` package in the expression.".format(tokens.name))
+            Logger.error("Unsupported *function* '{}' by `fp` package in the expression.".format(tokens.name))
             out = tokens
         else:
-            print("Unsupported *function* '{}' in the expression.".format(tokens.name))
+            Logger.error("Unsupported *function* '{}' in the expression.".format(tokens.name))
             out = tokens
         # print('In hook end :' , out)
         return out
@@ -454,10 +455,10 @@ class CalculatedParserFromFP(CalculatedParser):
             out[0] = MDL_FUNCTION[tokens.name]
         # check that only valid expression are used
         elif tokens.name in MDL_UNSUPPORTED:
-            print("Unsupported *function* '{}' by `moodle` interpreter in the expression.".format(tokens.name))
+            Logger.error("Unsupported *function* '{}' by `moodle` interpreter in the expression.".format(tokens.name))
             out = tokens
         else:
-            print("Unsupported *function* '{}' in the expression.".format(tokens.name))
+            Logger.error("Unsupported *function* '{}' in the expression.".format(tokens.name))
             out = tokens
         return out
 

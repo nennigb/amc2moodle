@@ -129,6 +129,9 @@ def run():
     # declare log file
     if fileInOk:
         logFile = os.path.splitext(os.path.basename(fileIn))[0]+'_amc2moodle.log'
+        # remove existing log file
+        if os.path.exists(logFile):
+            os.remove(logFile)
         # create handler for the log file
         fileHandler = logging.FileHandler(logFile)
         fileHandler.setLevel(logging.DEBUG)
@@ -154,13 +157,15 @@ def run():
                        keepFlag=keepFlag, catname=catname,
                        indentXML=indentFlag, usetempdir=tempDir,
                        magic_flag=magic_flag)
-    else:
-        # exit with error status
-        sys.exit(1)
-
-    #info about the log
+        #info about the log
     if fileInOk:
         Logger.info("Log file of amc2moodle's run: {}".format(logFile))
+    else:
+        #info about the log
+        if fileInOk:
+            Logger.info("Log file of amc2moodle's run: {}".format(logFile))
+        # exit with error status
+        sys.exit(1)
 
 
 # Run autonomous

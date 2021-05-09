@@ -25,6 +25,7 @@ import subprocess
 import os
 from ._questions import *
 from amc2moodle.utils.text import clean_q_name
+import logging
 
 
 # output latex File
@@ -32,7 +33,8 @@ LATEX_FILEOUT = 'out.tex'
 # xslt file
 XSLT_TEXRENDERER = os.path.join(os.path.dirname(__file__), 'struc2tex.xslt')
 
-
+# activate logger
+Logger = logging.getLogger(__name__)
 
 
 class Quiz:
@@ -83,7 +85,7 @@ class Quiz:
         # convert : convert(to str) converttofile
         amc, cat_dict = self._reshape()
         if debug:
-            print(etree.tostring(amc, pretty_print=True,
+            Logger.debug(etree.tostring(amc, pretty_print=True,
                                  encoding='utf8').decode('utf-8'))
         tex = self.texRendering(amc)
         # remove document root
@@ -236,7 +238,7 @@ class Quiz:
                 # for tex conversion, it is done in Question __init__
                 qname = clean_q_name(qname)
                 if qtype in SUPPORTED_QUESTION_TYPE:
-                        print("> Reshape question '{}' of type '{}'.".format(qname, qtype))
+                        Logger.debug("> Reshape question '{}' of type '{}'.".format(qname, qtype))
                         # if no encounter category name before this question,
                         # add the defaut catname in the cat_dict
                         if not(cat_dict):
@@ -246,9 +248,9 @@ class Quiz:
                         amc_q = CreateQuestion(qtype, question).transform(catname)
                         amc.append(amc_q)
                 else:
-                    print("> Question '{}' of type '{}' is not supported. Skipping.".format(qname, qtype))
+                    Logger.error("> Question '{}' of type '{}' is not supported. Skipping.".format(qname, qtype))
 
-        print('> done.')
+        Logger.info('> done.')
 
         # add footer
         footer = self._latex_footer(cat_dict)
@@ -286,7 +288,8 @@ class Quiz:
         latexFile : string
             full name of a latex file.
         """
-        command = "pdflatex {}".format(latexFile)
+        command = "pdflatex -interaction=nonstopmode -halt-on-error {}".format(latexFile)
+        Logger.debug('Run command {}'.format(command))
         status = subprocess.run(command.split(),
                                 stdout=subprocess.DEVNULL)
         return status
@@ -305,5 +308,5 @@ class Quiz:
               "  - strange html tags \n" +\
               "  - check the scoring \n" +\
               "  - ..."
-        print(msg)
+        Logger.warning(msg)
 
