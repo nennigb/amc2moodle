@@ -28,6 +28,8 @@ from wand.image import Image as wandImage
 from xml.sax.saxutils import unescape
 from ..utils.calculatedParser import *
 import random
+import logging
+
 
 # Define default and global
 SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric',
@@ -74,6 +76,9 @@ DEFAULT_OPTS = {# Set defaut relative tolerance for float in numerical question 
                 'calculated_correctanswerformat': 1,
                 'calculated_correctanswerlength': 2,
                 }
+
+# activate logger
+Logger = logging.getLogger(__name__)
 
 
 # ======================================================================
@@ -131,7 +136,7 @@ class ImageCustom:
         im.strip()
         # for (k, v) in im.artifacts.items():
         #     print(k, v)
-        print("   Conversion from {} to {} (imgResolution={}).".format(
+        Logger.debug("   Conversion from {} to {} (imgResolution={}).".format(
                                                     os.path.splitext(fileIn)[1],
                                                     os.path.splitext(fileOut)[1],
                                                     resolution))
@@ -239,7 +244,7 @@ class AMCQuestion(ABC):
             # the option name is in 'name' attribute
             self.options[opt.attrib['name']] = opt.text
             opt.getparent().remove(opt)
-            print("   Modified options '{}' to '{}'".format(opt.attrib['name'],
+            Logger.debug("   Modified options '{}' to '{}'".format(opt.attrib['name'],
                                                             self.options[opt.attrib['name']]))
 
     def _setWithOptionsOrDefault(self, opt_name, default_value):
@@ -257,7 +262,7 @@ class AMCQuestion(ABC):
     def convert(self):
         """ Run all questions convertion steps.
         """
-        print(" * processing {} question '{}'...".format(self.__class__.__name__, self.name))
+        Logger.debug(" * processing {} question '{}'...".format(self.__class__.__name__, self.name))
         self._options()
         self._encodeImg()
         self._scoring()
@@ -278,7 +283,7 @@ class AMCQuestionSimple(AMCQuestion):
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
         if optlist and 'o' in optlist[0].text.strip().split(","):
             Qiwantshuffle = False
-            print("   Keep choices order in question '{}'.".format(self.name))
+            Logger.debug("   Keep choices order in question '{}'.".format(self.name))
         etree.SubElement(Qi, "shuffleanswers").text = str(Qiwantshuffle).lower()
 
         # store local answernumbering policy
@@ -303,9 +308,9 @@ class AMCQuestionSimple(AMCQuestion):
         if len(barl) > 0:
             amc_bl_=dict(item.split("=") for item in barl[0].text.strip().split(","))
             amc_bl.update(amc_bl_)
-            print("   local scoring:", amc_bl)
+            Logger.debug("   local scoring:", amc_bl)
             if (float(amc_bl['b']) < 1.):
-                print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")
+                Logger.warning("The grade of the good answser(s) may be < 100%, put b=1")
 
         # bonne cherche dans les child
         Rlist = Qi.xpath("./*[starts-with(@class, 'amc_bonne')]")
@@ -345,9 +350,9 @@ class AMCQuestionMult(AMCQuestionSimple):
             # partial scoring is provided
             amc_bml_ = dict(item.split("=") for item in barl[0].text.strip().split(","))
             amc_bml.update(amc_bml_)
-            print("   local scoring :", amc_bml)
+            Logger.debug("   local scoring :", amc_bml)
             if (float(amc_bml['b']) < 1):
-                print("WARNING : the grade of the good answser(s) may be < 100%, put b=1")
+                Logger.warning("The grade of the good answser(s) may be < 100%, put b=1")
 
         # on compte le nombre de réponse NR
         # Rlistb = Qi.xpath("./text[@class='amc_bonne']")
@@ -447,7 +452,7 @@ class AMCQuestionNumeric(AMCQuestion):
         if float(opts['approx']) > 0:
             tola = float(opts['approx']) / 10**dec
             if tol > tola:
-                print("Warning the 'approx' bound is tighter than the 'exact' bound")
+                Logger.warning("The 'approx' bound is tighter than the 'exact' bound")
             scoreapprox = 100*float(opts['scoreapprox'])/float(opts['scoreexact'])
             # [x + tol, x + tola] -> scoreexact/scoreexact
             self._addanswer(Qi, scoreapprox, target + tol + (tola-tol)/2, (tola-tol)/2)
@@ -656,7 +661,7 @@ class _Calculated:
         super()._scoring()
         # parse fp expressions
         wildcards = self._parsemath()
-        print('   Found {} wildcards.'.format(len(wildcards)))
+        Logger.debug('   Found {} wildcards.'.format(len(wildcards)))
         # TODO add a test to check that all wildcards starts with rand!
         # to control substitution
         # Add calcultaed question specific fields to all answers.
@@ -867,15 +872,15 @@ class AMCQuiz:
         # Save output
         s = etree.tostring(self.tree, pretty_print=True, encoding="utf-8").decode('utf-8')
         if (self.deb == 1):
-            print(etree.tostring(self.tree, pretty_print=True, encoding="utf-8"))
+            Logger.debug(etree.tostring(self.tree, pretty_print=True, encoding="utf-8"))
         with open(fileout, 'w') as f:
             f.write(s)
 
         # summary
-        print('\n')
-        print(" > global 'shuffleanswers' is {}.".format(strtobool(self.options['shuffle_all'])))
-        print(" > global 'answerNumberingFormat' is '{}'.".format(self.options['answer_numbering_format']))
-        print(" > {} questions converted...".format(self.Qtot))
+        Logger.debug('\n')
+        Logger.debug(" > global 'shuffleanswers' is {}.".format(strtobool(self.options['shuffle_all'])))
+        Logger.debug(" > global 'answerNumberingFormat' is '{}'.".format(self.options['answer_numbering_format']))
+        Logger.debug(" > {} questions converted...".format(self.Qtot))
 
 
     def _preProcessing(self):
@@ -916,7 +921,7 @@ class AMCQuiz:
             # The option name is in 'name' attribute
             self.options[opt.attrib['role']] = opt.text
             opt.getparent().remove(opt)
-            print("   Modified Quizz options '{}' to '{}'".format(opt.attrib['role'],
+            Logger.debug("   Modified Quizz options '{}' to '{}'".format(opt.attrib['role'],
                                                            self.options[opt.attrib['role']]))
 
     def _scoring(self):
@@ -929,9 +934,9 @@ class AMCQuiz:
         if len(bars) > 0:
             # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
             amc_bs = dict(item.split("=") for item in bars[0].text.strip().split(","))
-            print("baremeDefautS :", amc_bs)
+            Logger.debug("baremeDefautS :", amc_bs)
             if (float(amc_bs['b']) < 1):
-                print("WARNING : the grade of the good answser in question will be < 100%, put b=1")
+                Logger.warning("The grade of the good answser in question will be < 100%, put b=1")
             self.amc_bs.update(amc_bs)
 
         # on cherche s'il existe un barème par défaut pour question multiple
@@ -940,9 +945,9 @@ class AMCQuiz:
         if len(barm) > 0:
             # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
             amc_bm = dict(item.split("=") for item in barm[0].text.strip().split(","))
-            print("baremeDefautM :", amc_bm)
+            Logger.debug("baremeDefautM :", amc_bm)
             if (float(amc_bm['b']) < 1):
-                print("WARNING : the grade of the good answser(s) in questionmult may be < 100%, put b=1")
+                Logger.warning("The grade of the good answser(s) in questionmult may be < 100%, put b=1")
             self.amc_bm.update(amc_bm)
 
     def _graphics(self):
@@ -960,8 +965,7 @@ class AMCQuiz:
             try:
                 img_name = Ii.attrib['candidates'].split(',')[-1]   # get the last candidates
             except KeyError as e:
-                print('WARNING : No Image file candidates. ',
-                      'Probably due to a wrong path : {}'.format(Ii.attrib['graphic']))
+                Logger.warning('No Image file candidates. Probably due to a wrong path : {}'.format(Ii.attrib['graphic']))
                 raise e
             ext = img_name.split('.')[-1]
             # not all attrib are mandatory... check if they exist before using them

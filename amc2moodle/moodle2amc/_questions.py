@@ -37,6 +37,7 @@ import sys
 from ..utils.calculatedParser import *
 from amc2moodle.utils.text import clean_q_name
 import markdown
+import logging
 
 # list of supported moodle question type for
 SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay', 'description',
@@ -72,6 +73,8 @@ FALSE = {'false', '0'}
 # Default parameters for calculated Questions
 CALCULATED_DEFAULT_PARSER = 'xml2fp'
 
+# activate logger
+Logger = logging.getLogger(__name__)
 class Question(ABC):
     """ Define an absract class for all supported questions.
     """
@@ -134,7 +137,7 @@ class Question(ABC):
                                               extensions=['extra'])
             text = self.html2tex(unescape('<text>' + cdata_content + '</text>'))
         else:
-            print("> Unsupported format '{}'. Try with html filter.".format(text_format))
+            Logger.warning("> Unsupported format '{}'. Try with html filter.".format(text_format))
             text = self.html2tex(cdata_content)
         return text
 
@@ -299,7 +302,7 @@ class QuestionMultichoice(Question):
         elif single.lower() == 'false':
             amcqtype = 'questionmult'
         else:
-            print("> Unknwon question type in '{}'".format(self.name))
+            Logger.error("> Unknwon question type in '{}'".format(self.name))
 
         return amcqtype
 
@@ -417,12 +420,12 @@ class QuestionNumerical(Question):
         # Check if there is several answers
         ans_list = self.q.findall(".//answer")
         if len(ans_list) > 1:
-            print('  Warning: multiple answers in the moodle question. ')
+            Logger.warning('Multiple answers in the moodle question. ')
 
         # Process the 1st good answer
         ok_list = self.q.findall(".//answer[@fraction='100']")
         if len(ok_list) != 1:
-            print('  Warning: Multiple good answer. Take only the first one.')
+            Logger.warning('Multiple good answer. Take only the first one.')
         else:
             ans = ok_list[0]
             # get and cast the target
@@ -458,8 +461,7 @@ class QuestionNumerical(Question):
                 t = float(a.find('text').text)
                 f = float(a.attrib['fraction'])
                 if (a is not(ans)) and (f > 0) and (abs(t-target) < EPS):
-                    print('  Detect two identical targets. ',
-                          'Try to generate approx scoring..')
+                    Logger.warning('  Detect two identical targets. \n Try to generate approx scoring..')
                     tolerance_approx = float(a.find('tolerance').text)
                     scoreapprox = f*SCOREEXACT/100
                     approx = round(tolerance_approx*(10**decimals))
@@ -538,7 +540,7 @@ class QuestionCalculatedMulti(Question):
         elif single.lower() in FALSE:
             amcqtype = 'questionmult'
         else:
-            print(" Unknwon question type in '{}'".format(self.name))
+            Logger.error(" Unknwon question type in '{}'".format(self.name))
 
         return amcqtype
 
@@ -551,13 +553,13 @@ class QuestionCalculatedMulti(Question):
         for data in datasets.iterfind('dataset_definition'):
             # check if dataset is private (if not, may have inconsistenies)
             if data.find('status/text').text.lower() !='private':
-                print(" Warining : some variables are shared between question. May leads to inconsistencies.")
+                Logger.warning("Some variables are shared between question. May leads to inconsistencies.")
             # get variable name and remove '_' as in CalculatedParser
             v = data.find('name/text').text
             v = v.replace('_','')
             # check distribution law
             if data.find('distribution/text').text !='uniform':
-                print(" Warining : only 'uniform' distribution is supported.")
+                Logger.warning("Only 'uniform' distribution is supported.")
             # Gets bounds
             vmin = data.find('minimum/text').text
             vmax = data.find('maximum/text').text
