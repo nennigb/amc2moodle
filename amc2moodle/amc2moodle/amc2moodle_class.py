@@ -246,7 +246,7 @@ class amc2moodle:
             self.magictex],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True) as latexmlProcess:
+            universal_newlines=True) as latexmlProcess:
             #while latexmlProcess.poll() is None:
             #    Logger.debug(latexmlProcess.stdout.read())
             #writePipeOnOutput(latexmlProcess,latexmlProcess.stderr,Logger.debug)
