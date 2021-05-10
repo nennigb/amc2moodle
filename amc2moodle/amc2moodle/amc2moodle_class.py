@@ -75,9 +75,13 @@ def writePipeOnOutput(process,streamIn,output:Callable):
     during process executed by subprocess.Popen
     """
     while process.poll() is None:
-        output(streamIn.readline().strip())
+        msg = streamIn.readline().strip()
+        if msg !="":
+            output(msg)
     # write the rest from the buffer
-    output(streamIn.read())
+    msg = streamIn.read().strip()
+    if msg !="":
+        output(msg)
 
 
 class amc2moodle:
@@ -189,7 +193,7 @@ class amc2moodle:
     def endMessage(self):
         """ Show end message explaining moodle inmport procedure.
         """
-        Logger.warning("""File converted. Check below for errors...
+        msg="""  File converted. Check below for errors...
 
             For import into moodle :
             --------------------------------
@@ -198,7 +202,9 @@ class amc2moodle:
             - In the option chose : 'choose the closest grade if not listed'
               in the 'General option' since Moodle used tabulated grades
               like 1/2, 1/3 etc...
-        """)
+        """
+        for item in msg.split('\n'):
+            logging.warning(item)
 
     def removeMagicComment(self):
         """ Remove magic comments prefix to enable amc2moodle dedicated LaTeX
