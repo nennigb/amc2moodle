@@ -129,7 +129,7 @@ class Flatex:
                         # add a new line after each inclided file
                         output_lines.append('\n')
                 # test if magic coment
-                elif self.magic_flag and line.startswith(self.magictag):
+                elif self.magic_flag and line.lstrip().startswith(self.magictag):
                     output_lines += self.magic_filter(line)
                     # count it
                     self._magic_comments_number += 1

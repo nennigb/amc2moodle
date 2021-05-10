@@ -241,7 +241,7 @@ class AMCQuestion(ABC):
         optlist = Qi.xpath(".//options")
 
         for opt in optlist:
-            # the option name is in 'name' atrtibute
+            # the option name is in 'name' attribute
             self.options[opt.attrib['name']] = opt.text
             opt.getparent().remove(opt)
             Logger.debug("   Modified options '{}' to '{}'".format(opt.attrib['name'],
@@ -308,7 +308,7 @@ class AMCQuestionSimple(AMCQuestion):
         if len(barl) > 0:
             amc_bl_=dict(item.split("=") for item in barl[0].text.strip().split(","))
             amc_bl.update(amc_bl_)
-            Logger.debug("   local scoring:", amc_bl)
+            Logger.debug("   local scoring: {}".format(amc_bl))
             if (float(amc_bl['b']) < 1.):
                 Logger.warning("The grade of the good answser(s) may be < 100%, put b=1")
 
@@ -350,7 +350,7 @@ class AMCQuestionMult(AMCQuestionSimple):
             # partial scoring is provided
             amc_bml_ = dict(item.split("=") for item in barl[0].text.strip().split(","))
             amc_bml.update(amc_bml_)
-            Logger.debug("   local scoring :", amc_bml)
+            Logger.debug("   local scoring : {}".format(amc_bml))
             if (float(amc_bml['b']) < 1):
                 Logger.warning("The grade of the good answser(s) may be < 100%, put b=1")
 
@@ -877,7 +877,7 @@ class AMCQuiz:
             f.write(s)
 
         # summary
-        Logger.debug('\n')
+        Logger.debug(" ")
         Logger.debug(" > global 'shuffleanswers' is {}.".format(strtobool(self.options['shuffle_all'])))
         Logger.debug(" > global 'answerNumberingFormat' is '{}'.".format(self.options['answer_numbering_format']))
         Logger.debug(" > {} questions converted...".format(self.Qtot))
@@ -918,7 +918,7 @@ class AMCQuiz:
         """
         opts = self.tree.xpath("//*[@class='amc_quiz_options']")
         for opt in opts:
-            # The option name is in 'name' atrtibute
+            # The option name is in 'name' attribute
             self.options[opt.attrib['role']] = opt.text
             opt.getparent().remove(opt)
             Logger.debug("   Modified Quizz options '{}' to '{}'".format(opt.attrib['role'],
@@ -934,7 +934,7 @@ class AMCQuiz:
         if len(bars) > 0:
             # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
             amc_bs = dict(item.split("=") for item in bars[0].text.strip().split(","))
-            Logger.debug("baremeDefautS :", amc_bs)
+            Logger.debug("baremeDefautS : {}".format(amc_bs))
             if (float(amc_bs['b']) < 1):
                 Logger.warning("The grade of the good answser in question will be < 100%, put b=1")
             self.amc_bs.update(amc_bs)
@@ -945,7 +945,7 @@ class AMCQuiz:
         if len(barm) > 0:
             # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
             amc_bm = dict(item.split("=") for item in barm[0].text.strip().split(","))
-            Logger.debug("baremeDefautM :", amc_bm)
+            Logger.debug("baremeDefautM : {}".format(amc_bm))
             if (float(amc_bm['b']) < 1):
                 Logger.warning("The grade of the good answser(s) in questionmult may be < 100%, put b=1")
             self.amc_bm.update(amc_bm)

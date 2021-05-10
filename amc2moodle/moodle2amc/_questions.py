@@ -461,7 +461,8 @@ class QuestionNumerical(Question):
                 t = float(a.find('text').text)
                 f = float(a.attrib['fraction'])
                 if (a is not(ans)) and (f > 0) and (abs(t-target) < EPS):
-                    Logger.warning('  Detect two identical targets. \n Try to generate approx scoring..')
+                    Logger.warning('  Detect two identical targets.')
+                    Logger.warning('    Try to generate approx scoring..')
                     tolerance_approx = float(a.find('tolerance').text)
                     scoreapprox = f*SCOREEXACT/100
                     approx = round(tolerance_approx*(10**decimals))

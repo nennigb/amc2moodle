@@ -299,14 +299,15 @@ class Quiz:
         """ Print ouput message.
         """
 
-        msg = "\nThe conversion is complete. Try to compile the tex file...\n" + \
-              "In case of trouble, you may need to check for :\n" + \
-              u"  - unicode character like euro € currency symbol  \n" + \
-              "  - latex special character like '{', '_', '&', ... \n" + \
-              "  - possible problems with embedded 'equation' environnement inside matjax delimiters:\n"\
-              "    ex :  $$\\begin{equation}... Remove '$$' in output TeX file  \n" + \
-              "  - strange html tags \n" +\
-              "  - check the scoring \n" +\
-              "  - ..."
-        Logger.warning(msg)
+        msg = """ The conversion is complete. Try to compile the tex file...
+                In case of trouble, you may need to check for :
+                - unicode character like euro € currency symbol  
+                - latex special character like '{', '_', '&', ... 
+                - possible problems with embedded 'equation' environnement inside matjax delimiters:
+                  ex :  $$\\begin{equation}... Remove '$$' in output TeX file
+                - strange html tags
+                - check the scoring
+                - ..."""
+        for item in msg.split('\n'):
+            logging.warning(item)
 

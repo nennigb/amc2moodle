@@ -75,9 +75,13 @@ def writePipeOnOutput(process,streamIn,output:Callable):
     during process executed by subprocess.Popen
     """
     while process.poll() is None:
-        output(streamIn.readline())
+        msg = streamIn.readline().strip()
+        if msg !="":
+            output(msg)
     # write the rest from the buffer
-    output(streamIn.read())
+    msg = streamIn.read().strip()
+    if msg !="":
+        output(msg)
 
 
 class amc2moodle:
@@ -189,7 +193,7 @@ class amc2moodle:
     def endMessage(self):
         """ Show end message explaining moodle inmport procedure.
         """
-        Logger.warning("""File converted. Check below for errors...
+        msg="""  File converted. Check below for errors...
 
             For import into moodle :
             --------------------------------
@@ -198,7 +202,9 @@ class amc2moodle:
             - In the option chose : 'choose the closest grade if not listed'
               in the 'General option' since Moodle used tabulated grades
               like 1/2, 1/3 etc...
-        """)
+        """
+        for item in msg.split('\n'):
+            logging.warning(item)
 
     def removeMagicComment(self):
         """ Remove magic comments prefix to enable amc2moodle dedicated LaTeX
@@ -230,7 +236,8 @@ class amc2moodle:
         """
         # run LaTeXML on magictex file
         Logger.info(' > Running LaTeXML conversion')
-        latexmlProcess = subprocess.Popen([
+        LoggerXML = logging.getLogger(' LaTexML ')
+        with subprocess.Popen([
             'latexml',
             '--noparse',
             '--nocomments',
@@ -239,21 +246,26 @@ class amc2moodle:
             self.magictex],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True)
-        # write stdout and stderr in parallel to the right logging outputs
-        # caution LaTeXML uses only STDERR... (version 0.8.5)
-        # all outputs will be written in debug log
-        with ThreadPoolExecutor(2) as pool:
-            rstdout = pool.submit(writePipeOnOutput,
-                    latexmlProcess,
-                    latexmlProcess.stdout,
-                    Logger.debug)
-            rstderr = pool.submit(writePipeOnOutput,
-                    latexmlProcess,
-                    latexmlProcess.stderr,
-                    Logger.debug)
-            rstdout.result()
-            rstderr.result()
+            universal_newlines=True) as latexmlProcess:
+            #while latexmlProcess.poll() is None:
+            #    Logger.debug(latexmlProcess.stdout.read())
+            #writePipeOnOutput(latexmlProcess,latexmlProcess.stderr,Logger.debug)
+
+            # write stdout and stderr in parallel to the right logging outputs
+            # caution LaTeXML uses only STDERR... (version 0.8.5)
+            # all outputs will be written in debug log
+            with ThreadPoolExecutor(2) as pool:
+                rstdout = pool.submit(writePipeOnOutput,
+                        latexmlProcess,
+                        latexmlProcess.stdout,
+                        LoggerXML.info)
+                rstderr = pool.submit(writePipeOnOutput,
+                        latexmlProcess,
+                        latexmlProcess.stderr,
+                        LoggerXML.debug)
+                rstdout.result()
+                rstderr.result()
+        #latexmlProcess.wait()
         return latexmlProcess.returncode == 0
 
     def runXMLindent(self):
@@ -297,7 +309,8 @@ class amc2moodle:
 
         Logger.info(' > Running LaTeXML pre-processing...')
         # process magictex as tex input
-        if self.runLaTeXML():
+        statusLaTeXML = self.runLaTeXML()
+        if statusLaTeXML:
             # run script
             Logger.info(' > Running Python conversion...')
             convert.to_moodle(
