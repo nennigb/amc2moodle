@@ -24,6 +24,7 @@ from ..utils.flatex import Flatex
 import subprocess
 import sys
 import os
+import shutil
 from importlib import util  # python 3.x
 import tempfile
 from distutils.dir_util import copy_tree
@@ -92,7 +93,7 @@ class amc2moodle:
 
     def __init__(self, fileInput, fileOutput=None, keepFlag=False,
                  catname='amc', indentXML=False, usetempdir=True,
-                 magic_flag=True, deb=0):
+                 magic_flag=True, cleanXML=False, deb=0):
         """ Initialize the object.
 
         Parameters
@@ -128,6 +129,7 @@ class amc2moodle:
         self.tempxmlfiledef = 'tex2xml.xml'
         self.tempxmlfile = 'tex2xml.xml'
         self.indentXML = indentXML
+        self.cleanXML = cleanXML
 
         # check required tools
         if not checkTools(show=True):
@@ -204,7 +206,7 @@ class amc2moodle:
               like 1/2, 1/3 etc...
         """
         for item in msg.split('\n'):
-            logging.warning(item)
+            Logger.warning(item)
 
     def removeMagicComment(self):
         """ Remove magic comments prefix to enable amc2moodle dedicated LaTeX
@@ -289,12 +291,25 @@ class amc2moodle:
             subprocess.run(['xmllint', self.output,'--format','--output', self.output],
                            stdout=subprocess.DEVNULL)
     
-    def cleanXML(self):
+    def runCleanXML(self):
         """ Clean final XML file 
         remove "%" at end of lines 
         (EXPERIMENTAL)
         """
         Logger.warning("Caution: cleaning XML file is experimental")
+        # copy output file and remove '%\n' (a temporary file will be used and deleted)
+        fdTemp,pathTemp = tempfile.mkstemp(dir=getPathFile(self.inputtex),
+                                    prefix='xmlclean') 
+        Logger.warning("Cleaning: create {} ".format(pathTemp))
+        with open(self.output,'r') as fin, open(pathTemp,'w') as fout:
+            for line in fin:
+                #remove '%' at ends of lines
+                line = line.replace("%\n", "\n")
+                fout.write(line)
+        # copy temporary file to the output
+        os.close(fdTemp)
+        shutil.copy(pathTemp,self.output)
+        Logger.warning("Cleaning: done")
         
 
     def runBuilding(self):
@@ -329,6 +344,10 @@ class amc2moodle:
                 #
                 Logger.info(' > Save all temp files in: %s' % tempdirSave)
                 copy_tree(self.tempdir.name, tempdirSave)
+
+            # clean XML file (experimental)
+            if self.cleanXML:
+                self.runCleanXML()
 
             # run XMLindent
             if self.indentXML:
