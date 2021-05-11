@@ -204,7 +204,7 @@ class amc2moodle:
               like 1/2, 1/3 etc...
         """
         for item in msg.split('\n'):
-            logging.warning(item)
+            Logger.warning(item)
 
     def removeMagicComment(self):
         """ Remove magic comments prefix to enable amc2moodle dedicated LaTeX
