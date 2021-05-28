@@ -309,5 +309,5 @@ class Quiz:
                 - check the scoring
                 - ..."""
         for item in msg.split('\n'):
-            logging.warning(item)
+            Logger.info(item)
 

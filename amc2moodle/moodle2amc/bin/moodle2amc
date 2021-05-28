@@ -18,7 +18,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+from amc2moodle.utils.customLogging import customLogger
 import amc2moodle as amdlpkg
 import amc2moodle.moodle2amc as mdl2amc
 import argparse
@@ -58,7 +58,7 @@ def run():
                         version="%(prog)s v{version}".format(version=amdlpkg.__version__))
     parser.add_argument("-v", "--verbose",
                         help='''Show all log messages in CLI''',
-                        required=False, action="store_true")
+                        required=False, action="count")
     parser.add_argument("-s", "--silent",
                         help='''Hide all messages in CLI (log file is still written) (override verbosity)''',
                         required=False, action="store_true")
@@ -79,34 +79,16 @@ def run():
     silentMode = args.silent
     verboseMode = args.verbose
 
-    # DEFAULT
-    DEFAULT_LOG_FORMATTER = '%(asctime)s [%(levelname)s]: %(message)s '
-    DEFAULT_LOG_DEBUG_FORMATTER = '%(asctime)s-({}-%(name)s) [%(levelname)s]: %(message)s '.format(amdlpkg.__version__)
-    DEFAULT_FMT_TIME = '%H:%M:%S'
+#adapt verbosemode
+    if not verboseMode:
+        verboseMode = 0
 
-    # create global logger
-    # logging.basicConfig(level=logging.DEBUG)
-    # load root logger
-    rootLogger = logging.getLogger('amc2moodle')
-    rootLogger.setLevel(logging.DEBUG)
-    # create basic stream logger
-    sH = logging.StreamHandler(stream=sys.stdout)
-    sH.setFormatter(logging.Formatter(fmt=DEFAULT_LOG_FORMATTER,datefmt=DEFAULT_FMT_TIME))
-    sH.setLevel(logging.INFO)    
+    #load logger
+    logObj = customLogger('amc2moodle')
+    logObj.setupConsoleLogger(verbositylevel=verboseMode,
+                              silent=silentMode,
+                              txtinfo=amdlpkg.__version__)    
 
-    # activate verbose mode
-    if verboseMode:
-        sH.setLevel(logging.DEBUG)
-        sH.setFormatter(logging.Formatter(fmt=DEFAULT_LOG_DEBUG_FORMATTER))
-
-    # activate silent mode
-    if silentMode:
-        sH.setLevel(logging.ERROR)
-    # add it in the rootLogger
-    rootLogger.addHandler(sH)
-
-    #current logger
-    Logger = rootLogger
 
     # check input file
     fileInOk = os.path.exists(fileIn)
@@ -117,12 +99,12 @@ def run():
         # remove existing log file
         if os.path.exists(logFile):
             os.remove(logFile)
-        # create handler for the log file
-        fileHandler = logging.FileHandler(logFile)
-        fileHandler.setLevel(logging.DEBUG)
-        fileHandler.setFormatter(logging.Formatter(DEFAULT_LOG_DEBUG_FORMATTER))
-        # add handler to the current list
-        rootLogger.addHandler(fileHandler)
+        # create file logger
+        logObj.setupFileLogger(filename=logFile,
+                               verbositylevel=2,
+                               txtinfo=amdlpkg.__version__)
+    #catch Logger
+    Logger = logObj.getLogger()
 
     if fileInOk:
         Logger.debug('Input file: %s - status: %s' % (fileIn, "OK"))

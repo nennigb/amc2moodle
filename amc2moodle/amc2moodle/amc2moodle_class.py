@@ -204,7 +204,7 @@ class amc2moodle:
               like 1/2, 1/3 etc...
         """
         for item in msg.split('\n'):
-            Logger.warning(item)
+            Logger.info(item)
 
     def removeMagicComment(self):
         """ Remove magic comments prefix to enable amc2moodle dedicated LaTeX
@@ -236,7 +236,8 @@ class amc2moodle:
         """
         # run LaTeXML on magictex file
         Logger.info(' > Running LaTeXML conversion')
-        LoggerXML = logging.getLogger(' LaTexML ')
+        # LoggerXML = logging.getLogger('LaTexML')
+        #TODO: caution with 'universal_newlines=' (new syntax from Python 3.7: text=)
         with subprocess.Popen([
             'latexml',
             '--noparse',
@@ -258,11 +259,11 @@ class amc2moodle:
                 rstdout = pool.submit(writePipeOnOutput,
                         latexmlProcess,
                         latexmlProcess.stdout,
-                        LoggerXML.info)
+                        Logger.debug)
                 rstderr = pool.submit(writePipeOnOutput,
                         latexmlProcess,
                         latexmlProcess.stderr,
-                        LoggerXML.debug)
+                        Logger.debug)
                 rstdout.result()
                 rstderr.result()
         #latexmlProcess.wait()
