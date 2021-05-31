@@ -1,0 +1,99 @@
+\documentclass[a4paper]{article}
+%review
+
+
+%#########################################################################
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+%\usepackage[francais]{babel}
+%\usepackage{lmodern}
+\usepackage[hmargin=4cm, vmargin=2cm, includeheadfoot]{geometry}
+\usepackage{alltt}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage[francais,bloc,completemulti]{automultiplechoice}     % Mandatory for conversion
+\usepackage{mhchem} % needed for chemical equations
+% needed by amc to be commented for amc2moodle usage (fp is not yet supported)
+%\usepackage{fp} 
+% exemple de commande utilisateur
+\providecommand{\abs}[1]{\lvert#1\rvert}
+%#########################################################################
+% Entête
+%#########################################################################
+
+
+
+\title{Conversion test for AMC to moodle}
+\author{amc2moodle}
+
+
+
+%#########################################################################
+% Document
+%#########################################################################
+\begin{document}
+
+%
+% B A R E M E
+% e=incohérence; b=bonne; m=mauvaise; p planché (on ne descent pas en dessous)
+\baremeDefautS{e=-0.5,b=1,m=-0.5}% never put b<1,
+\baremeDefautM{e=-0.5,b=1,m=-0.25,p=-0.5}% never put b<1, with amc2moodle m correspond to the grade if all the wrong answers are ticked, b correspond to the grade if all the good answers are ticked
+
+
+\element{dyna}{
+% Test for long equation that may breakdown in LaTeXML due to '%\n' insertion
+    \begin{question}{long_eq}
+        \`A partir des résultats précédents, donner l'expression dans la base $(\vec{x}_1,\vec{y}_1,\vec{z}_0)$ de l'accélération du point $G_3$ lié à $S_3$ dans son mouvement par rapport à $R_0$:
+        \[\overrightarrow{\Gamma_{({G_3},S_3/R_0)}}\]
+        \begin{reponses}
+            \mauvaise{$(\ddot{\lambda}-\lambda\dot{\theta}_{1}^{2})\vec{x}_{1}+(\lambda\ddot{\theta}_{1}+2\dot{\lambda}\dot{\theta}_{1})\vec{y}_{1}$}
+            \mauvaise{$\ddot{\lambda}\vec{x}_{1}+\lambda\ddot{\theta}_{1}\vec{y}_{1}$}
+            \bonne{$\ddot{\lambda}\vec{x}_{1}$}
+            \mauvaise{$\ddot{\lambda}\vec{x}_{1}+(\lambda\ddot{\theta}_{1}+\dot{\lambda}\dot{\theta}_{1})\vec{y}_{1}$}
+        \end{reponses}
+    \end{question}
+}
+
+
+
+
+
+
+% #################################################################
+% C R E A T I O N  D E S  C O P I E S
+% #################################################################
+\exemplaire{1}{        % nombre de sujet différent
+
+  %debut de l'en-tête des copies :
+  \vspace*{.5cm}
+  \begin{minipage}{.4\linewidth}
+    \centering\large\texttt{amc2moodle}
+  \end{minipage}
+  \champnom{\fbox{
+      \begin{minipage}{.5\linewidth}
+        Nom et prénom :
+
+        \vspace*{.5cm}\dotfill
+        \vspace*{1mm}
+      \end{minipage}
+    }}
+
+  \begin{flushleft}
+    Test for long equation.
+    \begin{center}
+      \Large{\textsc{QCM using AMC Latex Format}}\\
+      \normalsize
+    \end{center}
+  \end{flushleft}
+
+  \cleargroup{BigGroupe}
+  \copygroup{dyna}{BigGroupe}
+  \restituegroupe{BigGroupe}
+}
+
+
+
+
+\end{document}
