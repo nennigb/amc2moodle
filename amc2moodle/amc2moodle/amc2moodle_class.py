@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from typing import Callable
 from ..amc2moodle import convert
 from ..utils.flatex import Flatex
 import subprocess
@@ -26,7 +27,11 @@ import os
 from importlib import util  # python 3.x
 import tempfile
 from distutils.dir_util import copy_tree
+import logging
+from concurrent.futures import ThreadPoolExecutor
 
+# activate logger
+Logger = logging.getLogger(__name__)
 
 def checkTools(show=True):
     """ Check if the required Tools are available.
@@ -35,18 +40,18 @@ def checkTools(show=True):
     wand_loader = util.find_spec('wand') 
     wandOk = wand_loader is not None
     if not wandOk:
-        print ("Please install Wand's Python module")
+        Logger.critical("Please install Wand's Python module")
     # lxml Python Module
     lxml_loader = util.find_spec('lxml') 
     lxmlOk = lxml_loader is not None
     if not lxmlOk:
-        print ("Please install lxml's Python module")
+        Logger.critical("Please install lxml's Python module")
     # LaTeXML
     latexMLwhich = subprocess.run(['which', 'latexml'],
                                   stdout=subprocess.DEVNULL)
     latexmlOk = latexMLwhich.returncode == 0
     if not latexmlOk:
-        print ("Please install LaTeXML software (see https://dlmf.nist.gov/LaTeXML/)")
+        Logger.critical("Please install LaTeXML software (see https://dlmf.nist.gov/LaTeXML/)")
 
     return wandOk and lxmlOk and latexmlOk
 
@@ -64,6 +69,19 @@ def getPathFile(fileIn):
     if not dirname:
         dirname = '.'
     return dirname
+
+def writePipeOnOutput(process,streamIn,output:Callable):
+    """ Write the stream from a pipe through an output
+    during process executed by subprocess.Popen
+    """
+    while process.poll() is None:
+        msg = streamIn.readline().strip()
+        if msg !="":
+            output(msg)
+    # write the rest from the buffer
+    msg = streamIn.read().strip()
+    if msg !="":
+        output(msg)
 
 
 class amc2moodle:
@@ -101,11 +119,11 @@ class amc2moodle:
         None.
 
         """
-        print('========================')
-        print('========================')
-        print('=== Start amc2moodle ===')
-        print('========================')
-        print('========================')
+        Logger.info('========================')
+        Logger.info('========================')
+        Logger.info('=== Start amc2moodle ===')
+        Logger.info('========================')
+        Logger.info('========================')
         # Set temp XML filename for internal use
         self.tempxmlfiledef = 'tex2xml.xml'
         self.tempxmlfile = 'tex2xml.xml'
@@ -151,7 +169,7 @@ class amc2moodle:
     def cleanUpTemp(self):
         """ Clean-up temp directory created by tempfile.TemporaryDirectory().
         """
-        print(' > Clean-up tempfile.')
+        Logger.debug(' > Clean-up tempfile.')
         self.tempdir.cleanup()
         # remove magictex temp file
         if not self.keepFlag:
@@ -161,21 +179,21 @@ class amc2moodle:
         """ Show loaded parameters.
         """
         disable = {True:'enable', False:'disable'}
-        print('====== Parameters ======')
-        print(' > path input TeX: %s' % getPathFile(self.inputtex))
-        print(' > input TeX file: %s' % getFilename(self.inputtex))
-        print(' > temporary directory: %s' % getPathFile(self.tempdir.name))
-        print(' > path output TeX: %s' % getPathFile(self.output))
-        print(' > output XML file: %s' % getFilename(self.output))
-        print(' > temp XML file: %s' % self.tempxmlfile)
-        print(' > keep temp files: %s' % self.keepFlag)
-        print(' > categorie name: %s' % self.catname)
-        print(' > magic comments: %s' % disable[self.magic_flag])
+        Logger.debug('====== Parameters ======')
+        Logger.debug(' > path input TeX: %s' % getPathFile(self.inputtex))
+        Logger.debug(' > input TeX file: %s' % getFilename(self.inputtex))
+        Logger.debug(' > temporary directory: %s' % getPathFile(self.tempdir.name))
+        Logger.debug(' > path output TeX: %s' % getPathFile(self.output))
+        Logger.debug(' > output XML file: %s' % getFilename(self.output))
+        Logger.debug(' > temp XML file: %s' % self.tempxmlfile)
+        Logger.debug(' > keep temp files: %s' % self.keepFlag)
+        Logger.debug(' > categorie name: %s' % self.catname)
+        Logger.debug(' > magic comments: %s' % disable[self.magic_flag])
 
     def endMessage(self):
         """ Show end message explaining moodle inmport procedure.
         """
-        print("""File converted. Check below for errors...
+        msg="""  File converted. Check below for errors...
 
             For import into moodle :
             --------------------------------
@@ -184,7 +202,9 @@ class amc2moodle:
             - In the option chose : 'choose the closest grade if not listed'
               in the 'General option' since Moodle used tabulated grades
               like 1/2, 1/3 etc...
-        """)
+        """
+        for item in msg.split('\n'):
+            Logger.info(item)
 
     def removeMagicComment(self):
         """ Remove magic comments prefix to enable amc2moodle dedicated LaTeX
@@ -215,15 +235,39 @@ class amc2moodle:
         """ Run LaTeXML on the input TeX file.
         """
         # run LaTeXML on magictex file
-        print(' > Running LaTeXML conversion')
-        runStatus = subprocess.run([
+        Logger.info(' > Running LaTeXML conversion')
+        # LoggerXML = logging.getLogger('LaTexML')
+        #TODO: caution with 'universal_newlines=' (new syntax from Python 3.7: text=)
+        with subprocess.Popen([
             'latexml',
             '--noparse',
             '--nocomments',
             '--path=%s' % os.path.dirname(__file__),
             '--dest=%s' % self.tempxmlfile,
-            self.magictex])
-        return runStatus.returncode == 0
+            self.magictex],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True) as latexmlProcess:
+            #while latexmlProcess.poll() is None:
+            #    Logger.debug(latexmlProcess.stdout.read())
+            #writePipeOnOutput(latexmlProcess,latexmlProcess.stderr,Logger.debug)
+
+            # write stdout and stderr in parallel to the right logging outputs
+            # caution LaTeXML uses only STDERR... (version 0.8.5)
+            # all outputs will be written in debug log
+            with ThreadPoolExecutor(2) as pool:
+                rstdout = pool.submit(writePipeOnOutput,
+                        latexmlProcess,
+                        latexmlProcess.stdout,
+                        Logger.debug)
+                rstderr = pool.submit(writePipeOnOutput,
+                        latexmlProcess,
+                        latexmlProcess.stderr,
+                        Logger.debug)
+                rstdout.result()
+                rstderr.result()
+        #latexmlProcess.wait()
+        return latexmlProcess.returncode == 0
 
     def runXMLindent(self):
         """ Run XML indentation with subprocess.
@@ -237,30 +281,31 @@ class amc2moodle:
 
         # linux
         if xmlindentOk:
-            print(' > Indenting XML output...')
+            Logger.debug(' > Indenting XML output...')
             subprocess.run(['xmlindent', self.output, '-o', self.output],
                            stdout=subprocess.DEVNULL)
         # MacOS
         if xmllintOk and not xmlindentOk:
-            print(' > Indenting XML output...')
+            Logger.debug(' > Indenting XML output...')
             subprocess.run(['xmllint', self.output,'--format','--output', self.output],
                            stdout=subprocess.DEVNULL)
 
     def runBuilding(self):
         """ Build the xml file for Moodle quizz.
         """
-        print('====== Build XML =======')
+        Logger.info('====== Build XML =======')
         # remove magic comment, return magictex
         if self.magic_flag:
-            print(' > Search for magic comments...')
+            Logger.info(' > Search for magic comments...')
         self.removeMagicComment()
 
 
-        print(' > Running LaTeXML pre-processing...')
+        Logger.info(' > Running LaTeXML pre-processing...')
         # process magictex as tex input
-        if self.runLaTeXML():
+        statusLaTeXML = self.runLaTeXML()
+        if statusLaTeXML:
             # run script
-            print(' > Running Python conversion...')
+            Logger.info(' > Running Python conversion...')
             convert.to_moodle(
                 filein=getFilename(self.tempxmlfile),
                 pathin=getPathFile(self.inputtex),
@@ -275,7 +320,7 @@ class amc2moodle:
                 tempdirSave = tempfile.mkdtemp(prefix='tmp_amc2moodle_',
                                                dir=getPathFile(self.output))
                 #
-                print(' > Save all temp files in: %s' % tempdirSave)
+                Logger.info(' > Save all temp files in: %s' % tempdirSave)
                 copy_tree(self.tempdir.name, tempdirSave)
 
             # run XMLindent
@@ -289,5 +334,5 @@ class amc2moodle:
             self.endMessage()
 
         else:
-            print('ERROR during LaTeXML processing.')
+            Logger.error('ERROR during LaTeXML processing.')
             sys.exit(1)

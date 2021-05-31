@@ -19,12 +19,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from typing import Callable
 from lxml import etree
 from xml.sax.saxutils import unescape
 import subprocess
 import os
 from ._questions import *
 from amc2moodle.utils.text import clean_q_name
+import logging
+from concurrent.futures import ThreadPoolExecutor
 
 
 # output latex File
@@ -32,8 +35,21 @@ LATEX_FILEOUT = 'out.tex'
 # xslt file
 XSLT_TEXRENDERER = os.path.join(os.path.dirname(__file__), 'struc2tex.xslt')
 
+# activate logger
+Logger = logging.getLogger(__name__)
 
-
+def writePipeOnOutput(process,streamIn,output:Callable):
+    """ Write the stream from a pipe through an output
+    during process executed by subprocess.Popen
+    """
+    while process.poll() is None:
+        msg = streamIn.readline().strip()
+        if msg !="":
+            output(msg)
+    # write the rest from the buffer
+    msg = streamIn.read().strip()
+    if msg !="":
+        output(msg)
 
 class Quiz:
     """ Define the quiz class.
@@ -83,7 +99,7 @@ class Quiz:
         # convert : convert(to str) converttofile
         amc, cat_dict = self._reshape()
         if debug:
-            print(etree.tostring(amc, pretty_print=True,
+            Logger.debug(etree.tostring(amc, pretty_print=True,
                                  encoding='utf8').decode('utf-8'))
         tex = self.texRendering(amc)
         # remove document root
@@ -236,7 +252,7 @@ class Quiz:
                 # for tex conversion, it is done in Question __init__
                 qname = clean_q_name(qname)
                 if qtype in SUPPORTED_QUESTION_TYPE:
-                        print("> Reshape question '{}' of type '{}'.".format(qname, qtype))
+                        Logger.debug("> Reshape question '{}' of type '{}'.".format(qname, qtype))
                         # if no encounter category name before this question,
                         # add the defaut catname in the cat_dict
                         if not(cat_dict):
@@ -246,9 +262,9 @@ class Quiz:
                         amc_q = CreateQuestion(qtype, question).transform(catname)
                         amc.append(amc_q)
                 else:
-                    print("> Question '{}' of type '{}' is not supported. Skipping.".format(qname, qtype))
+                    Logger.error("> Question '{}' of type '{}' is not supported. Skipping.".format(qname, qtype))
 
-        print('> done.')
+        Logger.info('> done.')
 
         # add footer
         footer = self._latex_footer(cat_dict)
@@ -286,24 +302,50 @@ class Quiz:
         latexFile : string
             full name of a latex file.
         """
-        command = "pdflatex {}".format(latexFile)
-        status = subprocess.run(command.split(),
-                                stdout=subprocess.DEVNULL)
-        return status
+        command = "pdflatex -interaction=nonstopmode -halt-on-error -file-line-error {}".format(latexFile)
+        #TODO: caution with 'universal_newlines=' (new syntax from Python 3.7: text=)
+        Logger.debug('Run command {}'.format(command))
+        with subprocess.Popen(command.split(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True) as latexProcess:
+            #while latexProcess.poll() is None:
+            #    Logger.debug(latexProcess.stdout.read())
+            #writePipeOnOutput(latexProcess,latexProcess.stderr,Logger.debug)
+
+            # write stdout and stderr in parallel to the right logging outputs
+            # caution pdflatex uses only STDOUT...
+            # all outputs will be written in debug log
+            with ThreadPoolExecutor(2) as pool:
+                rstdout = pool.submit(writePipeOnOutput,
+                        latexProcess,
+                        latexProcess.stdout,
+                        Logger.debug)
+                rstderr = pool.submit(writePipeOnOutput,
+                        latexProcess,
+                        latexProcess.stderr,
+                        Logger.debug)
+                rstdout.result()
+                rstderr.result()
+        
+        # status = subprocess.run(command.split(),
+        #                         stdout=subprocess.DEVNULL)
+        return latexProcess
 
     @staticmethod
     def output_msg():
         """ Print ouput message.
         """
 
-        msg = "\nThe conversion is complete. Try to compile the tex file...\n" + \
-              "In case of trouble, you may need to check for :\n" + \
-              u"  - unicode character like euro € currency symbol  \n" + \
-              "  - latex special character like '{', '_', '&', ... \n" + \
-              "  - possible problems with embedded 'equation' environnement inside matjax delimiters:\n"\
-              "    ex :  $$\\begin{equation}... Remove '$$' in output TeX file  \n" + \
-              "  - strange html tags \n" +\
-              "  - check the scoring \n" +\
-              "  - ..."
-        print(msg)
+        msg = """ The conversion is complete. Try to compile the tex file...
+                In case of trouble, you may need to check for :
+                - unicode character like euro € currency symbol  
+                - latex special character like '{', '_', '&', ... 
+                - possible problems with embedded 'equation' environnement inside matjax delimiters:
+                  ex :  $$\\begin{equation}... Remove '$$' in output TeX file
+                - strange html tags
+                - check the scoring
+                - ..."""
+        for item in msg.split('\n'):
+            Logger.info(item)
 

@@ -18,12 +18,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+from amc2moodle.utils.customLogging import customLogger
 import amc2moodle as amdlpkg
 import amc2moodle.moodle2amc as mdl2amc
 import argparse
 import os
 import sys
+import logging
 
 
 def run():
@@ -51,10 +52,19 @@ def run():
     parser.add_argument("--check",
                         help='''Check if LaTeX output compile (optional)''',
                         required=False, action="store_true")
-    parser.add_argument("--version",
+    parser.add_argument("-V","--version",
                         help='''Show the current version of moodle2amc''',
                         action="version",
                         version="%(prog)s v{version}".format(version=amdlpkg.__version__))
+    parser.add_argument("-v", "--verbose",
+                        help='''Show all log messages in CLI. Use -vv for more verbosity.''',
+                        required=False, action="count",default=0)
+    parser.add_argument("--no-log-file",
+                        help='''Deactivate the log file.''',
+                        required=False, action="store_false")
+    parser.add_argument("-s", "--silent",
+                        help='''Hide all messages in CLI (log file is still written) (override verbosity)''',
+                        required=False, action="store_true")
     # parser.add_argument("-c", "--catname",  # nargs=1,
     #                     help='''Provide root category name (default 'amc').
     #                     Note that \\element{label} are used as
@@ -68,43 +78,73 @@ def run():
         fileIn = args.inputfile
     if args.output:
         fileOut = args.output
+    
+    silentMode = args.silent
+    verboseMode = args.verbose
+    logFileMode = args.no_log_file
+
+    #load logger
+    logObj = customLogger('amc2moodle')
+    logObj.setupConsoleLogger(verbositylevel=verboseMode,
+                              silent=silentMode,
+                              txtinfo=amdlpkg.__version__)    
+
 
     # check input file
     fileInOk = os.path.exists(fileIn)
 
+    # declare log file
+    if fileInOk and logFileMode:
+        logFile = os.path.splitext(os.path.basename(fileIn))[0]+'_moodle2amc.log'
+        # remove existing log file
+        if os.path.exists(logFile):
+            os.remove(logFile)
+        # create file logger
+        logObj.setupFileLogger(filename=logFile,
+                               verbositylevel=2,
+                               txtinfo=amdlpkg.__version__)
+    #catch Logger
+    Logger = logObj.getLogger()
+
     if fileInOk:
-        print('Input file: %s - status: %s' % (fileIn, "OK"))
+        Logger.debug('Input file: %s - status: %s' % (fileIn, "OK"))
     else:
-        print('Input file: %s - status: %s' % (fileIn, "does not exist"))
+        Logger.critical('Input file: %s - status: %s' % (fileIn, "does not exist"))
     if fileOut:
         fileOutOk = not os.path.exists(fileOut)
         if fileOutOk:
-            print('Output file: %s - status: Ok' % fileOut)
+            Logger.debug('Output file: %s - status: Ok' % fileOut)
         else:
-            print('Output file: %s - status: Already exists (will be overwritten)' % fileOut)
+            Logger.warning('Output file: %s - status: Already exists (will be overwritten)' % fileOut)
     else:
         fileOut = os.path.splitext(fileIn)[0] + '.tex'
-        print('Output file: %s - will be created.' % fileOut)
+        Logger.info('Output file: %s - will be created.' % fileOut)
 
+    globalReturncode = 0
     # run conversion
     if fileInOk:
-        print('============ Run conversion ============')
+        Logger.info('============ Run conversion ============')
         # create a quiz
         quiz = mdl2amc.Quiz(fileIn)
         # convert it
         quiz.convert(fileOut, debug)
         # test latex compilation
         if args.check:
-            print('============ Check output ==============')
+            Logger.info('============ Check output ==============')
             status = quiz.compileLatex(fileOut)
             if status.returncode != 0:
-                print('> pdflatex encounters Errors...')
-                sys.exit(status.returncode)
+                Logger.error('> pdflatex encounters Errors...')
+                globalReturncode = status.returncode
             else:
-                print('> pdflatex compile without Errors... OK')
+                Logger.info('> pdflatex compile without Errors... OK')
     else:
-        # exit with error status
-        sys.exit(1)
+        globalReturncode = 1
+    #info about the log
+    if fileInOk  and logFileMode:
+        Logger.info("Log file of moodle2amc's run: {}".format(logFile))
+    # exit with error status
+    sys.exit(globalReturncode)
+    
 
 
 # Run autonomous

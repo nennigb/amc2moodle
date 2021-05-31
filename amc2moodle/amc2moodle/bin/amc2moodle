@@ -18,6 +18,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from amc2moodle.utils.customLogging import customLogger
 import amc2moodle as amdlpkg
 from amc2moodle.amc2moodle import amc2moodle_class as a2m
 import argparse
@@ -61,10 +62,19 @@ def run():
                         help='''No use of system temporary directory, use
                                 input directory instead.''',
                         required=False, action="store_true")
-    parser.add_argument("-v", "--version",
+    parser.add_argument("-V", "--version",
                         help='''Show the current version of moodle2amc''',
                         action="version",
                         version="%(prog)s v{version}".format(version=amdlpkg.__version__))
+    parser.add_argument("-v", "--verbose",
+                        help='''Show all log messages in CLI. Use -vv for more verbosity.''',
+                        required=False, action="count",default=0)
+    parser.add_argument("--no-log-file",
+                        help='''Deactivate the log file.''',
+                        required=False, action="store_false")
+    parser.add_argument("-s", "--silent",
+                        help='''Hide all messages in CLI (log file is still written) (override verbosity)''',
+                        required=False, action="store_true")
     parser.add_argument("--disable-magic",
                         help='''Disable magic comments (default : enable).''',
                         required=False, default=False, dest='magic_flag',
@@ -83,32 +93,62 @@ def run():
     tempDir = not args.notemp
     catname = args.catname
     magic_flag = not(args.magic_flag)
+    silentMode = args.silent
+    verboseMode = args.verbose
+    logFileMode = args.no_log_file
+
+    #load logger
+    logObj = customLogger('amc2moodle')
+    logObj.setupConsoleLogger(verbositylevel=verboseMode,
+                              silent=silentMode,
+                              txtinfo=amdlpkg.__version__)    
 
     # check input file
     fileInOk = False
     if fileIn is not None:
         fileInOk = os.path.exists(fileIn)
+    
+    # declare log file
+    if fileInOk and logFileMode:
+        logFile = os.path.splitext(os.path.basename(fileIn))[0]+'_amc2moodle.log'
+        # remove existing log file
+        if os.path.exists(logFile):
+            os.remove(logFile)
+        # create file logger
+        logObj.setupFileLogger(filename=logFile,
+                               verbositylevel=2,
+                               txtinfo=amdlpkg.__version__)
+    #catch Logger
+    Logger = logObj.getLogger()
+
 
     if fileInOk:
-        print('Input file: %s - status: %s' % (fileIn, "OK"))
+        Logger.debug('Input file: %s - status: %s' % (fileIn, "OK"))
     else:
-        print('Input file: %s - status: %s' % (fileIn, "does not exist"))
+        Logger.critical('Input file: %s - status: %s' % (fileIn, "does not exist"))
     if fileOut:
         fileOutOk = not os.path.exists(fileOut)
         if fileOutOk:
-            print('Output file: %s - status: Ok' % fileOut)
+            Logger.debug('Output file: %s - status: Ok' % fileOut)
         else:
-            print('Output file: %s - status: Already exists (will be overwritten)' % fileOut)
+            Logger.warning('Output file: %s - status: Already exists (will be overwritten)' % fileOut)
 
+    globalReturncode = 0
     # run conversion
     if fileInOk:
         a2m.amc2moodle(fileInput=fileIn, fileOutput=fileOut,
                        keepFlag=keepFlag, catname=catname,
                        indentXML=indentFlag, usetempdir=tempDir,
                        magic_flag=magic_flag)
-    else:
+    else:        
         # exit with error status
-        sys.exit(1)
+        globalReturncode = 1
+    #info about the log
+    if fileInOk and logFileMode:
+        Logger.info("Log file of amc2moodle's run: {}".format(logFile))
+        
+    # exit with error status
+    sys.exit(globalReturncode)
 
 
 # Run autonomous
