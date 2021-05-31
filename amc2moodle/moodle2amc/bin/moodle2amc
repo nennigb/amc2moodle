@@ -57,8 +57,11 @@ def run():
                         action="version",
                         version="%(prog)s v{version}".format(version=amdlpkg.__version__))
     parser.add_argument("-v", "--verbose",
-                        help='''Show all log messages in CLI''',
-                        required=False, action="count")
+                        help='''Show all log messages in CLI. Use -vv for more verbosity.''',
+                        required=False, action="count",default=0)
+    parser.add_argument("--no-log-file",
+                        help='''Deactivate the log file.''',
+                        required=False, action="store_false")
     parser.add_argument("-s", "--silent",
                         help='''Hide all messages in CLI (log file is still written) (override verbosity)''',
                         required=False, action="store_true")
@@ -78,10 +81,7 @@ def run():
     
     silentMode = args.silent
     verboseMode = args.verbose
-
-#adapt verbosemode
-    if not verboseMode:
-        verboseMode = 0
+    logFileMode = args.no_log_file
 
     #load logger
     logObj = customLogger('amc2moodle')
@@ -94,7 +94,7 @@ def run():
     fileInOk = os.path.exists(fileIn)
 
     # declare log file
-    if fileInOk:
+    if fileInOk and logFileMode:
         logFile = os.path.splitext(os.path.basename(fileIn))[0]+'_moodle2amc.log'
         # remove existing log file
         if os.path.exists(logFile):
@@ -140,7 +140,7 @@ def run():
     else:
         globalReturncode = 1
     #info about the log
-    if fileInOk:
+    if fileInOk  and logFileMode:
         Logger.info("Log file of moodle2amc's run: {}".format(logFile))
     # exit with error status
     sys.exit(globalReturncode)
