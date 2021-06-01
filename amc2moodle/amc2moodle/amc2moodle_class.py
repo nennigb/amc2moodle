@@ -1,8 +1,8 @@
 """
     This file is part of amc2moodle, a convertion tool to recast quiz written
-    with the LaTeX format used by automuliplechoice 1.0.3 into the 
+    with the LaTeX format used by automuliplechoice 1.0.3 into the
     moodle XML quiz format.
-    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr 
+    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,12 +38,12 @@ def checkTools(show=True):
     """ Check if the required Tools are available.
     """
     # Wand Python module
-    wand_loader = util.find_spec('wand') 
+    wand_loader = util.find_spec('wand')
     wandOk = wand_loader is not None
     if not wandOk:
         Logger.critical("Please install Wand's Python module")
     # lxml Python Module
-    lxml_loader = util.find_spec('lxml') 
+    lxml_loader = util.find_spec('lxml')
     lxmlOk = lxml_loader is not None
     if not lxmlOk:
         Logger.critical("Please install lxml's Python module")
@@ -99,7 +99,7 @@ class amc2moodle:
         Parameters
         ----------
         fileInput : string
-            Input LaTeX file containg amc questions. 
+            Input LaTeX file containg amc questions.
         fileOutput : string, optional
             Output XML moodle file. The default is `inputfile.xml`.
         keepFlag : bool, optional
@@ -207,7 +207,7 @@ class amc2moodle:
         """
         for item in msg.split('\n'):
             Logger.info(item)
-            
+
     def removeMagicComment(self):
         """ Remove magic comments prefix to enable amc2moodle dedicated LaTeX
         commands.
@@ -289,29 +289,34 @@ class amc2moodle:
         # MacOS
         if xmllintOk and not xmlindentOk:
             Logger.debug(' > Indenting XML output...')
-            subprocess.run(['xmllint', self.output,'--format','--output', self.output],
+            subprocess.run(['xmllint', self.output, '--format', '--output', self.output],
                            stdout=subprocess.DEVNULL)
-    
+
     def runCleanXML(self):
-        """ Clean final XML file 
-        remove "%" at end of lines 
-        (EXPERIMENTAL)
+        """ Clean final XML file remove "%" added by LaTeXML at end of lines
+        (EXPERIMENTAL).
         """
+        pattern = '%\n'
         Logger.warning("Caution: cleaning XML file is experimental")
         # copy output file and remove '%\n' (a temporary file will be used and deleted)
-        fdTemp,pathTemp = tempfile.mkstemp(dir=getPathFile(self.inputtex),
-                                    prefix='xmlclean') 
-        Logger.warning("Cleaning: create {} ".format(pathTemp))
-        with open(self.output,'r') as fin, open(pathTemp,'w') as fout:
-            for line in fin:
-                #remove '%' at ends of lines
-                line = line.replace("%\n", "\n")
+        fdTemp, pathTemp = tempfile.mkstemp(dir=getPathFile(self.inputtex),
+                                            prefix='xmlclean')
+        Logger.debug(" > Cleaning: create {} ".format(pathTemp))
+        with open(self.output, 'r') as fin, open(pathTemp, 'w') as fout:
+            # set replacement counter for patern occurence
+            nreplacement = 0
+            for lno, line in enumerate(fin):
+                count = line.count(pattern)
+                nreplacement += count
+                # remove '%' at ends of lines
+                line = line.replace(pattern, "\n")
+                if count > 0:
+                    Logger.debug("   Remove pattern at (line {} of {})".format(lno+1, self.output))
                 fout.write(line)
         # copy temporary file to the output
         os.close(fdTemp)
-        shutil.copy(pathTemp,self.output)
-        Logger.warning("Cleaning: done")
-        
+        shutil.copy(pathTemp, self.output)
+        Logger.info(" > Cleaning: done, with {} replacements.".format(nreplacement))
 
     def runBuilding(self):
         """ Build the xml file for Moodle quizz.
@@ -322,8 +327,7 @@ class amc2moodle:
             Logger.info(' > Search for magic comments...')
         self.removeMagicComment()
 
-
-        Logger.info(' > Running LaTeXML pre-processing...')
+        Logger.info(' > Running LaTeXML pre-processing (may take a while)...')
         # process magictex as tex input
         statusLaTeXML = self.runLaTeXML()
         if statusLaTeXML:
