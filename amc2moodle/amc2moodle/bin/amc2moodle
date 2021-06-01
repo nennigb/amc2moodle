@@ -75,6 +75,9 @@ def run():
     parser.add_argument("-s", "--silent",
                         help='''Hide all messages in CLI (log file is still written) (override verbosity)''',
                         required=False, action="store_true")
+    parser.add_argument("-x","--exp",
+                        help='''Experimental features (clean XML...)''',
+                        required=False, action="store_true")
     parser.add_argument("--disable-magic",
                         help='''Disable magic comments (default : enable).''',
                         required=False, default=False, dest='magic_flag',
@@ -95,6 +98,7 @@ def run():
     magic_flag = not(args.magic_flag)
     silentMode = args.silent
     verboseMode = args.verbose
+    cleanXML=args.exp
     logFileMode = args.no_log_file
 
     #load logger
@@ -139,7 +143,7 @@ def run():
         a2m.amc2moodle(fileInput=fileIn, fileOutput=fileOut,
                        keepFlag=keepFlag, catname=catname,
                        indentXML=indentFlag, usetempdir=tempDir,
-                       magic_flag=magic_flag)
+                       magic_flag=magic_flag, cleanXML=cleanXML)
     else:        
         # exit with error status
         globalReturncode = 1

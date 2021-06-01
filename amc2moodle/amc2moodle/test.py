@@ -377,7 +377,46 @@ class TestSuiteOther(unittest.TestCase):
         if equiv:
             print(' > Converted XML is identical to the ref.')
         #self.assertTrue(equiv, 'The converted file is different from the ref.')
+        
+    def test_cleaning(self):
+        """ Tests if questions with long equation yields reference xml file.
+        """
+        # Define i/o file
+        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                              "test/cleaning.tex"))
+        fileOut = os.path.abspath('./cleaning.xml')
+        fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               "test/cleaning.xml"))
+        # Convert to xml
+        a2m.amc2moodle(fileInput=fileIn,
+                       fileOutput=fileOut,
+                       keepFlag=False,
+                       catname='test_clean',
+                       cleanXML=True,  # force cleaning
+                       deb=0)
+        # check it
+        equiv = check_hash(fileOut, fileRef)
+        if equiv:
+            print(' > Converted XML is identical to the ref.')
 
+        # Parse new XML file
+        # open, parse and store the the converted file tree
+        parser = etree.XMLParser(strip_cdata=False)
+        tree = etree.parse(fileOut, parser)
+        # Question name must contain the string in q_dict
+        q_dict = {'long_eq': '%\n',          # check if contain '%\n'
+                  }
+        # # Loop over questions of q_dict
+        for qname, value in q_dict.items():
+            for q in tree.iterfind(".//question"):
+                if q.attrib['type'] != 'category':
+                    if q.find('name/text').text == qname:
+                        for text in q.findall('.//answer/text'):
+                            text_str = etree.tostring(text).decode('utf8')
+                            present = value in text_str
+                            # the test is ok if present is True
+                            self.assertFalse(present)
+                        break
 
 if __name__ == '__main__':
     # run unittest test suite

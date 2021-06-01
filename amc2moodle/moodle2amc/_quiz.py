@@ -19,7 +19,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Callable
 from lxml import etree
 from xml.sax.saxutils import unescape
 import subprocess
@@ -38,7 +37,7 @@ XSLT_TEXRENDERER = os.path.join(os.path.dirname(__file__), 'struc2tex.xslt')
 # activate logger
 Logger = logging.getLogger(__name__)
 
-def writePipeOnOutput(process,streamIn,output:Callable):
+def writePipeOnOutput(process,streamIn,output):
     """ Write the stream from a pipe through an output
     during process executed by subprocess.Popen
     """

@@ -1,0 +1,58 @@
+<?latexml class="article" options="a4paper"?>
+<?latexml package="inputenc" options="utf8"?>
+<?latexml package="fontenc" options="T1"?>
+<?latexml package="geometry" options="hmargin=4cm, vmargin=2cm, includeheadfoot"?>
+<?latexml package="alltt"?>
+<?latexml package="multicol"?>
+<?latexml package="amsmath,amssymb"?>
+<?latexml package="color"?>
+<?latexml package="graphicx"?>
+<?latexml package="automultiplechoice" options="francais,bloc,completemulti"?>
+<?latexml package="mhchem"?>
+<?latexml RelaxNGSchema="LaTeXML"?>
+<quiz>
+  
+  
+  <!--Conversion test for AMC to moodle-->
+  <!--
+    amc2moodle
+  -->
+  
+    <p/>
+  
+  <question type="category"><category><text>$course$/test_clean/dyna</text></category></question>
+  <question type="multichoice"><name><text>long_eq</text></name><questiontext format="html"><text><![CDATA[
+      
+        <p>À partir des résultats précédents, donner l’expression dans la base 
+           \((\vec{x}_{1},\vec{y}_{1},\vec{z}_{0})\)
+     de l’accélération du point 
+           \(G_{3}\)
+     lié à 
+           \(S_{3}\)
+     dans son mouvement par rapport à 
+           \(R_{0}\)
+    :</p>
+        
+          
+    $$\begin{equation}
+           \overrightarrow{\Gamma_{({G_{3}},S_{3}/R_{0})}}
+    \end{equation}$$
+    
+        
+        
+        
+        
+        
+      
+    ]]></text></questiontext><answer format="html" fraction="-50.0"><text><![CDATA[
+           \((\ddot{\lambda}-\lambda\dot{\theta}_{1}^{2})\vec{x}_{1}+(\lambda\ddot{\theta}_
+{1}+2\dot{\lambda}\dot{\theta}_{1})\vec{y}_{1}\)
+    ]]></text></answer><answer format="html" fraction="-50.0"><text><![CDATA[
+           \(\ddot{\lambda}\vec{x}_{1}+\lambda\ddot{\theta}_{1}\vec{y}_{1}\)
+    ]]></text></answer><answer format="html" fraction="100.0"><text><![CDATA[
+           \(\ddot{\lambda}\vec{x}_{1}\)
+    ]]></text></answer><answer format="html" fraction="-50.0"><text><![CDATA[
+           \(\ddot{\lambda}\vec{x}_{1}+(\lambda\ddot{\theta}_{1}+\dot{\lambda}\dot{\theta}_
+{1})\vec{y}_{1}\)
+    ]]></text></answer><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering><defaultgrade>1.0</defaultgrade><single>true</single></question>
+</quiz>
