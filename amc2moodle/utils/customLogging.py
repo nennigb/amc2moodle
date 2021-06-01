@@ -4,8 +4,8 @@ import sys
 # DEFAULT
 DEFAULT_LOG_BASIC_FORMATTER = '[%(levelname)-8s]: %(message)s '
 DEFAULT_LOG_VERBA_FORMATTER = '%(relativeCreated)dms [%(levelname)-8s]: %(message)s '
-DEFAULT_LOG_VERBB_FORMATTER = lambda x : '%(relativeCreated)dms-({}-%(name)s) [%(levelname)-8s]: %(message)s '.format(x)
-DEFAULT_LOG_VERBC_FORMATTER = '%(relativeCreated)dms-(%(name)s) [%(levelname)-8s]: %(message)s '
+DEFAULT_LOG_VERBB_FORMATTER = lambda x : '%(relativeCreated)dms - ({}-%(name)s) [%(levelname)-8s]: %(message)s '.format(x)
+DEFAULT_LOG_VERBC_FORMATTER = '%(relativeCreated)dms - (%(name)s) [%(levelname)-8s]: %(message)s '
 DEFAULT_FMT_TIME = '%H:%M:%S'
 
 
