@@ -377,7 +377,7 @@ class TestSuiteOther(unittest.TestCase):
         if equiv:
             print(' > Converted XML is identical to the ref.')
         #self.assertTrue(equiv, 'The converted file is different from the ref.')
-        
+
     def test_cleaning(self):
         """ Tests if questions with long equation yields reference xml file.
         """
@@ -417,6 +417,33 @@ class TestSuiteOther(unittest.TestCase):
                             # the test is ok if present is True
                             self.assertFalse(present)
                         break
+
+
+class TestSuiteElement(unittest.TestCase):
+    """ Define test cases for unittest. Just check the process finish normally.
+
+    Before changing the reference xml file, please check they can be imported
+    in [moodle sandbox](https://sandbox.moodledemo.net/login/index.php)
+
+    teacher / sandbox
+    """
+
+    def test_Elements(self):
+        """ Tests if numerical questions yields reference xml file.
+
+        Just test the excecution.
+        """
+        # define i/o file
+        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                              "test/element.tex"))
+        fileOut = os.path.abspath('./test_element.xml')
+        # convert to xml
+        a2m.amc2moodle(fileInput=fileIn,
+                       fileOutput=fileOut,
+                       keepFlag=False,
+                       catname='test_num',
+                       deb=0)
+
 
 if __name__ == '__main__':
     # run unittest test suite
