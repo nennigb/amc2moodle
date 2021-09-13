@@ -882,6 +882,29 @@ class AMCQuiz:
         Logger.debug(" > global 'answerNumberingFormat' is '{}'.".format(self.options['answer_numbering_format']))
         Logger.debug(" > {} questions converted...".format(self.Qtot))
 
+    def _element_pre_process(self, tree):
+        """ Test if `element` blocks contain text outside 'Question'
+        environnement and remove them.
+
+        Need to be removed before html conversion because of parsing issues
+        with CDATA.
+        """
+        # These elements should be <para> nodes at roots level.
+        all_para = tree.findall('/para')
+        if len(all_para) > 0:
+            Logger.warning(" > {} '\\element' blocks contain text outside ".format(len(all_para))
+                           + "'Question environnement'. "
+                           + "Skip them for moodle XML compatibility. "
+                           + "Increase verbosity to see them. "
+                           + "Use MagicComment in your tex file to convert them "
+                           + "into moodle 'Description question' (see README).")
+
+        for para in all_para:
+            Logger.debug(" * Remove \\element{}{} content outside '\\question' env.: \n"
+                         + etree.tostring(para, pretty_print=True).decode('utf-8'))
+            para.getparent().remove(para)
+
+        return tree
 
     def _preProcessing(self):
         """ Clean up input file and create the tree.
@@ -902,6 +925,8 @@ class AMCQuiz:
         if (self.deb == 1):
             tree.write(self._tempfile(), pretty_print=True, encoding="utf-8")
 
+        # Test and clean if `element` contains other data than `\Question*`
+        tree = self._element_pre_process(tree)
         # rename generic AMC question into more specific type
         transform_qtype = etree.XSLT(etree.parse(self.filexslt_qtype))
         # apply transform
