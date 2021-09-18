@@ -142,7 +142,17 @@ Currently, the main **general options** accessible by `\SetQuizOption` (or `\Set
   - `answer_numbering_format` ('123', 'abc', 'iii', 'none', 'ABCD'), only at quiz level, to specify the numbering format in moodle.
   - other general options can be found in the `convert.py` header.
 Specific options are given in each question type section.
-@
+
+Magic comments could also be combined with `ignoreForMoodle` environnement to ignore some part of the LaTeX file during the `amc2moodle` conversion. For instance
+```latex
+%amc2moodle \begin{ignoreForMoodle}
+  \begin{question}{ShouldBeSkip}
+     This question would be included in AMC and excluded from the XML conversion.
+     ...
+  \end{question}
+%amc2moodle \end{ignoreForMoodle}
+```
+
 ### Numerical questions
 These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` questions in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical questions, but it is not used here. 
 For question with floating point operations, **you need to comment `\usepackage{fp}` during the conversion** (required internally by AMC). If you need to realize computation in the question, prefer `\pgfmathparse` that is handled by LaTeXML.

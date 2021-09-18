@@ -108,6 +108,18 @@ Text that provide additional information.
   \end{question}
 }
 
+%amc2moodle \begin{ignoreForMoodle}
+\element{myelem}{
+  \begin{question}{ShouldBeSkip}
+      This question should be present only in amc. $x^2+2x-5=0$
+      \begin{reponses}
+        \mauvaise{moodle}
+        \bonne{amc}
+      \end{reponses}
+  \end{question}
+}
+%amc2moodle \end{ignoreForMoodle}
+
 % Generate quiz
 \exemplaire{1}{
     \restituegroupe{test}

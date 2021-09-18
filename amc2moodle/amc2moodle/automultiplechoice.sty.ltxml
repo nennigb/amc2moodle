@@ -17,6 +17,8 @@ DefMacro('\AMCform','');
 DefMacro('\AMCformBegin','');
 DefMacro('\AMCnobloc','');
 DefMacro('\multiSymbole','');
+# Create an environement to ignore LaTeX content for moodle export
+DefEnvironment('{ignoreForMoodle}{}',"");
 
 # Load "anotherpackage"
 # RequirePackage('anotherpackage');
