@@ -21,6 +21,7 @@
 from amc2moodle.utils.customLogging import customLogger
 from amc2moodle.amc2moodle.test import check_hash
 from amc2moodle.moodle2amc import Quiz
+import amc2moodle as amdlpkg
 import os
 import unittest
 import pkgutil
