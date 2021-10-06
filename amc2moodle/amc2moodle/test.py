@@ -18,22 +18,26 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+from amc2moodle.utils.customLogging import customLogger
 from amc2moodle.amc2moodle import amc2moodle_class as a2m
+import amc2moodle as amdlpkg
 import os
 import hashlib
 import unittest
 from lxml import etree
-import logging
 
-#manage logging
-logging.basicConfig(level=logging.DEBUG)
-Logger = logging.getLogger("tests_a2m")
-Logger.setLevel(logging.DEBUG)
+#load logger
+logObj = customLogger('amc2moodle')
+logObj.setupConsoleLogger(verbositylevel = 2,
+                              silent = False,
+                              txtinfo = amdlpkg.__version__)
+#catch Logger
+Logger = logObj.getLogger()
+
 # Silence other loggers
-for log_name, log_obj in logging.Logger.manager.loggerDict.items():
-     if "tests_a2m" not in log_name and "amc2moodle" not in log_name:
-          log_obj.disabled = True
+# for log_name, log_obj in logging.Logger.manager.loggerDict.items():
+#      if "tests_a2m" not in log_name and "amc2moodle" not in log_name:
+#           log_obj.disabled = True
 
 # TODO complete test case for Numerical questions
 # TODO Test XML Schema Definition
@@ -106,7 +110,7 @@ class TestSuiteNoTikz(unittest.TestCase):
         # check it
         equiv = check_hash(fileOut, fileRef)
         if equiv:
-            print(' > Converted XML is identical to the ref.')
+            Logger.info(' > Converted XML is identical to the ref.')
 
         # open, parse and store the the converted file tree
         parser = etree.XMLParser(strip_cdata=False)
@@ -397,7 +401,7 @@ class TestSuiteOther(unittest.TestCase):
         # check it
         equiv = check_hash(fileOut, fileRef)
         if equiv:
-            print(' > Converted XML is identical to the ref.')
+            Logger.info(' > Converted XML is identical to the ref.')
 
         # Parse new XML file
         # open, parse and store the the converted file tree
@@ -447,5 +451,5 @@ class TestSuiteElement(unittest.TestCase):
 
 if __name__ == '__main__':
     # run unittest test suite
-    print('> Running tests...')
+    Logger.info('> Running tests...')
     unittest.main()
