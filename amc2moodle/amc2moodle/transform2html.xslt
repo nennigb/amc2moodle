@@ -75,7 +75,7 @@ Changement de l'organisation des questions
 		</name>
 
         <!-- barème local -->
-        <xsl:for-each select=".//text[@class='amc_bareme']">
+        <xsl:for-each select=".//note[@class='amc_bareme']">
           <bareme>
                 <xsl:value-of select="text()"/>
          </bareme>
@@ -260,7 +260,7 @@ equation
 <!--traités au niveau de la question, pour les remonter d'un cran-->
 <xsl:template match="note[@class='amc_mauvaise' or @class='amc_bonne' or @class='amc_choices_options']">
 </xsl:template>
-<xsl:template match="text[@class='amc_bareme']">
+<xsl:template match="note[@class='amc_bareme']">
 </xsl:template>
 <xsl:template match="note[@class='amc_options']">
 </xsl:template>

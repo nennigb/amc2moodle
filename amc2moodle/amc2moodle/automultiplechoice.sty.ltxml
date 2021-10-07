@@ -17,6 +17,8 @@ DefMacro('\AMCform','');
 DefMacro('\AMCformBegin','');
 DefMacro('\AMCnobloc','');
 DefMacro('\multiSymbole','');
+# Create an environement to ignore LaTeX content for moodle export
+DefEnvironment('{ignoreForMoodle}{}',"");
 
 # Load "anotherpackage"
 # RequirePackage('anotherpackage');
@@ -35,23 +37,23 @@ DefMacro('\multiSymbole','');
 # ===================================================================
 # BAREME
 # % e=incohérence; b=bonne; m=mauvaise; p planché (on ne descent pas en dessous)
-DefConstructor('\bareme{}',"<ltx:text class='amc_bareme'>#1</ltx:text>"); # dans question
-DefConstructor('\scoring{}',"<ltx:text class='amc_bareme'>#1</ltx:text>"); # dans question
+DefConstructor('\bareme{}',"<ltx:note class='amc_bareme'>#1</ltx:note>"); # dans question
+DefConstructor('\scoring{}',"<ltx:note class='amc_bareme'>#1</ltx:note>"); # dans question
 
-DefConstructor('\baremeDefautS{}',"<ltx:text class='amc_baremeDefautS'>#1</ltx:text>"); # début document
-DefConstructor('\scoringDefaultS{}',"<ltx:text class='amc_baremeDefautS'>#1</ltx:text>"); # début document
+DefConstructor('\baremeDefautS{}',"<ltx:note class='amc_baremeDefautS'>#1</ltx:note>"); # début document
+DefConstructor('\scoringDefaultS{}',"<ltx:note class='amc_baremeDefautS'>#1</ltx:note>"); # début document
 
-DefConstructor('\baremeDefautM{}',"<ltx:text class='amc_baremeDefautM'>#1</ltx:text>"); #début document
-DefConstructor('\scoringDefaultM{}',"<ltx:text class='amc_baremeDefautM'>#1</ltx:text>"); #début document
+DefConstructor('\baremeDefautM{}',"<ltx:note class='amc_baremeDefautM'>#1</ltx:note>"); #début document
+DefConstructor('\scoringDefaultM{}',"<ltx:note class='amc_baremeDefautM'>#1</ltx:note>"); #début document
 
 # Dans le cas où la question posée est juste informative et ne doit pas contribuer à la note de l'étudiant, on utilisera la commande \QuestionIndicative, comme dans l'exemple suivant :
-DefConstructor('\QuestionIndicative',"<ltx:text class='amc_bareme'>e=0,b=0,m=0,v=0</ltx:text>"); # pas testé
+DefConstructor('\QuestionIndicative',"<ltx:note class='amc_bareme'>e=0,b=0,m=0,v=0</ltx:note>");
 
 DefConstructor('\exemplaire{}{}',"");   # on supprime la partie construction du sujet si présente
 DefConstructor('\onecopy{}{}',"");
 DefConstructor('\AMCcode{}{}',"");
 
-DefConstructor('\element{}{}',"<ltx:note class='amc_categorie'>#1</ltx:note>#2");   # on cree les categories
+DefConstructor('\element{}{}',"<ltx:note class='amc_categorie'>#1</ltx:note>#2");   # create the category container, keep the name pop everything else!
 #DefConstructor('\includesounds{}',"<ltx:ressource src='#1' type='mp3'>");   # on cree les categories
 #DefConstructor('\includesounds{}',"<ltx:text class='sound'>#1</ltx:text>");   # on cree les categories
 DefConstructor('\includesounds{}',"<ltx:graphics graphic='#1' options='sound'></ltx:graphics>");   # on cree les categories
@@ -60,17 +62,19 @@ DefConstructor('\includesounds{}',"<ltx:graphics graphic='#1' options='sound'></
 # ===================================================================
 # QUESTIONS
 # Set counter 'questions' for question
+# Close the curent _logical_ paragraph before. Needed if other content is present in the body of element, since it just 'pop' everything else.
 NewCounter('questions', 'document');
 # question simple
-DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>", properties => sub { StepCounter('questions') });
+DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>",
+               properties => sub { StepCounter('questions') }, beforeConstruct => sub { $_[0]->maybeCloseElement('ltx:para'); });
 # question multiple
-DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>", properties => sub { StepCounter('questions') });
+DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>",
+               properties => sub { StepCounter('questions') }, beforeConstruct => sub { $_[0]->maybeCloseElement('ltx:para'); });
 # questionmultx is the same as questionmult, except it does not display \multiSymbole
-DefEnvironment('{questionmultx}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>", properties => sub { StepCounter('questions') });
+DefEnvironment('{questionmultx}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>",
+               properties => sub { StepCounter('questions') }, beforeConstruct => sub { $_[0]->maybeCloseElement('ltx:para'); });
 
 DefEnvironment('{examcopy}[]',"");   # alternative to onecopy, # on supprime la partie construction du sujet si présente
-
-# question numérique à faire....
 
 # ===================================================================
 # REPONSE

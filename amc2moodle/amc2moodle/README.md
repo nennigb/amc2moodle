@@ -13,7 +13,7 @@ The first conversion step is to convert the LaTeX file into XML file. This is pe
 The conversion can be performed:
   - by running `amc2moodle` command line tool as detailed [here](../../README.md#conversion),
   - or directly from python by importing the package
-```
+```python
 # import subpackage
 from amc2moodle.amc2moodle import amc2moodle_class as a2m
 # convert to xml
@@ -72,6 +72,7 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  Use font size (easy to add)
   -  Use amsmath environments like align, aligned... Because  `text` attribute of `\elem{equation}`, provided by `LaTeXML` output, doesn't contains really the raw tex equation.
   -  Change border of table
+  -  Import text or other content outside `\question` environnement (see [description section](#Description) for workaround). **These content will be skipped**.
   -  Use command like `\raggedright`, text align is not fully supported. This add align information into the `class` attribute of `\elem{note}` and the string matching break down. Note that `\raggedright` is bypassed.
   -  Usage of `multicol` is bypassed. But it should be possible to use it elsewhere (create newcommand).
   -  Translate equation into mathml, but it can be easily changed
@@ -80,12 +81,13 @@ Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./test/QCM.pdf
   -  You cannot remove the add of "None of these answers are correct" choice at the end of each multiple question.
 
 
+
 ### Grading strategy
 In moodle 3, the grading strategy is different from AMC, especially, for questions with multiple answers. In this case, AMC affects a grade for each checked good answer and each non-checked wrong answer. The total grade of the question depend on the number of choice.
 
 In Moodle, only checked item leads to a grade, positive or negative. The grading is computed in the `convert.py` script.
 The default grading parameters are set in the `convert.py` script to
-```
+```latex
 # Multiple :: e :incohérence, b: bonne,  m: mauvaise,  p: plancher
 amc_bs = {'e':-1,'b':1,'m':-0.5}
 amc_bm = {'e':-1,'b':1,'m':-0.5, 'p':-1}
@@ -93,7 +95,7 @@ amc_bm = {'e':-1,'b':1,'m':-0.5, 'p':-1}
 moo_defautgrade = 1.
 ```
 This value can be changed (as in AMC) with the tex command
-```
+```latex
 \baremeDefautS{e=-0.5,b=1,m=-0.5}         % never put b!=1,
 \baremeDefautM{e=-0.5,b=1,m=-0.25,p=-0.5} % never put b!=1,
 ```
@@ -116,7 +118,7 @@ For other feedbacks supported in moodle XML format, you can use the magic commen
   - `\AddXMLQElement{element_name}{text content}` to add text (html) the element `element_name` at the **Question** level
   - `\AddXMLAElement{element_name}{text content}` to add text (html) the element `element_name` at the **Answer** level
 For instance,
-```
+```latex
 %amc2moodle \AddXMLQElement{partiallycorrectfeedback}{This is \textbf{partially} correct !} % in the question
 %amc2moodle \AddXMLAElement{feedback}{This is an \emph{answer} feedback !} % in the answer
 ```
@@ -125,7 +127,7 @@ at answer level the feedback is called `feedback`. However, at question level, t
 
 ## Passing options and "magic comments"
 Options can be passed to `amc2moodle` using the `amc2moodle` internal command `\SetOption{option_name}{value}` or `\SetQuizOption{option_name}{value}` at quiz level. To avoid LaTeX compilation problem with `automuliplechoice`, you need to comment it. Another possibility is to use "magic comments" prefix `%amc2moodle` to pass options to `amc2moodle` and to keep LaTeX backward compatibility, for instance:
-```
+```latex
 %amc2moodle \SetOption{nitems}{10}
 %amc2moodle \SetQuizOption{amc_aucune}{None of these answers are correct.}  
 ```
@@ -140,7 +142,17 @@ Currently, the main **general options** accessible by `\SetQuizOption` (or `\Set
   - `answer_numbering_format` ('123', 'abc', 'iii', 'none', 'ABCD'), only at quiz level, to specify the numbering format in moodle.
   - other general options can be found in the `convert.py` header.
 Specific options are given in each question type section.
-@
+
+Magic comments could also be combined with `ignoreForMoodle` environnement to ignore some part of the LaTeX file during the `amc2moodle` conversion. For instance
+```latex
+%amc2moodle \begin{ignoreForMoodle}
+  \begin{question}{ShouldBeSkip}
+     This question would be included in AMC and excluded from the XML conversion.
+     ...
+  \end{question}
+%amc2moodle \end{ignoreForMoodle}
+```
+
 ### Numerical questions
 These questions defined in AMC with `\AMCNumericChoices` are converted into `numerical` questions in moodle. The target value and its tolerance are preserved. However, exponential notation, bases are not yet supported. Moodle also supports a units in numerical questions, but it is not used here. 
 For question with floating point operations, **you need to comment `\usepackage{fp}` during the conversion** (required internally by AMC). If you need to realize computation in the question, prefer `\pgfmathparse` that is handled by LaTeXML.
@@ -149,7 +161,7 @@ For question with floating point operations, **you need to comment `\usepackage{
 These questions are possible in AMC in several ways but `amc2moodle` currently supports only the use for `fp` package. When `fp` is used to create an random parameter, the question will be converted and map into moodle `CalculatedMulti` question.
 Only a part of `fp` syntax is supported `\FPset`, `\FPrandom`, `\FPseed` (ignored), `\FPpi`, `\FPeval` and `\FPprint` (other command can be easilly defined in `fp.sty.ltxml` using `\FPeval`).
 To define an expression, the general purpose command `\FPeval` should be use
-```
+```latex
 \FPeval{\a}{trunc(1+random*(10-1), 1)} % uniform in [1, 10]
 \FPeval{\b}{2.5+3}
 ```
@@ -158,12 +170,12 @@ in `amc2moodle` this command will affect the expression to the output variable. 
 The moodle jocker will be automatically created at each call of `random` in `\FPeval` or with `\FPrandom`. Currently, the jocker are created used python random generator and results will be different from those obtained by `fp`. If required the jocker value can be changed in the output xml file in the `dataset_definitions` node.
 
 Moodle expected that the answer will contains only mathematical expression thus `amc2moodle` will also expect `choices` environnement defined like
-```
+```latex
 \begin{choices}
    \correctchoice{\FPprint{\FPeval{\out}{\a * \b}\out}}
    \wrongchoice{\FPprint{\FPeval{\out}{\a + \b}\out}}
 \end{choices}
-``` 
+```
 It is noteworthy that there is NO `$x=$` or additional things...
 The moodle wildcard, cannot be replaced in equations rendered by mathjax.
 
@@ -181,6 +193,22 @@ These questions defined in AMC with `\AMCOpen` are converted into `essay` questi
 ### Description
 Provide a description of a problem that can be common to several questions. It is useful to define notation, pictures, equations. Since, it is not a *real* question, the `choices` environment is not provided. In this case, the question will be converted by `amc2moodle` into moodle `description` question type.
 To use it in AMC, do not forget to use `\QuestionIndicative` to tell AMC not to count points for this question (with a 0-point scoring).
-> In AMC it is also possible to use `element` content to do share text between questions of the same group, but it will be ignored by `amc2moodle` (too open to parse it).
+> In AMC it is also possible to use `\element` content to do share text between questions of the same group, but it will be ignored by `amc2moodle`. All text outside `\question` environnement, will be removed from XML output. A workaround is to use `\QuestionIndicative` with magic comment. It requires to edit the tex file, but the same file will work within AMC and moodle:
+
+```latex
+\element{myelem}{
+%amc2moodle \begin{question}{indication} \QuestionIndicative
+Text that provide additional information.
+%amc2moodle \end{question}
+  \begin{question}{myequation}
+      question text
+      \begin{choices}
+        \wrongchoice{bad}
+        \wrongchoice{very bad}
+        \correctchoice{ok}
+      \end{choices}
+  \end{question}
+}
+```
 
 

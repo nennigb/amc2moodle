@@ -1,0 +1,128 @@
+%
+% This file is part of amc2moodle test suite
+% it provides test cases for text content outside the question environnement.
+%
+\documentclass{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphics}
+\usepackage[francais,bloc,correc]{automultiplechoice}
+  
+\begin{document}
+% change default scoring
+\baremeDefautS{e=0,b=1,m=0}% never put b<1,
+
+\element{test}{
+  uioygbjkbk, hhHLJmq jkjlkqjs qjlkjqs lk
+  aa
+  \begin{question}{NoSpace}
+    Loui
+    \begin{reponses}
+      \mauvaise{ hein}
+      \mauvaise{oh}
+      \bonne{ah}
+      \mauvaise{ouf}
+    \end{reponses}
+  \end{question}
+}
+
+\element{test}{
+    uioygbjkbk, hhHLJmq jkjlkqjs qjlkjqs lk
+    aa
+
+    \begin{question}{Space}
+      bla bla bla
+      \begin{reponses}
+        \mauvaise{ hein}
+        \mauvaise{oh}
+        \bonne{ah}
+        \mauvaise{ouf}
+      \end{reponses}
+    \end{question}
+}
+
+  
+\element{test}{
+    uioygbjkbk, hhHLJmq jkjlkqjs qjlkjqs lk
+    aa
+    
+    bbb
+
+    \begin{questionmult}{BeforeAndAfter}
+      With \texttt{questionmult} type.
+      \begin{reponses}
+        \mauvaise{ hein}
+        \mauvaise{oh}
+        \bonne{ah}
+        \mauvaise{this}
+      \end{reponses}
+    \end{questionmult}
+    
+  again
+}
+  
+\element{test}{
+    uioygbjkbk, hhHLJmq jkjlkqjs qjlkjqs lk
+    aa
+    \begin{equation}
+    x^2
+    \end{equation}
+    bbb \includegraphics[width=1cm]{4.png}
+
+    \begin{questionmult}{With image or equation}
+      Loui
+      \begin{reponses}
+        \mauvaise{ hein}
+        \mauvaise{oh}
+        \bonne{ah}
+        \mauvaise{ouf}
+      \end{reponses}
+    \end{questionmult}
+    
+    again
+}
+  
+\begin{question}{No element}
+      Loui
+      \begin{reponses}
+        \mauvaise{ hein}
+        \mauvaise{oh}
+        \bonne{oh}
+        \mauvaise{ouf}
+      \end{reponses}
+\end{question}
+
+something outside element block.
+    
+\element{myelem}{
+%amc2moodle \begin{question}{indication} \QuestionIndicative
+Text that provide additional information.
+%amc2moodle \end{question}
+  \begin{question}{myequation}
+      question text
+      \begin{reponses}
+        \mauvaise{bad}
+        \mauvaise{very bad}
+        \bonne{ok}
+      \end{reponses}
+  \end{question}
+}
+
+%amc2moodle \begin{ignoreForMoodle}
+\element{myelem}{
+  \begin{question}{ShouldBeSkip}
+      This question should be present only in amc. $x^2+2x-5=0$
+      \begin{reponses}
+        \mauvaise{moodle}
+        \bonne{amc}
+      \end{reponses}
+  \end{question}
+}
+%amc2moodle \end{ignoreForMoodle}
+
+% Generate quiz
+\exemplaire{1}{
+    \restituegroupe{test}
+    \restituegroupe{myelem}
+}
+\end{document}

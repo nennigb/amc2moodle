@@ -123,7 +123,7 @@
 
 
 <!-- Remove amc_bareme* elements -DefaultS -DefaultM-->
-<xsl:template match="text[starts-with(@class, 'amc_bareme')]">
+<xsl:template match="note[starts-with(@class, 'amc_bareme')]">
 </xsl:template>
 
 <xsl:template match="bareme">
