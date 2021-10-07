@@ -39,7 +39,7 @@ SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric',
 DEFAULT_IMG_RESOLUTION = 100
 # Dictionnary containing all used options. May be overwritten in Quiz or in Questions.
 # When overwritten, it becomes a string. Need to be carfull when use them.
-DEFAULT_OPTS = {# Set defaut relative tolerance for float in numerical question to 1%
+DEFAULT_OPTS = {  # Set defaut relative tolerance for float in numerical question to 1%
                 'default_numeric_tol': 1e-2,
                 # Shuffle all answsers
                 'shuffle_all': True,
@@ -100,6 +100,14 @@ def basename(s):
     """
     name = os.path.splitext(os.path.basename(s))[0]
     return name
+
+
+def scoring2dict(text):
+    """ Convert the AMC scoring `text` into a dictionary.
+    """
+    # The `map` allows to `strip` all the keys and values
+    scoring = dict(map(str.strip, item.split("=")) for item in text.split(","))
+    return scoring
 
 
 class ImageCustom:
@@ -245,7 +253,7 @@ class AMCQuestion(ABC):
             self.options[opt.attrib['name']] = opt.text
             opt.getparent().remove(opt)
             Logger.debug("   Modified options '{}' to '{}'".format(opt.attrib['name'],
-                                                            self.options[opt.attrib['name']]))
+                         self.options[opt.attrib['name']]))
 
     def _setWithOptionsOrDefault(self, opt_name, default_value):
         """ Set an option to its value if provided, else use default value.
@@ -306,7 +314,7 @@ class AMCQuestionSimple(AMCQuestion):
         amc_bl = self.context.amc_bs.copy()
         # si il y a une bareme local, on prend celui-la
         if len(barl) > 0:
-            amc_bl_=dict(item.split("=") for item in barl[0].text.strip().split(","))
+            amc_bl_ = scoring2dict(barl[0].text)
             amc_bl.update(amc_bl_)
             Logger.debug("   local scoring: {}".format(amc_bl))
             if (float(amc_bl['b']) < 1.):
@@ -348,7 +356,7 @@ class AMCQuestionMult(AMCQuestionSimple):
         if len(barl) > 0:
             # TODO see if amc_bml.update(...) is more robust if only
             # partial scoring is provided
-            amc_bml_ = dict(item.split("=") for item in barl[0].text.strip().split(","))
+            amc_bml_ = scoring2dict(barl[0].text)
             amc_bml.update(amc_bml_)
             Logger.debug("   local scoring : {}".format(amc_bml))
             if (float(amc_bml['b']) < 1):
@@ -394,7 +402,6 @@ class AMCQuestionMult(AMCQuestionSimple):
         for Ri in Rlistm:
             frac = etree.SubElement(Ri, "fraction")  # body pointe vers une case de tree
             frac.text = str(float(amc_bml['m'])*100./NRm)
-
 
 
 class AMCQuestionNumeric(AMCQuestion):
@@ -446,7 +453,7 @@ class AMCQuestionNumeric(AMCQuestion):
             tol = float(self.options['default_numeric_tol']) * target
 
         # good answers [x-tol; x+tol] -> scoreexact/scoreexact
-        self._addanswer(Qi, 100, target , tol)
+        self._addanswer(Qi, 100, target, tol)
 
         # if approx, create partially good answers
         if float(opts['approx']) > 0:
@@ -544,9 +551,8 @@ class _Calculated:
             # cdata-section-elements="cdata" and CDATA are added in the output
             # now need to remove `cdata` elements at the end of the conversion
             cdata = etree.fromstring('<cdata>' + parsed_text + '</cdata>',
-                                    etree.XMLParser(strip_cdata=False))
+                                     etree.XMLParser(strip_cdata=False))
             orig_text.append(cdata)
-
 
             # orig_text.text = etree.CDATA(parsed_text)  # doesn't work ??!!
             # Change behavior to avoid lxml unescape chars
@@ -555,7 +561,6 @@ class _Calculated:
             # orig_text.text = etree.fromstring(parsed_text)
             # etree.dump(Qi)
         return parser.wildcards
-
 
     def _addAnswerFields(self):
         """ Add calcultaed question specific fields to all answers.
@@ -620,11 +625,11 @@ class _Calculated:
             dataset_items = etree.SubElement(data, 'dataset_items')
             for i in range(0, nitems):
                 # set container for each random value
-                dataset_item =  etree.SubElement(dataset_items, 'dataset_item')
-                number =  etree.SubElement(dataset_item, 'number')
+                dataset_item = etree.SubElement(dataset_items, 'dataset_item')
+                number = etree.SubElement(dataset_item, 'number')
                 # moodle indexes start at 1
                 number.text = str(i+1)
-                value =  etree.SubElement(dataset_item, 'value')
+                value = etree.SubElement(dataset_item, 'value')
                 rand = random.uniform(0, 1)
                 # limit the number of digits
                 rand = round(rand, decimal_number)
@@ -808,7 +813,6 @@ class AMCQuiz:
         self.tempfile_id = 0
         self.tempBaseName = 'temp_'
 
-
     def __repr__(self):
         """ Change string representation.
         """
@@ -947,7 +951,7 @@ class AMCQuiz:
             self.options[opt.attrib['role']] = opt.text
             opt.getparent().remove(opt)
             Logger.debug("   Modified Quizz options '{}' to '{}'".format(opt.attrib['role'],
-                                                           self.options[opt.attrib['role']]))
+                         self.options[opt.attrib['role']]))
 
     def _scoring(self):
         """ Find and convert default scoring.
@@ -958,7 +962,7 @@ class AMCQuiz:
         # bar[0].text contient la chaine de caractère
         if len(bars) > 0:
             # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
-            amc_bs = dict(item.split("=") for item in bars[0].text.strip().split(","))
+            amc_bs = scoring2dict(bars[0].text)
             Logger.debug("baremeDefautS : {}".format(amc_bs))
             if (float(amc_bs['b']) < 1):
                 Logger.warning("The grade of the good answser in question will be < 100%, put b=1")
@@ -969,7 +973,7 @@ class AMCQuiz:
         # bar[0].text contient la chaine de caractère
         if len(barm) > 0:
             # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
-            amc_bm = dict(item.split("=") for item in barm[0].text.strip().split(","))
+            amc_bm = scoring2dict(barm[0].text)
             Logger.debug("baremeDefautM : {}".format(amc_bm))
             if (float(amc_bm['b']) < 1):
                 Logger.warning("The grade of the good answser(s) in questionmult may be < 100%, put b=1")
@@ -1013,7 +1017,7 @@ class AMCQuiz:
 
             name = basename(img_name)
             # print(name, ext, img_dim, align[img_align])
-            Ii.attrib.update({'ext':ext, 'dim': img_dim, 'size': img_size,
+            Ii.attrib.update({'ext': ext, 'dim': img_dim, 'size': img_size,
                               'pathF': img_path, 'align': align[img_align],
                               'name': name})
 
@@ -1028,7 +1032,6 @@ class AMCQuiz:
             else:
                 Ci.text = "$course$/"+self.catname.split('.')[0]
 
-
     def _convertQuestions(self):
         """ Find and convert questions
         """
@@ -1040,7 +1043,6 @@ class AMCQuiz:
                 thisq = CreateQuestion(qtype, Qi, context)
                 thisq.convert()
             self.Qtot += len(Qlist)
-
 
     def _exportContext(self):
         """ Export environnement variable as a Context object.
@@ -1058,7 +1060,6 @@ class AMCQuiz:
         # increment it for next use
         self.tempfile_id += 1
         return os.path.join(self.wdir, name)
-
 
 
 def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
@@ -1108,6 +1109,3 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
         quiz = AMCQuiz(xml, pathin, wdir, catname, deb)
         # run the conversion and save the output
         quiz.toMoodle(os.path.join(pathout, fileout))
-
-
-
