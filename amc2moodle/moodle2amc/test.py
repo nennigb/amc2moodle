@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
     This file is part of amc2moodle, a convertion tool to recast quiz written
-    with the LaTeX format used by automuliplechoice 1.0.3 into the 
+    with the LaTeX format used by automuliplechoice 1.0.3 into the
     moodle XML quiz format.
-    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr 
+    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,14 +24,13 @@ from amc2moodle.moodle2amc import Quiz
 import amc2moodle as amdlpkg
 import os
 import unittest
-import pkgutil
 
-#load logger
+# Load logger
 logObj = customLogger('amc2moodle')
-logObj.setupConsoleLogger(verbositylevel = 2,
-                              silent = False,
-                              txtinfo = amdlpkg.__version__)
-#catch Logger
+logObj.setupConsoleLogger(verbositylevel=2,
+                          silent=False,
+                          txtinfo=amdlpkg.__version__)
+# Catch Logger
 Logger = logObj.getLogger()
 
 # Silence other loggers
@@ -79,11 +78,7 @@ class TestSuite(unittest.TestCase):
         self.assertEqual(status.returncode, 0)
 
 
-
-
-
 if __name__ == '__main__':
     # run unittest test suite
     Logger.info('> Running tests...')
     unittest.main()
-

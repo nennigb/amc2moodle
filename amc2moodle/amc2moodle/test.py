@@ -26,12 +26,12 @@ import hashlib
 import unittest
 from lxml import etree
 
-#load logger
+# Load logger
 logObj = customLogger('amc2moodle')
-logObj.setupConsoleLogger(verbositylevel = 2,
-                              silent = False,
-                              txtinfo = amdlpkg.__version__)
-#catch Logger
+logObj.setupConsoleLogger(verbositylevel=2,
+                          silent=False,
+                          txtinfo=amdlpkg.__version__)
+# Catch Logger
 Logger = logObj.getLogger()
 
 # Silence other loggers
@@ -42,13 +42,14 @@ Logger = logObj.getLogger()
 # TODO complete test case for Numerical questions
 # TODO Test XML Schema Definition
 
+
 def check_hash(file1, file2):
     """ Return the md5 sum after removing all withspace.
 
     Parameters
     ----------
     file1, file2 : string
-        Filename 1.
+        Filenames of files to check.
 
     Returns
     -------
@@ -115,7 +116,7 @@ class TestSuiteNoTikz(unittest.TestCase):
         # open, parse and store the the converted file tree
         parser = etree.XMLParser(strip_cdata=False)
         cls.tree = etree.parse(fileOut, parser)
-        #self.assertTrue(equiv, 'The converted file is different from the ref.')
+        # self.assertTrue(equiv, 'The converted file is different from the ref.')
 
     def question_fields(self, qname, target_ans_sum,
                         target_shuffleanswers='true', target_single='false'):
@@ -287,7 +288,7 @@ class TestSuiteNoTikz(unittest.TestCase):
         self.assertEqual(ok, 0)
 
     def test_set_option(self):
-        """ Check if \SetOption and \SetQuizOptions are working.
+        r""" Check if \SetOption and \SetQuizOptions are working.
         """
         # Defaut value are French in convert.py, modified by \SetQuizOptions to english
         # and modified in question 'Qmult:Aucune' to french by \SetOption
@@ -329,6 +330,7 @@ class TestSuiteNoTikz(unittest.TestCase):
                             # the test is ok if present is True
                             self.assertTrue(present)
                         break
+
 
 class TestSuiteOther(unittest.TestCase):
     """ Define test cases for unittest. Just check the process finish normally.
@@ -380,7 +382,7 @@ class TestSuiteOther(unittest.TestCase):
         equiv = check_hash(fileOut, fileRef)
         if equiv:
             print(' > Converted XML is identical to the ref.')
-        #self.assertTrue(equiv, 'The converted file is different from the ref.')
+        # self.assertTrue(equiv, 'The converted file is different from the ref.')
 
     def test_cleaning(self):
         """ Tests if questions with long equation yields reference xml file.
