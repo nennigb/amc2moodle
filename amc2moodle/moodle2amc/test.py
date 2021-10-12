@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
     This file is part of amc2moodle, a convertion tool to recast quiz written
-    with the LaTeX format used by automuliplechoice 1.0.3 into the 
+    with the LaTeX format used by automuliplechoice 1.0.3 into the
     moodle XML quiz format.
-    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr 
+    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,22 +18,25 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+from amc2moodle.utils.customLogging import customLogger
 from amc2moodle.amc2moodle.test import check_hash
 from amc2moodle.moodle2amc import Quiz
+import amc2moodle as amdlpkg
 import os
 import unittest
-import pkgutil
-import logging
 
-#manage logging
-logging.basicConfig(level=logging.DEBUG)
-Logger = logging.getLogger("tests_a2m")
-Logger.setLevel(logging.DEBUG)
+# Load logger
+logObj = customLogger('amc2moodle')
+logObj.setupConsoleLogger(verbositylevel=2,
+                          silent=False,
+                          txtinfo=amdlpkg.__version__)
+# Catch Logger
+Logger = logObj.getLogger()
+
 # Silence other loggers
-for log_name, log_obj in logging.Logger.manager.loggerDict.items():
-    if "amc2moodle" not in log_name and "tests_a2m" not in log_name:
-        log_obj.disabled = True
+# for log_name, log_obj in logging.Logger.manager.loggerDict.items():
+#     if "amc2moodle" not in log_name and "tests_a2m" not in log_name:
+#         log_obj.disabled = True
 
 
 class TestSuite(unittest.TestCase):
@@ -55,31 +58,27 @@ class TestSuite(unittest.TestCase):
         fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                "test/moodle-bank-exemple.tex"))
 
-        print('============ Run test conversion ============')
+        Logger.info('============ Run test conversion ============')
         # create a quiz
         quiz = Quiz(fileIn)
         # convert it
         quiz.convert(fileOut, debug=False)
 
-        print('=============== Check output ================')
+        Logger.info('=============== Check output ================')
         # check it (for convinience but too strict)
         equiv = check_hash(fileOut, fileRef)
         if equiv:
-            print('> Converted XML is identical to the reference: OK')
+            Logger.info('> Converted XML is identical to the reference: OK')
         # test latex compilation
         status = quiz.compileLatex(fileOut)
         if status.returncode != 0:
-            print('> pdflatex encounters Errors, see logs...')
+            Logger.info('> pdflatex encounters Errors, see logs...')
         else:
-            print('> pdflatex compile without Errors: OK')
+            Logger.info('> pdflatex compile without Errors: OK')
         self.assertEqual(status.returncode, 0)
-
-
-
 
 
 if __name__ == '__main__':
     # run unittest test suite
-    print('> Running tests...')
+    Logger.info('> Running tests...')
     unittest.main()
-

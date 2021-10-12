@@ -18,25 +18,30 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+from amc2moodle.utils.customLogging import customLogger
 from amc2moodle.amc2moodle import amc2moodle_class as a2m
+import amc2moodle as amdlpkg
 import os
 import hashlib
 import unittest
 from lxml import etree
-import logging
 
-#manage logging
-logging.basicConfig(level=logging.DEBUG)
-Logger = logging.getLogger("tests_a2m")
-Logger.setLevel(logging.DEBUG)
+# Load logger
+logObj = customLogger('amc2moodle')
+logObj.setupConsoleLogger(verbositylevel=2,
+                          silent=False,
+                          txtinfo=amdlpkg.__version__)
+# Catch Logger
+Logger = logObj.getLogger()
+
 # Silence other loggers
-for log_name, log_obj in logging.Logger.manager.loggerDict.items():
-     if "tests_a2m" not in log_name and "amc2moodle" not in log_name:
-          log_obj.disabled = True
+# for log_name, log_obj in logging.Logger.manager.loggerDict.items():
+#      if "tests_a2m" not in log_name and "amc2moodle" not in log_name:
+#           log_obj.disabled = True
 
 # TODO complete test case for Numerical questions
 # TODO Test XML Schema Definition
+
 
 def check_hash(file1, file2):
     """ Return the md5 sum after removing all withspace.
@@ -44,7 +49,7 @@ def check_hash(file1, file2):
     Parameters
     ----------
     file1, file2 : string
-        Filename 1.
+        Filenames of files to check.
 
     Returns
     -------
@@ -106,12 +111,12 @@ class TestSuiteNoTikz(unittest.TestCase):
         # check it
         equiv = check_hash(fileOut, fileRef)
         if equiv:
-            print(' > Converted XML is identical to the ref.')
+            Logger.info(' > Converted XML is identical to the ref.')
 
         # open, parse and store the the converted file tree
         parser = etree.XMLParser(strip_cdata=False)
         cls.tree = etree.parse(fileOut, parser)
-        #self.assertTrue(equiv, 'The converted file is different from the ref.')
+        # self.assertTrue(equiv, 'The converted file is different from the ref.')
 
     def question_fields(self, qname, target_ans_sum,
                         target_shuffleanswers='true', target_single='false'):
@@ -283,7 +288,7 @@ class TestSuiteNoTikz(unittest.TestCase):
         self.assertEqual(ok, 0)
 
     def test_set_option(self):
-        """ Check if \SetOption and \SetQuizOptions are working.
+        r""" Check if \SetOption and \SetQuizOptions are working.
         """
         # Defaut value are French in convert.py, modified by \SetQuizOptions to english
         # and modified in question 'Qmult:Aucune' to french by \SetOption
@@ -325,6 +330,7 @@ class TestSuiteNoTikz(unittest.TestCase):
                             # the test is ok if present is True
                             self.assertTrue(present)
                         break
+
 
 class TestSuiteOther(unittest.TestCase):
     """ Define test cases for unittest. Just check the process finish normally.
@@ -376,7 +382,7 @@ class TestSuiteOther(unittest.TestCase):
         equiv = check_hash(fileOut, fileRef)
         if equiv:
             print(' > Converted XML is identical to the ref.')
-        #self.assertTrue(equiv, 'The converted file is different from the ref.')
+        # self.assertTrue(equiv, 'The converted file is different from the ref.')
 
     def test_cleaning(self):
         """ Tests if questions with long equation yields reference xml file.
@@ -397,7 +403,7 @@ class TestSuiteOther(unittest.TestCase):
         # check it
         equiv = check_hash(fileOut, fileRef)
         if equiv:
-            print(' > Converted XML is identical to the ref.')
+            Logger.info(' > Converted XML is identical to the ref.')
 
         # Parse new XML file
         # open, parse and store the the converted file tree
@@ -447,5 +453,5 @@ class TestSuiteElement(unittest.TestCase):
 
 if __name__ == '__main__':
     # run unittest test suite
-    print('> Running tests...')
+    Logger.info('> Running tests...')
     unittest.main()
