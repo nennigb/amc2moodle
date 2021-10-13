@@ -335,6 +335,14 @@ class Quiz:
     def output_msg():
         """ Print ouput message.
         """
+        # Summary of logged events in convert.py only
+        log_msg = "> Found {} Warnings and {} Errors during conversion (see above)."
+        # Needto sum from _questions.py and _quiz.py
+        quest_log = logging.getLogger('amc2moodle.moodle2amc._questions')        
+        warn_number = quest_log.counter['warning'] + Logger.counter['warning']
+        err_number = (quest_log.counter['error'] + Logger.counter['error']
+                      + quest_log.counter['critical'] + Logger.counter['critical'])
+        Logger.info(log_msg.format(warn_number, err_number))
 
         msg = """ The conversion is complete. Try to compile the tex file...
                 In case of trouble, you may need to check for :
