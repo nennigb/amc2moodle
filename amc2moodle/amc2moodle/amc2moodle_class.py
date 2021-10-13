@@ -193,9 +193,9 @@ class amc2moodle:
         Logger.debug(' > magic comments: %s' % disable[self.magic_flag])
 
     def endMessage(self):
-        """ Show end message explaining moodle inmport procedure.
+        """ Show end message explaining moodle import procedure.
         """
-        msg="""  File converted. Check below for errors...
+        msg = """ File converted.
 
             For import into moodle :
             --------------------------------
