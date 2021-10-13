@@ -24,16 +24,16 @@ with open("README.md", "r") as fh:
 #         ghash = 'no.checksum.error'
 #     return '%s' % ghash
 
+
 def version():
-    """ Get version from __init__.py."""
+    """ Get version from _version.py."""
     v = None
-    with open(os.path.join('./amc2moodle', '__init__.py')) as f:
+    with open(os.path.join('./amc2moodle', '_version.py')) as f:
         for line in f:
             if line.startswith('__version__'):
                 v = line.replace("'", '').split()[-1]
                 break
         return v
-
 
 
 this_version = version()
@@ -44,7 +44,7 @@ setup(
     name="amc2moodle",
     version=this_version,
     author="B. Nennig, L. Laurent",
-    author_email="benoit.nennig@supmeca.fr",
+    author_email="benoit.nennig@isae-supmeca.fr",
     description="A tool to convert automultiplechoice quizz to moodle questions",
     long_description=long_description,
     long_description_content_type="text/markdown",
