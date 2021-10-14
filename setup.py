@@ -1,7 +1,5 @@
-from setuptools import setup, find_packages
-import subprocess
+from setuptools import setup
 import os
-import shutil
 
 
 with open("README.md", "r") as fh:
@@ -50,7 +48,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/nennigb/amc2moodle",
     zip_safe=False,
-    packages=['amc2moodle','amc2moodle.amc2moodle', 'amc2moodle.moodle2amc',
+    packages=['amc2moodle', 'amc2moodle.amc2moodle', 'amc2moodle.moodle2amc',
               'amc2moodle.utils'],
     include_package_data=True,
     scripts=['amc2moodle/amc2moodle/bin/amc2moodle',
@@ -60,6 +58,7 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
+    license="GPLv3",
     install_requires=[
         'wand>=0.5.9',
         'lxml>=3.5.0',
