@@ -880,11 +880,16 @@ class AMCQuiz:
         with open(fileout, 'w') as f:
             f.write(s)
 
-        # summary
+        # Conversion summary
         Logger.debug(" ")
         Logger.debug(" > global 'shuffleanswers' is {}.".format(strtobool(self.options['shuffle_all'])))
         Logger.debug(" > global 'answerNumberingFormat' is '{}'.".format(self.options['answer_numbering_format']))
-        Logger.debug(" > {} questions converted...".format(self.Qtot))
+        Logger.debug(" > {} questions converted.".format(self.Qtot))
+
+        # Summary of logged events in convert.py only
+        log_msg = " >  Found {} Warnings and {} Errors during conversion (see above)."
+        Logger.info(log_msg.format(Logger.counter['warning'],
+                               Logger.counter['error'] + Logger.counter['critical']))
 
     def _element_pre_process(self, tree):
         """ Test if `element` blocks contain text outside 'Question'
