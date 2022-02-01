@@ -10,7 +10,14 @@ Created on Wed Jul 15 21:04:36 2020
 from abc import ABC, abstractmethod
 from pyparsing import Word, alphas, nums, alphas, alphanums, Char, oneOf,\
                       Suppress, Combine, Regex, Group, ZeroOrMore, Literal,\
-                      Forward, Optional, ParseResults, _flatten
+                      Forward, Optional, ParseResults
+from pyparsing import __version__ as pyparsing_version
+# In pyparsing 3 _flatten function has been move in `util` submodule
+if int(pyparsing_version.split('.')[0]) > 2:
+    from pyparsing.util import _flatten
+else:
+    from pyparsing import _flatten
+
 import logging
 
 
