@@ -11,6 +11,10 @@ on:
       - README.md
   pull_request:
     branches: [ '*' ]
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # run at 02:01 on every 15th day-of-month.
+    - cron:  '1 2 */15 * *'
     
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
