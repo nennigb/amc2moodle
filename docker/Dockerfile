@@ -29,7 +29,7 @@ VOLUME /tmp/daemon
 # create new user
 RUN groupadd -r user && useradd -r -g user user
 RUN chown user:user /tmp/daemon
-run chown user:user /tmp/work
+RUN chown user:user /tmp/work
 
 
 USER user
@@ -39,6 +39,8 @@ WORKDIR /tmp/work
 
 # copy autorun script for amc2moodle/moodle2amc
 COPY autorun-amc2moodle.sh /tmp/.
+#RUN ["/tmp/autorun-amc2moodle.sh",">","/dev/null","2>&1&"]
 
 # execute script
-ENTRYPOINT ["/tmp/autorun-amc2moodle.sh > /dev/null 2>&1"]
+ENTRYPOINT ["/tmp/autorun-amc2moodle.sh",">","/dev/null","2>&1&"]
+#["tail","-f","/dev/null"]
