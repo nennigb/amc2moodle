@@ -41,4 +41,4 @@ WORKDIR /tmp/work
 COPY autorun-amc2moodle.sh /tmp/.
 
 # execute script
-ENTRYPOINT ["/tmp/autorun-amc2moodle.sh",">","/dev/null","2>&1"]
+ENTRYPOINT ["/tmp/autorun-amc2moodle.sh > /dev/null 2>&1"]
