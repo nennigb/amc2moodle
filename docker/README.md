@@ -21,6 +21,11 @@ docker run --name amc2moodle -d -v "DIRA:/tmp/work" -v "DIRB:/tmp/daemon" ghcr.i
 NB: that `DIRA` and `DIRB` must be absolute paths.
 
 ** it is recommended to use only empty folder with no critical contents for `DIRA`and `DIRB`. **
+
+The container can be stopped using the following command
+```
+docker stop amc2moodle
+```
 # Usage
 
 We assume that `DIRA` has been mounted and bound to `/tmp/work`.
