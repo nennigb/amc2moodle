@@ -33,6 +33,8 @@ jobs:
           context: ./docker
           tags: ghcr.io/${{ github.repository_owner }}/amc2moodle:${{ steps.docker-tag.outputs.tag }},ghcr.io/${{ github.repository_owner }}/amc2moodle:latest
           push: true
+          cache-from: type=gha
+          cache-to: type=gha
           # # build on feature branches, push only on main branch
           # push: ${{ github.ref == 'refs/heads/main' }}
       - name: Image digest
