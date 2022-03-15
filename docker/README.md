@@ -13,12 +13,12 @@ The container proposes to mount two volumes:
     - `/tmp/work` (**mandatory mount**) that must be link to a specific folder on the host computer
     - `/tmp/daemon` (optional mount) that store the log file of the daemon
 
-For instance, the container can be run in CLI with the following command:
+For instance, the container can be run in CLI (in detached mode) with the following command:
 ```
 docker run --name amc2moodle -d -v "DIRA:/tmp/work" -v "DIRB:/tmp/daemon" ghcr.io/luclaurent/amc2moodle
 ```
 
-NB: that `DIRA` and `DIRB` must be absolute paths.
+NB: `DIRA` and `DIRB` must be absolute paths.
 
 ** it is recommended to use only empty folder with no critical contents for `DIRA`and `DIRB`. **
 
@@ -26,7 +26,7 @@ The container can be stopped using the following command
 ```
 docker stop amc2moodle
 ```
-# Usage
+# Usage as daemon/server (automatic building)
 
 We assume that `DIRA` has been mounted and bound to `/tmp/work`.
 
@@ -62,6 +62,19 @@ Logfiles (`*.log`) are provided by the `amc2moodle`or `moodle2amc` scripts and a
 Lockfiles (`*.lock`) are provided by the daemon/server. **Running a new execution could be obtain by removing one of this files.**
 
 In addition, if the `DIRB` directory has been mounted, it will contain detailed logfiles of the daemon and could be use for debug.
+
+# Advanced usage with command line
+
+Since the container has been started with for instance the procedure given [above](#installation). A command line within the docker can be obtained by running the following command:
+```
+docker exec -it amc2moodle /bin/bash 
+```
+With this shell, classical `amc2moodle` and `moodle2amc` commands are available (see [here](../README.md#conversion) for usable syntax).
+
+
+NB: 
+ - this command could be adapted depending on the name of the executed container.
+ - execution of the previous does not stop the server/daemon
 
 <!---
  # Development 
