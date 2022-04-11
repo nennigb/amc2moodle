@@ -15,6 +15,8 @@ RUN mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
 # install pip and Python pkgs
 # RUN pip3 install -U pip && \
 #     pip install amc2moodle
+RUN pwd
+RUN ls -al
 RUN pip3 install setup.py
 
 # check if amc2moodle and moodle2amc work
