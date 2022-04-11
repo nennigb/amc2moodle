@@ -3,9 +3,9 @@ name: 'Build amc2moodle container'
 on:
   push:
     branches:
-      - 'devel-docker'
-    # tags:
-    #   - 'v*'
+      - 'master'
+    tags:
+      - 'v*'
 
 
 jobs:

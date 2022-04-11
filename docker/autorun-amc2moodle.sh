@@ -38,6 +38,8 @@ LOGFILE=${LOG_DIR}/${now}_autorun.log
 {
 
 printf "Start daemon\n\n"
+printf "Log dir: ${LOG_DIR}\n"
+printf "Monitored dir: ${MONITOR_DIR}\n"
 # loop
 while true
 do
