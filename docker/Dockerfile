@@ -42,6 +42,10 @@ USER user
 #working dir
 WORKDIR /tmp/work
 
+#declare directory using environement 
+ENV MONITOR_DIR=/tmp/work
+ENV LOG_DIR=/tmp/daemon
+
 # copy autorun script for amc2moodle/moodle2amc
 COPY autorun-amc2moodle.sh /tmp/.
 #RUN ["/tmp/autorun-amc2moodle.sh",">","/dev/null","2>&1&"]

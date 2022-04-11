@@ -2,8 +2,18 @@
 
 ## script to run amc2moodle or moodle2amc automatically in a specific folder
 
-# monitored folder
-MONITOR_DIR=/tmp/work
+# monitored and daemon folder
+MONITOR_DIR_DEF=/tmp/work
+LOG_DIR_DEF=/tmp/daemon
+#
+if [ -z ${MONITOR_DIR+x} ]
+then 
+    MONITOR_DIR=${MONITOR_DIR_DEF}
+fi
+if [ -z ${LOG_DIR+x} ]
+then 
+    LOG_DIR=${LOG_DIR_DEF}
+fi
 
 # function to run amc2moodle
 function run_amc2moodle()
@@ -22,9 +32,8 @@ function run_moodle2amc()
 
 #log manage
 now=$(date +"%Y-%m-%d_%H-%M-%s")
-LOGDIR=/tmp/daemon
-mkdir -p ${LOGDIR}
-LOGFILE=${LOGDIR}/${now}_autorun.log
+mkdir -p ${LOG_DIR}
+LOGFILE=${LOG_DIR}/${now}_autorun.log
 
 {
 
