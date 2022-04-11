@@ -17,7 +17,7 @@ jobs:
       - id: docker-tag
         uses: yuya-takeyama/docker-tag-from-github-ref-action@v1
         with:
-          latest-branches: 'main,master,devel-docker'
+          latest-branches: 'main,master'
       - name: "Build:checkout"
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
