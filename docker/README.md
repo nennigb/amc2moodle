@@ -20,7 +20,7 @@ docker run --name amc2moodle -d -v "DIRA:/tmp/work" -v "DIRB:/tmp/daemon" ghcr.i
 
 NB: `DIRA` and `DIRB` must be absolute paths.
 
-** it is recommended to use only empty folder with no critical contents for `DIRA`and `DIRB`. **
+** it is recommended to use only empty folder with no critical contents for `DIRA` and `DIRB`. **
 
 The container can be stopped using the following command
 ```
@@ -74,7 +74,10 @@ With this shell, classical `amc2moodle` and `moodle2amc` commands are available 
 
 NB: 
  - this command could be adapted depending on the name of the executed container.
- - execution of the previous does not stop the server/daemon
+ - execution of the previous does not stop the server/daemon.
+ - the files should be visible from the docker i.e. in `DIRA` folder or in another given volume
+ - the command line interface could also be run without starting the `amc2moodle` daemon (`docker run` vs `docker exec`)
+
 
 <!---
  # Development 
