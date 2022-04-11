@@ -1,6 +1,8 @@
 # Docker's version of `amc2moodle`
 
-A docker version of `amc2moodle` is available and it start a daemon server to automatically execute `amc2moodle` or `moodle2amc`.
+A docker version of `amc2moodle` is available and it starts a daemon server to automatically execute `amc2moodle` or `moodle2amc`.
+
+Alternatively, it is also possible to run an interactive shell in the docker to recover standard `amc2moodle` command line interface.
 
 # Installation
 
