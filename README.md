@@ -13,6 +13,9 @@ Note that [auto-multiple-choice](https://www.auto-multiple-choice.net) (amc) LaT
 
 ## Installation
 
+A Docker image with `amc2moodle` and its dependencies is available at [ghcr.io/nennigb/amc2moodle](ghcr.io/nennigb/amc2moodle).
+Once the docker software is installed, this image allows to use `amc2moodle` on **windows plateforms** or to add the resource isolation features on linux or macOS. For more information, see the [`amc2moodle`' docker README](docker/README.md).
+
 ### Before installing amc2moodle:
 
   -  install python (version >=3.5)
