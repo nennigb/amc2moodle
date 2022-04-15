@@ -8,7 +8,7 @@ Alternatively, it is also possible to run an interactive shell in the docker to 
 
 The container can be downloaded using the following command 
 ```
-docker pull ghcr.io/luclaurent/amc2moodle:latest
+docker pull ghcr.io/nennigb/amc2moodle:latest
 ```
 
 The container proposes to mount two volumes:
@@ -17,12 +17,12 @@ The container proposes to mount two volumes:
 
 For instance, the container can be run in CLI (in detached mode) with the following command:
 ```
-docker run --name amc2moodle -d -v "DIRA:/tmp/work" -v "DIRB:/tmp/daemon" ghcr.io/luclaurent/amc2moodle
+docker run --name amc2moodle -d -v "DIRA:/tmp/work" -v "DIRB:/tmp/daemon" ghcr.io/nennigb/amc2moodle
 ```
 
 NB: `DIRA` and `DIRB` must be absolute paths.
 
-** it is recommended to use only empty folder with no critical contents for `DIRA` and `DIRB`. **
+**it is recommended to use only empty folder with no critical contents for `DIRA` and `DIRB`.**
 
 The container can be stopped using the following command
 ```
