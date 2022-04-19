@@ -12,13 +12,14 @@ RUN apt update && \
 # move policy file
 RUN mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
 
-# install pip and Python pkgs
+# install pip and Python pkg
 # RUN pip3 install -U pip && \
 #     pip install amc2moodle
 WORKDIR /tmp
 RUN git clone https://github.com/nennigb/amc2moodle.git -b master
 WORKDIR /tmp/amc2moodle
-RUN pip3 install .
+RUN pip3 install -U pip && \
+    pip3 install .
 
 # check if amc2moodle and moodle2amc work
 WORKDIR /
@@ -26,23 +27,24 @@ RUN python -m amc2moodle.amc2moodle.test && \
     python -m amc2moodle.utils.test
 
 # create dir
-RUN mkdir /tmp/work
-RUN mkdir /tmp/daemon
+RUN mkdir /tmp/work && \
+    mkdir /tmp/daemon
 VOLUME /tmp/work
 VOLUME /tmp/daemon
 
 # create new user
-RUN groupadd -r user && useradd -r -g user user
-RUN chown user:user /tmp/daemon
-RUN chown user:user /tmp/work
+RUN groupadd -r user && \
+    useradd -r -g user user && \
+    chown user:user /tmp/daemon && \
+    chown user:user /tmp/work
 
-
+# switch to "user"
 USER user
 
-#working dir
+# working dir
 WORKDIR /tmp/work
 
-#declare directory using environement 
+# declare useful directories using environement 
 ENV MONITOR_DIR=/tmp/work
 ENV LOG_DIR=/tmp/daemon
 
