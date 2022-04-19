@@ -3,6 +3,7 @@ FROM texlive/texlive:latest
 # labels
 LABEL AUTHOR='Luc Laurent'
 LABEL MAINTAINER='Luc Laurent & Benoit Nennig'
+LABEL org.opencontainers.image.source = "https://github.com/nennigb/amc2moodle/"
 
 # install debian packages
 RUN apt update && \
