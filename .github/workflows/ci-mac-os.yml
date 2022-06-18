@@ -38,10 +38,15 @@ jobs:
         
         # install xml libraries and requirements for lateXML
         brew install cpanm
-        brew install libxml2 libxslt
-        cpanm XML::LibXML XML::XSLT
-        cpanm XML::LibXSLT --force
-        cpanm Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI UUID::Tiny
+        brew install libxml2
+        brew info libxml2
+        brew link libxml2 --force        
+        brew install --force libxslt
+        brew link libxslt --force
+        export PKG_CONFIG_PATH="/usr/local/opt/libxml2/lib/pkgconfig"
+        export PKG_CONFIG_PATH="/usr/local/opt/libxslt/lib/pkgconfig"
+        
+        cpanm -v --notest Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML XML::LibXSLT UUID::Tiny
 
         # install imagemagick
         brew install imagemagick
