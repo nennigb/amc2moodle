@@ -38,7 +38,8 @@ jobs:
         
         # install xml libraries and requirements for lateXML
         brew install cpanm
-        brew install --force libxml2
+        brew install libxml2
+        brew info libxml2
         brew link libxml2 --force        
         brew install --force libxslt
         brew link libxslt --force
