@@ -39,9 +39,9 @@ jobs:
         # install xml libraries and requirements for lateXML
         # brew install cpanm
         brew install libxml2     
-        brew install --force libxslt
+        brew install libxslt
         
-        # cpanm -v --notest Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML XML::LibXSLT UUID::Tiny
+        # The list comes from lateXML docker file LaTeXML/tools/ci/Dockerfile
         cpan -iT Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML XML::LibXSLT UUID::Tin
         
         # install imagemagick
