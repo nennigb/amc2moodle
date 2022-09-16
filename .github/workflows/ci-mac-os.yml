@@ -42,7 +42,7 @@ jobs:
         brew install libxslt
         
         # The list comes from lateXML docker file LaTeXML/tools/ci/Dockerfile
-        cpan -iT Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML XML::LibXSLT UUID::Tin
+        cpan -iT Archive::Zip DB_File File::Which Getopt::Long Image::Size IO::String JSON::XS LWP MIME::Base64 Parse::RecDescent Pod::Parser Text::Unidecode Test::More URI XML::LibXML XML::LibXSLT UUID::Tiny
         
         # install imagemagick
         brew install imagemagick
