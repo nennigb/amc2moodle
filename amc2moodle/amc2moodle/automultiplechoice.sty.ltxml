@@ -135,7 +135,7 @@ DefConstructor('\copygroup{}{}',"");        # copy
 
 DefConstructor('\champnom{}',"");         # copy
 DefConstructor('\namefield{}',"");         # copy
-
+DefMacro('\namefielddots','');         # amc / pdfform
 
 DefConstructor('\AMCrandomseed{}',"");
 DefConstructor('\setdefaultgroupmode{}',"");
