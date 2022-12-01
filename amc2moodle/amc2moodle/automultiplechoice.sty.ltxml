@@ -111,6 +111,15 @@ DefConstructor('\AddXMLAElement{}{}',"<ltx:note class='amc_XMLAElement' role='#1
 
 # ===================================================================
 # MISE EN FORME PAPIER
+# Section etc. and starred version. Known by LaTeXML but redifined here to simplify transformation
+# and avoid nesting
+DefMacro('\section', '\@ifstar{\@section}{\@section}');
+DefConstructor('\@section{}',"<ltx:note class='amc_section'>#1</ltx:note>"); 
+DefMacro('\subsection', '\@ifstar{\@subsection}{\@subsection}');
+DefConstructor('\@subsection{}',"<ltx:note class='amc_subsection'>#1</ltx:note>");
+DefMacro('\subsubsection', '\@ifstar{\@subsubsection}{\@subsubsection}');
+DefConstructor('\@subsubsection{}',"<ltx:note class='amc_subsubsection'>#1</ltx:note>");
+
 #DefMacro('\raggedright','');
 #DefMacro('\raggedleft','');
 DefEnvironment('{multicols}{}',"#body");     # on supprime la mise en forme sur plusieurs colonnes pour les réponses, possible side effect in table
