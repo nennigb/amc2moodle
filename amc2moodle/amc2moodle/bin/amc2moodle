@@ -82,6 +82,10 @@ def run():
                         help='''Disable magic comments (default : enable).''',
                         required=False, default=False, dest='magic_flag',
                         action="store_true")
+    parser.add_argument("--includestyles",
+                        help='''Allow LaTeXML to load raw *.sty file (default : False).''',
+                        required=False, default=False, dest='include_styles',
+                        action="store_true")
 
     # Get input args
     args = parser.parse_args()
@@ -100,6 +104,7 @@ def run():
     verboseMode = args.verbose
     cleanXML=args.exp
     logFileMode = args.no_log_file
+    include_styles = args.include_styles
 
     #load logger
     logObj = customLogger('amc2moodle')
@@ -143,7 +148,8 @@ def run():
         a2m.amc2moodle(fileInput=fileIn, fileOutput=fileOut,
                        keepFlag=keepFlag, catname=catname,
                        indentXML=indentFlag, usetempdir=tempDir,
-                       magic_flag=magic_flag, cleanXML=cleanXML)
+                       magic_flag=magic_flag, cleanXML=cleanXML,
+                       include_styles=include_styles)
     else:        
         # exit with error status
         globalReturncode = 1
