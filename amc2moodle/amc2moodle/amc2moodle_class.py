@@ -1,21 +1,21 @@
 """
-    This file is part of amc2moodle, a convertion tool to recast quiz written
-    with the LaTeX format used by automuliplechoice 1.0.3 into the
-    moodle XML quiz format.
-    Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
+This file is part of amc2moodle, a convertion tool to recast quiz written
+with the LaTeX format used by automuliplechoice 1.0.3 into the
+moodle XML quiz format.
+Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from typing import Callable
@@ -34,9 +34,9 @@ from concurrent.futures import ThreadPoolExecutor
 # activate logger
 Logger = logging.getLogger(__name__)
 
+
 def checkTools(show=True):
-    """ Check if the required Tools are available.
-    """
+    """Check if the required Tools are available."""
     # Wand Python module
     wand_loader = util.find_spec('wand')
     wandOk = wand_loader is not None
@@ -58,43 +58,42 @@ def checkTools(show=True):
 
 
 def getFilename(fileIn):
-    """ Get the filename without path.
-    """
+    """Get the filename without path."""
     return os.path.basename(fileIn)
 
 
 def getPathFile(fileIn):
-    """ Get the path of a file without.
-    """
+    """Get the path of a file without."""
     dirname = os.path.dirname(fileIn)
     if not dirname:
         dirname = '.'
     return dirname
 
-def writePipeOnOutput(process,streamIn,output:Callable):
-    """ Write the stream from a pipe through an output
-    during process executed by subprocess.Popen
+
+def writePipeOnOutput(process, streamIn, output: Callable):
+    """Write the stream from a pipe through an output during process executed
+    by subprocess.Popen
     """
     while process.poll() is None:
         msg = streamIn.readline().strip()
-        if msg !="":
+        if msg != "":
             output(msg)
     # write the rest from the buffer
     msg = streamIn.read().strip()
-    if msg !="":
+    if msg != "":
         output(msg)
 
 
 class amc2moodle:
-    """ Main class to invoke LaTeX to moodle XML conversion.
-    """
+    """Main class to invoke LaTeX to moodle XML conversion."""
+
     # tag for magic comments
     magictag = '%amc2moodle '
 
     def __init__(self, fileInput, fileOutput=None, keepFlag=False,
                  catname='amc', indentXML=False, usetempdir=True,
                  magic_flag=True, cleanXML=False, deb=0, include_styles=False):
-        """ Initialize the object.
+        """Initialize the object.
 
         Parameters
         ----------
@@ -116,7 +115,7 @@ class amc2moodle:
             Allow LaTeXML to load raw *.sty file. The default is False.
         deb : int, optional
             Store all intermediate file for debugging.
-        
+
         Returns
         -------
         None.
@@ -168,12 +167,11 @@ class amc2moodle:
             # Show summury of all loaded parameters
             self.showData()
 
-        #run the building of the xml file for Moodle
+        # run the building of the xml file for Moodle
         self.runBuilding()
 
     def cleanUpTemp(self):
-        """ Clean-up temp directory created by tempfile.TemporaryDirectory().
-        """
+        """Clean-up temp directory created by tempfile.TemporaryDirectory()."""
         Logger.debug(' > Clean-up tempfile.')
         self.tempdir.cleanup()
         # remove magictex temp file
@@ -181,9 +179,8 @@ class amc2moodle:
             os.unlink(self.magictex)
 
     def showData(self):
-        """ Show loaded parameters.
-        """
-        disable = {True:'enable', False:'disable'}
+        """Show loaded parameters."""
+        disable = {True: 'enable', False: 'disable'}
         Logger.debug('====== Parameters ======')
         Logger.debug(' > path input TeX: %s' % getPathFile(self.inputtex))
         Logger.debug(' > input TeX file: %s' % getFilename(self.inputtex))
@@ -196,8 +193,7 @@ class amc2moodle:
         Logger.debug(' > magic comments: %s' % disable[self.magic_flag])
 
     def endMessage(self):
-        """ Show end message explaining moodle import procedure.
-        """
+        """Show end message explaining moodle import procedure."""
         msg = """ File converted.
 
             For import into moodle :
@@ -212,10 +208,7 @@ class amc2moodle:
             Logger.info(item)
 
     def removeMagicComment(self):
-        """ Remove magic comments prefix to enable amc2moodle dedicated LaTeX
-        commands.
-        """
-
+        """Remove magic comments prefix to enable amc2moodle dedicated LaTeX commands."""
         pathin = getPathFile(self.inputtex)
         prefix = os.path.splitext(getFilename(self.inputtex))[0] + '_'
 
@@ -235,10 +228,8 @@ class amc2moodle:
         texpand.expand()
         texpand.report()
 
-
     def runLaTeXML(self):
-        """ Run LaTeXML on the input TeX file.
-        """
+        """Run LaTeXML on the input TeX file."""
         # run LaTeXML on magictex file
         Logger.info(' > Running LaTeXML conversion')
         # LoggerXML = logging.getLogger('LaTexML')
@@ -265,21 +256,20 @@ class amc2moodle:
             # all outputs will be written in debug log
             with ThreadPoolExecutor(2) as pool:
                 rstdout = pool.submit(writePipeOnOutput,
-                        latexmlProcess,
-                        latexmlProcess.stdout,
-                        Logger.debug)
+                                      latexmlProcess,
+                                      latexmlProcess.stdout,
+                                      Logger.debug)
                 rstderr = pool.submit(writePipeOnOutput,
-                        latexmlProcess,
-                        latexmlProcess.stderr,
-                        Logger.debug)
+                                      latexmlProcess,
+                                      latexmlProcess.stderr,
+                                      Logger.debug)
                 rstdout.result()
                 rstderr.result()
-        #latexmlProcess.wait()
+        # latexmlProcess.wait()
         return latexmlProcess.returncode == 0
 
     def runXMLindent(self):
-        """ Run XML indentation with subprocess.
-        """
+        """Run XML indentation with subprocess."""
         # check for xmlindent
         xmlindentwhich = subprocess.run(['which', 'xmlindent'])
         xmlindentOk = xmlindentwhich.returncode == 0
@@ -299,9 +289,7 @@ class amc2moodle:
                            stdout=subprocess.DEVNULL)
 
     def runCleanXML(self):
-        """ Clean final XML file remove "%" added by LaTeXML at end of lines
-        (EXPERIMENTAL).
-        """
+        """Clean final XML file remove "%" added by LaTeXML at end of lines (EXPERIMENTAL)."""
         pattern = '%\n'
         Logger.warning("Caution: cleaning XML file is experimental")
         # copy output file and remove '%\n' (a temporary file will be used and deleted)
@@ -325,8 +313,7 @@ class amc2moodle:
         Logger.info(" > Cleaning: done, with {} replacements.".format(nreplacement))
 
     def runBuilding(self):
-        """ Build the xml file for Moodle quizz.
-        """
+        """Build the xml file for Moodle quizz."""
         Logger.info('====== Build XML =======')
         # remove magic comment, return magictex
         if self.magic_flag:
