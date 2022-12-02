@@ -93,7 +93,7 @@ class amc2moodle:
 
     def __init__(self, fileInput, fileOutput=None, keepFlag=False,
                  catname='amc', indentXML=False, usetempdir=True,
-                 magic_flag=True, cleanXML=False, deb=0):
+                 magic_flag=True, cleanXML=False, deb=0, include_styles=False):
         """ Initialize the object.
 
         Parameters
@@ -111,10 +111,12 @@ class amc2moodle:
         usetempdir : bool, optional
             Store all intermediate file in temp directory. The default is True.
         magic_flag : bool, optional
-            Enable magic comment.The default is True.
+            Enable magic comment. The default is True.
+        include_styles : bool, optional
+            Allow LaTeXML to load raw *.sty file. The default is False.
         deb : int, optional
             Store all intermediate file for debugging.
-
+        
         Returns
         -------
         None.
@@ -130,6 +132,7 @@ class amc2moodle:
         self.tempxmlfile = 'tex2xml.xml'
         self.indentXML = indentXML
         self.cleanXML = cleanXML
+        self.include_styles = include_styles
 
         # check required tools
         if not checkTools(show=True):
@@ -239,20 +242,23 @@ class amc2moodle:
         # run LaTeXML on magictex file
         Logger.info(' > Running LaTeXML conversion')
         # LoggerXML = logging.getLogger('LaTexML')
-        #TODO: caution with 'universal_newlines=' (new syntax from Python 3.7: text=)
+        # TODO: caution with 'universal_newlines=' (new syntax from Python 3.7: text=)
+        options = ['--noparse',
+                   '--nocomments', ]
+        if self.include_styles:
+            options.append('--includestyles')
         with subprocess.Popen([
-            'latexml',
-            '--noparse',
-            '--nocomments',
-            '--path=%s' % os.path.dirname(__file__),
-            '--dest=%s' % self.tempxmlfile,
-            self.magictex],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True) as latexmlProcess:
-            #while latexmlProcess.poll() is None:
+                'latexml',
+                *options,
+                '--path=%s' % os.path.dirname(__file__),
+                '--dest=%s' % self.tempxmlfile,
+                self.magictex],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True) as latexmlProcess:
+            # while latexmlProcess.poll() is None:
             #    Logger.debug(latexmlProcess.stdout.read())
-            #writePipeOnOutput(latexmlProcess,latexmlProcess.stderr,Logger.debug)
+            # writePipeOnOutput(latexmlProcess,latexmlProcess.stderr,Logger.debug)
 
             # write stdout and stderr in parallel to the right logging outputs
             # caution LaTeXML uses only STDERR... (version 0.8.5)
