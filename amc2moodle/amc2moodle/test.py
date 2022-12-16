@@ -451,6 +451,41 @@ class TestSuiteElement(unittest.TestCase):
                        deb=0)
 
 
+class TestSuiteStyles(unittest.TestCase):
+    """Check if `include_styles` options works as expected."""
+
+    @staticmethod
+    def check_error(fileOut):
+        """Parse ouput file `fileOut` and check if `ERROR` are present."""
+        is_error = False
+        with open(fileOut, 'r') as f:
+            for line in f.readlines():
+                if 'ERROR' in line:
+                    print(line)
+                    is_error = True
+        return is_error
+
+    def test_with_include(self):
+        """Tests `include_styles` options works as expected.
+
+        Error should be REMOVED when `include_styles` is switch on.
+        """
+        # define i/o file
+        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                              "test/includestyles.tex"))
+        fileOut = os.path.abspath('./test_includestyles.xml')
+        # convert to xml
+        a2m.amc2moodle(fileInput=fileIn,
+                       fileOutput=fileOut,
+                       keepFlag=False,
+                       catname='temp',
+                       deb=0,
+                       include_styles=True)
+        is_error = self.check_error(fileOut)
+        # Error should be removed with the flag on
+        self.assertFalse(is_error)
+
+
 if __name__ == '__main__':
     # run unittest test suite
     Logger.info('> Running tests...')
