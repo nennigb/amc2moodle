@@ -47,8 +47,9 @@ jobs:
       
     - name: Add fonts (required by moodle2amc tests)
       run: |
+        # xstring is just required for testing --includestyles
         sudo tlmgr update --self
-        sudo tlmgr install collection-fontsrecommended bophook
+        sudo tlmgr install collection-fontsrecommended bophook xstring
         
     - name: Test latexml
       run: |
