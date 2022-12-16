@@ -1,0 +1,18 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8x]{inputenc}    
+\usepackage[T1]{fontenc}
+\usepackage{xstring}
+\usepackage[francais,bloc,completemulti,correc,ordre]{automultiplechoice}    
+
+\begin{document}
+
+\element{use:xtring}{
+\begin{question}{q:xstring}\QuestionIndicative
+Just test if \texttt{xstring} can be loaded by LaTeXML.
+What you think ?
+\def\mystr{Hello world}
+\IfSubStr{llo}{\mystr}{Yes}{No}
+\end{question}
+}
+
+\end{document}
