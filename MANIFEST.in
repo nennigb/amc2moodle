@@ -20,6 +20,7 @@ include amc2moodle/amc2moodle/test/numerical.xml
 include amc2moodle/amc2moodle/test/cleaning.tex
 include amc2moodle/amc2moodle/test/cleaning.xml
 include amc2moodle/amc2moodle/test/element.tex
+include amc2moodle/amc2moodle/test/includestyles.tex
 include amc2moodle/moodle2amc/bin/moodle2amc
 include amc2moodle/moodle2amc/html2tex.xslt
 include amc2moodle/moodle2amc/struc2tex.xslt
