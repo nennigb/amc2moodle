@@ -39,7 +39,7 @@ function wheel()
 for i in "$@"
 do
     case "$i" in
-    -i|--install) pip install -e twine
+    -i|--install) pip install --user twine
     ;;
     -t|--test)
     wheel && twine upload --verbose -r testpypi $WHEEL_DIR/amc2moodle*.whl
