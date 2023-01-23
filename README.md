@@ -6,7 +6,7 @@
   - **from** [moodle questions (XML format)](https://docs.moodle.org/38/en/Moodle_XML_format) **to** [auto-multiple-choice](https://www.auto-multiple-choice.net) LaTeX quizzes, see details in the [moodle2amc README file](amc2moodle/moodle2amc/README.md).
 
 The conversion supports equations, tables, figures and standard text formatting.
-This software is written in python and in XSLT, thus the conversion step is OS independent. It has been tested for moodle 3.x and auto-multiple-choice (v1.0.3-v1.4) and the conversion step is OS independent.
+This software is written in python and in XSLT, thus the conversion step is OS independent. It has been tested for moodle 3.x and auto-multiple-choice (v1.0.3-v1.5) and the conversion step is OS independent.
 
 Note that [auto-multiple-choice](https://www.auto-multiple-choice.net) (amc) LaTeX format is very convenient, and can be used for preparing multiple choice questions off-line and avoiding moodle web GUI.
 
