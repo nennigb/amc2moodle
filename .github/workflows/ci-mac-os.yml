@@ -14,7 +14,8 @@ on:
   schedule:
     # * is a special character in YAML so you have to quote this string
     # run at 02:01 on every 15th day-of-month.
-    - cron:  '1 2 */15 * *'    
+    - cron:  '1 2 */15 * *'
+    
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -29,9 +30,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v3.1.0
+    - uses: actions/checkout@main
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@main
       with:
         python-version: ${{ matrix.python-version }}
    
@@ -68,7 +69,7 @@ jobs:
     - name: Test amc2moodle
       run: |
         python -m amc2moodle.amc2moodle.test
-
+        
     - name: Test moodle2amc
       run: |
         # add automultiplechoice.sty local copy to LaTeX PATH (for this step)
@@ -83,14 +84,14 @@ jobs:
     # amc2moodle
     - name: Archive XML test output of amc2moodle (without tikz)
       if: ${{ always() }}
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@main
       with:
         name: test_notikz_${{ matrix.python-version }}
         path: test_notikz.xml    
     
     - name: Archive XML test output of amc2moodle (with tikz)
       if: ${{ always() }}
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@main
       with:
         name: test_tikz_${{ matrix.python-version }}
         path: test_tikz.xml
@@ -103,7 +104,7 @@ jobs:
         
     - name: Archive LaTeX test output (moodle2amc)
       if: ${{ always() }}
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@main
       with:
         name: test_moodle-bank-exemple_${{ matrix.python-version }}
         path: moodle-bank-exemple-output
