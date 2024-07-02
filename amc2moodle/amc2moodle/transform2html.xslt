@@ -241,7 +241,7 @@ Single <br/> does the trick  -->
 <xsl:template match="break"><br/></xsl:template>
 
 <!-- template netoyage champ globaux mise en forme-->
-<xsl:template match="para|inline-para">
+<xsl:template match="para|inline-para|inline-logical-block">
     <xsl:apply-templates/>
 </xsl:template>
 

@@ -6,7 +6,7 @@
   - **from** [moodle questions (XML format)](https://docs.moodle.org/38/en/Moodle_XML_format) **to** [auto-multiple-choice](https://www.auto-multiple-choice.net) LaTeX quizzes, see details in the [moodle2amc README file](amc2moodle/moodle2amc/README.md).
 
 The conversion supports equations, tables, figures and standard text formatting.
-This software is written in python and in XSLT, thus the conversion step is OS independent. It has been tested for moodle 3.x and auto-multiple-choice (v1.0.3-v1.5) and the conversion step is OS independent.
+This software is written in python and in XSLT, thus the conversion step is OS independent. It has been tested for moodle 3.x or 4.x and auto-multiple-choice (v1.0.3-v1.5).
 
 Note that [auto-multiple-choice](https://www.auto-multiple-choice.net) (amc) LaTeX format is very convenient, and can be used for preparing multiple choice questions off-line and avoiding moodle web GUI.
 
@@ -23,7 +23,7 @@ To install `amc2moodle` as a python package on linux or macOS platform, follow t
   -  install `imageMagick`, useful to convert image files (*.eps, *.pdf, ...) into png
       - Ubuntu: `sudo apt-get install imagemagick`
       - MacOS: `brew install imagemagick` (see [`ImageMagick` website](https://imagemagick.org/script/download.php) for more details )
-  -  install [`LaTeXML`](http://dlmf.nist.gov/LaTeXML) [tested with version 0.8.1] This program does the first step of the conversion into XML
+  -  install [`LaTeXML`](http://dlmf.nist.gov/LaTeXML) [tested with version >= 0.8.1] This program does the first step of the conversion into XML
       - Ubuntu: `sudo apt-get install latexml`
       - see also [LaTeXML wiki](https://github.com/brucemiller/LaTeXML/wiki/Installation-Guides) or [install notes](https://dlmf.nist.gov/LaTeXML/get.html) that all the dependencies are installed (perl, latex, imagemagick).
   -  install `xmlindent` [optional]. This program can be used to indent well the XML file
