@@ -994,7 +994,7 @@ class AMCQuiz:
         # conversion des notations d'alignement
         align = {'ltx_align_right': 'right', 'ltx_align_left': 'left',
                  'ltx_centering': 'center'}
-
+        dimensions = ('width', 'height')
         for Ii in Ilist:
             try:
                 img_name = Ii.attrib['candidates'].split(',')[-1]   # get the last candidates
@@ -1008,11 +1008,15 @@ class AMCQuiz:
                 img_align = Ii.attrib['class']
             else:
                 img_align = 'ltx_centering'  # default value center !
-            # try for option
+            # try for options
             if 'options' in Ii.attrib:
                 img_options = Ii.attrib['options']
-                img_size = img_options.split('=')[-1]  # il reste pt, mais cela ne semble pas poser de pb
-                img_dim = img_options.split('=')[0]
+                # Convert options into a dict and select usefull key
+                img_options_dict =  dict([s.split('=') for s in img_options.split(',')])
+                for key, val in img_options_dict.items():
+                    if key in dimensions:
+                        img_size = val  # il reste pt, mais cela ne semble pas poser de pb
+                        img_dim = key
             else:
                 img_options = ''
                 img_size = self.options['default_img_width']
