@@ -145,6 +145,23 @@ test for enumerate html rendering,
 \end{question}
 }
 
+% Test for section usage
+\element{cat1}{
+\begin{question}{Section}\QuestionIndicative
+    Sometimes amc users use \emph{sectioning} to organize the quiz. This is also possible to do it with \texttt{amc2moodle}.
+    In moodle, this is rendered in html using \texttt{hi} tags. The starred version are also supported.
+    \section{Section title}
+    Ou blab \textit{ckl} ekjf blab ckl ekjf blab ckl ekjf
+    \section*{Stared Section title}
+    line jhkd blab ckl ekjf blab ckl \textbf{ekjf} blab ckl ekjf blab ckl ekjf
+    \subsection{This is a subsection title}
+    blab ckl ekjf subsection content blab ckl ekjf
+    \subsection*{This is a star \textbf{subsection} title}
+    ekjf blab ckl ekjf blab ckl ekjf blab ckl ekjf blab ckl $x^2$ 
+    \subsubsection{A subsubsection}
+    \subsubsection*{Another subsubsection}
+\end{question}
+}
 
 % Test for mhchem support with mathjax
 \element{mhchem}{

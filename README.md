@@ -6,7 +6,7 @@
   - **from** [moodle questions (XML format)](https://docs.moodle.org/38/en/Moodle_XML_format) **to** [auto-multiple-choice](https://www.auto-multiple-choice.net) LaTeX quizzes, see details in the [moodle2amc README file](amc2moodle/moodle2amc/README.md).
 
 The conversion supports equations, tables, figures and standard text formatting.
-This software is written in python and in XSLT, thus the conversion step is OS independent. It has been tested for moodle 3.x and auto-multiple-choice (v1.0.3-v1.4) and the conversion step is OS independent.
+This software is written in python and in XSLT, thus the conversion step is OS independent. It has been tested for moodle 3.x or 4.x and auto-multiple-choice (v1.0.3-v1.5).
 
 Note that [auto-multiple-choice](https://www.auto-multiple-choice.net) (amc) LaTeX format is very convenient, and can be used for preparing multiple choice questions off-line and avoiding moodle web GUI.
 
@@ -23,7 +23,7 @@ To install `amc2moodle` as a python package on linux or macOS platform, follow t
   -  install `imageMagick`, useful to convert image files (*.eps, *.pdf, ...) into png
       - Ubuntu: `sudo apt-get install imagemagick`
       - MacOS: `brew install imagemagick` (see [`ImageMagick` website](https://imagemagick.org/script/download.php) for more details )
-  -  install [`LaTeXML`](http://dlmf.nist.gov/LaTeXML) [tested with version 0.8.1] This program does the first step of the conversion into XML
+  -  install [`LaTeXML`](http://dlmf.nist.gov/LaTeXML) [tested with version >= 0.8.1] This program does the first step of the conversion into XML
       - Ubuntu: `sudo apt-get install latexml`
       - see also [LaTeXML wiki](https://github.com/brucemiller/LaTeXML/wiki/Installation-Guides) or [install notes](https://dlmf.nist.gov/LaTeXML/get.html) that all the dependencies are installed (perl, latex, imagemagick).
   -  install `xmlindent` [optional]. This program can be used to indent well the XML file
@@ -90,6 +90,7 @@ Then the output LaTeX can be edited and included for creating amc exams. Example
 In case of problem, do not hesitate to ask for help on [discussions](https://github.com/nennigb/amc2moodle/discussions) or to create an [issues](https://github.com/nennigb/amc2moodle/issues). Both binaries (`amc2moodle` and `moodle2amc`) write full log in log files based on the name of the input file (`_amc2moodle.log` and `_amc2moodle.log` suffixes are added on these files).
   - 'convert: not authorized..' see ImageMagick policy.xml file see [here](https://stackoverflow.com/questions/52699608/wand-policy-error-error-constitute-c-readimage-412)
   - bugs with tikz-LaTeXML in texlive 2019/2020: please update the following `perl` modules `Parse::RecDescent`, `XML::LibXML` and `XML::LibXSLT` [here](https://github.com/brucemiller/LaTeXML/issues/1279) with `cpan` or `cpanm`in CLI.
+  - If LaTeXML doesn't know some LaTeX package and return `Warning:missing_file:package-name Can't find binding for package package-name`, you can try to invoque `amc2moodle` with `--includestyles` flag.
 
 ## Related Project
   - [auto-multiple-choice](https://www.auto-multiple-choice.net),  is a piece of software that can help you creating and managing multiple choice questionnaires (MCQ), with automated marking.

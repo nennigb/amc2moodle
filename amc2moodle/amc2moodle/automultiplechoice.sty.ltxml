@@ -2,12 +2,23 @@ package LaTeXML::Package::pool;  # to put new subs & variables in common pool
 use LaTeXML::Package;            # to load these definitions
 use strict;                      # good style
 use warnings;
-
+use version;                     # Use to check version of LateXML
 # def les notes, comparer avec les arguemens optionnels etc
 # comment ajouter des tags?
 # comment imposer de neester les environenements?
-# ici pas de mise en forme, jsute des changement de case.
+# ici pas de mise en forme, juste des changements de case.
 # \usepackage[francais,bloc,completemulti]{automultiplechoice}
+
+# Version 0.8.8 of LateXML introduce breaking change.
+my $ltx_para_inline = '';
+if( version->parse($LaTeXML::VERSION) >= version->parse('0.8.8') ) {
+   $ltx_para_inline = 'ltx:inline-logical-block';
+   print 'Found a version of LaTeXML >= 0.8.8, use : ', $ltx_para_inline, "\n";
+} else {
+   $ltx_para_inline = 'ltx:inline-para';
+   print "Found a legacy version of LaTeXML, use : ", $ltx_para_inline, "\n" ;
+}
+
 
 DefMacro('\@ifundefined{}{}{}','');
 
@@ -65,16 +76,17 @@ DefConstructor('\includesounds{}',"<ltx:graphics graphic='#1' options='sound'></
 # Close the curent _logical_ paragraph before. Needed if other content is present in the body of element, since it just 'pop' everything else.
 NewCounter('questions', 'document');
 # question simple
-DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>",
+DefEnvironment('{question}{}',"<ltx:note class='amc_question' role='#1'><$ltx_para_inline>#body</$ltx_para_inline></ltx:note>",
                properties => sub { StepCounter('questions') }, beforeConstruct => sub { $_[0]->maybeCloseElement('ltx:para'); });
 # question multiple
-DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>",
+DefEnvironment('{questionmult}{}',"<ltx:note class='amc_questionmult' role='#1'><$ltx_para_inline>#body</$ltx_para_inline></ltx:note>",
                properties => sub { StepCounter('questions') }, beforeConstruct => sub { $_[0]->maybeCloseElement('ltx:para'); });
 # questionmultx is the same as questionmult, except it does not display \multiSymbole
-DefEnvironment('{questionmultx}{}',"<ltx:note class='amc_questionmult' role='#1'><ltx:inline-para>#body</ltx:inline-para></ltx:note>",
+DefEnvironment('{questionmultx}{}',"<ltx:note class='amc_questionmult' role='#1'><$ltx_para_inline>#body</$ltx_para_inline></ltx:note>",
                properties => sub { StepCounter('questions') }, beforeConstruct => sub { $_[0]->maybeCloseElement('ltx:para'); });
 
 DefEnvironment('{examcopy}[]',"");   # alternative to onecopy, # on supprime la partie construction du sujet si présente
+
 
 # ===================================================================
 # REPONSE
@@ -111,6 +123,15 @@ DefConstructor('\AddXMLAElement{}{}',"<ltx:note class='amc_XMLAElement' role='#1
 
 # ===================================================================
 # MISE EN FORME PAPIER
+# Section etc. and starred version. Known by LaTeXML but redifined here to simplify transformation
+# and avoid nesting
+DefMacro('\section', '\@ifstar{\@section}{\@section}');
+DefConstructor('\@section{}',"<ltx:note class='amc_section'>#1</ltx:note>"); 
+DefMacro('\subsection', '\@ifstar{\@subsection}{\@subsection}');
+DefConstructor('\@subsection{}',"<ltx:note class='amc_subsection'>#1</ltx:note>");
+DefMacro('\subsubsection', '\@ifstar{\@subsubsection}{\@subsubsection}');
+DefConstructor('\@subsubsection{}',"<ltx:note class='amc_subsubsection'>#1</ltx:note>");
+
 #DefMacro('\raggedright','');
 #DefMacro('\raggedleft','');
 DefEnvironment('{multicols}{}',"#body");     # on supprime la mise en forme sur plusieurs colonnes pour les réponses, possible side effect in table
@@ -135,7 +156,7 @@ DefConstructor('\copygroup{}{}',"");        # copy
 
 DefConstructor('\champnom{}',"");         # copy
 DefConstructor('\namefield{}',"");         # copy
-
+DefMacro('\namefielddots','');         # amc / pdfform
 
 DefConstructor('\AMCrandomseed{}',"");
 DefConstructor('\setdefaultgroupmode{}',"");

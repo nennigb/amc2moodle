@@ -212,7 +212,18 @@ A faire : <center> </center>,  small caps, sf, sl, sc
     <tt><xsl:apply-templates/></tt>
 </xsl:template>
 
+<!-- Take into account section, tested also with section* subsection* -->
+<xsl:template match="note[@class='amc_section']">
+    <h2><xsl:apply-templates/></h2>
+</xsl:template>
 
+<xsl:template match="note[@class='amc_subsection']">
+    <h3><xsl:apply-templates/></h3>
+</xsl:template>
+
+<xsl:template match="note[@class='amc_subsubsection']">
+    <h4><xsl:apply-templates/></h4>
+</xsl:template>
 
 <!--verbatim rendu comme du code, attention pb avec automultiplechoice et verbatim-->
 <!--use allttt instead of real evrbatim environemt-->
@@ -230,7 +241,7 @@ Single <br/> does the trick  -->
 <xsl:template match="break"><br/></xsl:template>
 
 <!-- template netoyage champ globaux mise en forme-->
-<xsl:template match="para|inline-para">
+<xsl:template match="para|inline-para|inline-logical-block">
     <xsl:apply-templates/>
 </xsl:template>
 
@@ -347,7 +358,9 @@ to change the bullet in html
 <!--- New name in new version of LaTeXML -->
 <xsl:template match="tags">
 </xsl:template>
-
+<!--comes from section and subsection, copied at *section level-->
+<xsl:template match="title">
+</xsl:template>
 
 <xsl:template match="note[@class='amc_FPprint']">fp{<xsl:apply-templates/>}</xsl:template>
 
