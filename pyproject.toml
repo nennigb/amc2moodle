@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "amc2moodle"
+dynamic = ['version']
+authors = [
+    {name = "B. Nennig", email = "benoit.nennig@isae-supmeca.fr"},
+    {name = "L. Laurent", email = "luc.laurent@lecnam.net"}
+]
+description = "A tool to convert automultiplechoice quizz to moodle questions"
+readme = "README.md"
+classifiers=[
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+license = {file = "LICENSE"}
+dependencies = [
+    'wand>=0.5.9',
+    'lxml>=3.5.0',
+    'pyparsing>=2.4.6',
+    'wheel>=0.29.0',
+    'markdown'
+]
+requires-python='>=3.8'
+
+[project.urls]
+Homepage = "https://github.com/nennigb/amc2moodle"
+Repository = "https://github.com/nennigb/amc2moodle"
+Issues = "https://github.com/nennigb/amc2moodle/issues"
+
+[tool.setuptools.dynamic]
+version = {attr = "amc2moodle.__version__"}
+
+[tool.setuptools]
+package-dir = {"amc2moodle" = "src"}
+

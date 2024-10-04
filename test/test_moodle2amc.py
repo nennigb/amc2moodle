@@ -23,6 +23,8 @@ from amc2moodle.amc2moodle.test import check_hash
 from amc2moodle.moodle2amc import Quiz
 import amc2moodle as amdlpkg
 import os
+import tempfile
+import shutil
 import unittest
 
 # Load logger
@@ -32,6 +34,12 @@ logObj.setupConsoleLogger(verbositylevel=2,
                           txtinfo=amdlpkg.__version__)
 # Catch Logger
 Logger = logObj.getLogger()
+
+# payload data directory for running test
+__PAYLOAD_TEST_DIR__ = os.path.join(os.path.dirname(__file__), 'payload_test_moodle2amc')
+
+# add a temporary directory for tests
+tmpdir = tempfile.mkdtemp(prefix="tmp_moodle2amc_test_", dir=os.getcwd())
 
 # Silence other loggers
 # for log_name, log_obj in logging.Logger.manager.loggerDict.items():
@@ -52,11 +60,21 @@ class TestSuite(unittest.TestCase):
         """ Tests if input XML file yields reference LaTeX file.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                              "test/moodle-bank-exemple.xml"))
-        fileOut = os.path.abspath('./test_moodle-bank-exemple.tex')
-        fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               "test/moodle-bank-exemple.tex"))
+        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                              "moodle-bank-exemple.xml"))
+        fileOut = os.path.abspath(os.path.join(tmpdir,
+                                               'test_moodle-bank-exemple.tex'))
+        fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                               "moodle-bank-exemple.tex"))
+        
+        # move sty's file to tmpdir
+        src = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                           "automultiplechoice.sty"))
+        dst = os.path.abspath(os.path.join(tmpdir,'automultiplechoice.sty'))
+        shutil.copyfile(src, dst)
+        
+        # change current working directory
+        os.chdir(tmpdir)
 
         Logger.info('============ Run test conversion ============')
         # create a quiz
