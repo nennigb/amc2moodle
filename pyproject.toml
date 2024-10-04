@@ -35,5 +35,5 @@ Issues = "https://github.com/nennigb/amc2moodle/issues"
 version = {attr = "amc2moodle.__version__"}
 
 [tool.setuptools]
-package-dir = {"amc2moodle" = "src"}
+package-dir = {"amc2moodle" = "src", "amc2moodle.tests" = "test"}
 
