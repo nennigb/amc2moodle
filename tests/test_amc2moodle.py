@@ -20,9 +20,9 @@
 """
 from amc2moodle.utils.customLogging import customLogger
 from amc2moodle.amc2moodle import amc2moodle_class as a2m
+from amc2moodle.utils.misc import check_hash
 import amc2moodle as amdlpkg
 import os
-import hashlib
 import tempfile
 import unittest
 from lxml import etree
@@ -48,43 +48,6 @@ tmpdir = tempfile.mkdtemp(prefix="tmp_amc2moodle_test_", dir=os.getcwd())
 
 # TODO complete test case for Numerical questions
 # TODO Test XML Schema Definition
-
-
-def check_hash(file1, file2):
-    """ Return the md5 sum after removing all withspace.
-
-    Parameters
-    ----------
-    file1, file2 : string
-        Filenames of files to check.
-
-    Returns
-    -------
-    equiv : bool
-        equiv is True if the checksum are equal.
-    """
-
-    # list of whitespace expression, avoid pb if xml layout is changed
-    ignored_exp = [' ', '\t', '\n']
-
-    # read and replace whitespace
-    with open(file1) as f1:
-        content1 = f1.read()
-        for exp in ignored_exp:
-            content1 = content1.replace(exp, '')
-
-    # read and replace whitespace
-    with open(file2) as f2:
-        content2 = f2.read()
-        for exp in ignored_exp:
-            content2 = content2.replace(exp, '')
-
-    # compute hash
-    h1 = hashlib.md5(content1.encode()).hexdigest()
-    h2 = hashlib.md5(content2.encode()).hexdigest()
-    equiv = h1 == h2
-    return equiv
-
 
 class TestSuiteNoTikz(unittest.TestCase):
     """ Define test cases for unittest based on __PAYLOAD_TEST_DIR__/QCM_wo-tikz.tex.
