@@ -55,7 +55,7 @@ jobs:
     - name: Test latexml
       run: |
         # add --strict flag to be more strict in error catching
-        latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./amc2moodle/amc2moodle/test/QCM.tex   
+        latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./tests/payload_test_amc2moodle/QCM.tex   
     
     - name: Install amc2moodle
       run: |
@@ -68,7 +68,7 @@ jobs:
     - name: Test moodle2amc
       run: |
         # add automultiplechoice.sty local copy to LaTeX PATH (for this step)
-        export TEXINPUTS=.:./amc2moodle/moodle2amc/test:$TEXINPUTS
+        # export TEXINPUTS=.:./tests/payload_test_amc2moodle/:$TEXINPUTS (during tests, automultiplechoice.sty is copied in the temprorary test folder )
         python -m amc2moodle.moodle2amc.test
     - name: Test calculated questions parsers
       run: |
