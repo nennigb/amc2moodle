@@ -39,7 +39,7 @@ moodle2amc = "amc2moodle.moodle2amc.bin.moodle2amc:run"
 version = {attr = "amc2moodle.__version__"}
 
 [tool.setuptools]
-package-dir = {"amc2moodle" = "src", "amc2moodle.tests" = "test"}
+package-dir = { "amc2moodle" = "src", "amc2moodle.tests" = "test"}
 
 [tool.coverage.run]
 branch = true
