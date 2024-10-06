@@ -23,7 +23,6 @@ from amc2moodle.utils.misc import check_hash
 from amc2moodle.moodle2amc import Quiz
 import amc2moodle as amdlpkg
 import os
-import tempfile
 import shutil
 import unittest
 
@@ -38,8 +37,13 @@ Logger = logObj.getLogger()
 # payload data directory for running test
 __PAYLOAD_TEST_DIR__ = os.path.join(os.path.dirname(__file__), 'payload_test_moodle2amc')
 
-# add a temporary directory for tests
-tmpdir = tempfile.mkdtemp(prefix="tmp_moodle2amc_test_", dir=os.getcwd())
+
+# add an output directory for tests
+__OUTPUT_TEST_DIR__ = os.path.abspath(os.path.join(os.getcwd(), 'output_tests'))
+# create output directory and switch working dir on it
+os.makedirs(__OUTPUT_TEST_DIR__, exist_ok=True)
+os.chdir(__OUTPUT_TEST_DIR__)
+
 
 # Silence other loggers
 # for log_name, log_obj in logging.Logger.manager.loggerDict.items():
@@ -62,20 +66,17 @@ class TestSuite(unittest.TestCase):
         # define i/o file
         fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                               "moodle-bank-exemple.xml"))
-        fileOut = os.path.abspath(os.path.join(tmpdir,
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,
                                                'test_moodle-bank-exemple.tex'))
         fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                                "moodle-bank-exemple.tex"))
         
-        # move sty's file to tmpdir
+        # move sty's file to output dir
         src = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                            "automultiplechoice.sty"))
-        dst = os.path.abspath(os.path.join(tmpdir,'automultiplechoice.sty'))
+        dst = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'automultiplechoice.sty'))
         shutil.copyfile(src, dst)
         
-        # change current working directory
-        os.chdir(tmpdir)
-
         Logger.info('============ Run test conversion ============')
         # create a quiz
         quiz = Quiz(fileIn)

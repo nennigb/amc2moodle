@@ -23,7 +23,6 @@ from amc2moodle.amc2moodle import amc2moodle_class as a2m
 from amc2moodle.utils.misc import check_hash
 import amc2moodle as amdlpkg
 import os
-import tempfile
 import unittest
 from lxml import etree
 
@@ -38,8 +37,11 @@ Logger = logObj.getLogger()
 # payload data directory for running test
 __PAYLOAD_TEST_DIR__ = os.path.join(os.path.dirname(__file__), 'payload_test_amc2moodle')
 
-# add a temporary directory for tests
-tmpdir = tempfile.mkdtemp(prefix="tmp_amc2moodle_test_", dir=os.getcwd())
+# add an output directory for tests
+__OUTPUT_TEST_DIR__ = os.path.abspath(os.path.join(os.getcwd(), 'output_tests'))
+# create output directory and switch working dir on it
+os.makedirs(__OUTPUT_TEST_DIR__, exist_ok=True)
+os.chdir(__OUTPUT_TEST_DIR__)
 
 # Silence other loggers
 # for log_name, log_obj in logging.Logger.manager.loggerDict.items():
@@ -69,7 +71,7 @@ class TestSuiteNoTikz(unittest.TestCase):
         # define i/o file
         fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                               "QCM_wo-tikz.tex"))
-        fileOut = os.path.abspath(os.path.join(tmpdir,'test_notikz.xml'))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_notikz.xml'))
         fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                                "QCM_wo-tikz.xml"))
         # convert to xml
@@ -318,7 +320,7 @@ class TestSuiteOther(unittest.TestCase):
         # define i/o file
         fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                               "numerical.tex"))
-        fileOut = os.path.abspath(os.path.join(tmpdir,'test_numerical.xml'))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_numerical.xml'))
         fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                                "numerical.xml"))
         # convert to xml
@@ -339,7 +341,7 @@ class TestSuiteOther(unittest.TestCase):
         # define i/o file
         fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                               "QCM.tex"))
-        fileOut = os.path.abspath(os.path.join(tmpdir,'test_tikz.xml'))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_tikz.xml'))
         fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                                "QCM.xml"))
         # convert to xml
@@ -360,7 +362,7 @@ class TestSuiteOther(unittest.TestCase):
         # Define i/o file
         fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                               "cleaning.tex"))
-        fileOut = os.path.abspath(os.path.join(tmpdir,'cleaning.xml'))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'cleaning.xml'))
         fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                                "cleaning.xml"))
         # Convert to xml
@@ -412,7 +414,7 @@ class TestSuiteElement(unittest.TestCase):
         # define i/o file
         fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                               "element.tex"))
-        fileOut = os.path.abspath(os.path.join(tmpdir,'test_element.xml'))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_element.xml'))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
@@ -443,7 +445,7 @@ class TestSuiteStyles(unittest.TestCase):
         # define i/o file
         fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
                                               "includestyles.tex"))
-        fileOut = os.path.abspath(os.path.join(tmpdir,'test_includestyles.xml'))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_includestyles.xml'))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
