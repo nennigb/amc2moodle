@@ -1,6 +1,7 @@
 # Byte-code
 __pycache__/
 *.py[cod]
+**/__pycache__/
 
 # Distribution / packaging
 *.egg-info/

@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "amc2moodle"
@@ -35,11 +35,63 @@ Issues = "https://github.com/nennigb/amc2moodle/issues"
 amc2moodle = "amc2moodle.amc2moodle.bin.amc2moodle:run"
 moodle2amc = "amc2moodle.moodle2amc.bin.moodle2amc:run"
 
-[tool.setuptools.dynamic]
-version = {attr = "amc2moodle.__version__"}
+[tool.hatch.version]
+path = "amc2moodle/_version.py"
 
-[tool.setuptools]
-package-dir = { "amc2moodle" = "amc2moodle", "amc2moodle.tests" = "tests"}
+# [tool.hatch.build.targets.sdist.force-include]
+# "tests" = "amc2moodle/tests"
+
+# [tool.hatch.build.targets.wheel.force-include]
+# "tests" = "amc2moodle/tests"
+
+# [tool.hatch.build.targets.wheel.sources]
+# "src/foo" = "bar"
+
+[tool.hatch.build]
+packages = ["amc2moodle"]
+# only-packages = true
+ignore-vcs = false
+"/tests" = "amc2moodle/tests"
+include = [
+    '/amc2moodle',
+    "LICENSE",
+    "README.md",
+    "/amc2moodle/moodle2amc/README.md",
+    "/amc2moodle/amc2moodle/README.md",
+    "/amc2moodle/amc2moodle/*.xslt",
+    "/amc2moodle/amc2moodle/*sty.ltxml",
+    "/amc2moodle/moodle2amc/html2tex.xslt",
+    "/amc2moodle/moodle2amc/struc2tex.xslt",
+    "/tests/payload_test_amc2moodle/Figures/*",
+    "/tests/payload_test_amc2moodle/Figures/other/*",
+    "/tests/payload_test_amc2moodle/4.png",
+    "/tests/payload_test_amc2moodle/QCM.pdf",
+    "/tests/payload_test_amc2moodle/QCM.tex",
+    "/tests/payload_test_amc2moodle/QCM.xml",
+    "/tests/payload_test_amc2moodle/QCM_wo-tikz.tex",
+    "/tests/payload_test_amc2moodle/QCM_wo-tikz.xml",
+    "/tests/payload_test_amc2moodle/tikz.tex",
+    "/tests/payload_test_amc2moodle/common-bank.tex",
+    "/tests/payload_test_amc2moodle/numerical.tex",
+    "/tests/payload_test_amc2moodle/numerical.xml",
+    "/tests/payload_test_amc2moodle/cleaning.tex",
+    "/tests/payload_test_amc2moodle/cleaning.xml",
+    "/tests/payload_test_amc2moodle/element.tex",
+    "/tests/payload_test_amc2moodle/includestyles.tex",
+    "/tests/payload_test_moodle2amc/automultiplechoice.sty",
+    "/tests/payload_test_moodle2amc/moodle-bank-exemple.xml",
+    "/tests/payload_test_moodle2amc/moodle-bank-exemple.tex",
+    "/tests/payload_test_moodle2amc/moodle-bank-exemple.pdf"
+    ]
+exclude = [
+    "/.github",
+    ".gitignore"
+    ]
+
+
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 [tool.coverage.run]
 branch = true
