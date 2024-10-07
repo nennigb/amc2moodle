@@ -20,7 +20,10 @@ function wheel()
     # Install the wheel
     pip3 install $WHEEL_DIR/amc2moodle*.whl
     # Run all tests
-    python3 -m amc2moodle.amc2moodle.test && python -m amc2moodle.moodle2amc.test && python -m amc2moodle.utils.test
+    python3 -m amc2moodle.tests.test_amc2moodle && \
+    python -m amc2moodle.tests.test_moodle2amc && \
+    python -m amc2moodle.tests.test_utils_text && \
+    python -m amc2moodle.tests.test_utils_calculatedParser
     SUCCESS=$?
     # Clean-up tmp directory
     cd $WHEEL_DIR
@@ -40,6 +43,9 @@ for i in "$@"
 do
     case "$i" in
     -i|--install) pip install --user twine
+    ;;
+    -w|--wheel) 
+    wheel
     ;;
     -t|--test)
     wheel && twine upload --verbose -r testpypi $WHEEL_DIR/amc2moodle*.whl
