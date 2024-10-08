@@ -899,7 +899,7 @@ class AMCQuiz:
         with CDATA.
         """
         # These elements should be <para> nodes at roots level.
-        all_para = tree.findall('/para')
+        all_para = tree.findall('./para')
         if len(all_para) > 0:
             Logger.warning(" > {} '\\element' blocks contain text outside ".format(len(all_para))
                            + "'Question environnement'. "
