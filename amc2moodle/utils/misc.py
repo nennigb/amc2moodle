@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import hashlib
+import inspect
+import os
 
 def check_hash(file1, file2):
     """ Return the md5 sum after removing all withspace.
@@ -54,3 +56,50 @@ def check_hash(file1, file2):
     h2 = hashlib.md5(content2.encode()).hexdigest()
     equiv = h1 == h2
     return equiv
+
+
+def for_all_methods(decorator):
+    """ Decorate to class to apply a decorator on all methods.
+
+    Parameters
+    ----------
+    decorator : function
+        Decorator function.
+
+    Returns
+    -------
+    cls : class
+        return the decorated class.
+    """
+    def decorate(cls):
+        for name, fn in inspect.getmembers(cls, inspect.ismethod):
+            setattr(cls, name, decorator(fn))
+        return cls
+    return decorate
+
+def decorator_set_cwd(directory):
+    """ Set and unset the current working directory.
+
+    Parameters
+    ----------
+    directory : path
+        Directory to use as current working directory.
+
+    Returns
+    -------
+    func : function
+        return the decorated function.
+    """
+    def decorator(function):
+        def wrapper(*args, **kwargs):
+            # initial cwd
+            init_cwd = os.getcwd()
+            # set cwd
+            os.chdir(directory)
+            # run function
+            result = function(*args, **kwargs)
+            # restore cwd
+            os.chdir(init_cwd)
+            return result
+        return wrapper
+    return decorator
