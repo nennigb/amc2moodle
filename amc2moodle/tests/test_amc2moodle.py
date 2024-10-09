@@ -41,7 +41,7 @@ __PAYLOAD_TEST_DIR__ = os.path.join(os.path.dirname(__file__), 'payload_test_amc
 __OUTPUT_TEST_DIR__ = os.path.abspath(os.path.join(os.getcwd(), 'output_tests'))
 # create output directory and switch working dir on it
 os.makedirs(__OUTPUT_TEST_DIR__, exist_ok=True)
-os.chdir(__OUTPUT_TEST_DIR__)
+# os.chdir(__OUTPUT_TEST_DIR__)
 
 # Silence other loggers
 # for log_name, log_obj in logging.Logger.manager.loggerDict.items():
