@@ -59,7 +59,7 @@ jobs:
     - name: Test latexml
       run: |
         # add --strict flag to be more strict in error catching
-        latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./tests/payload_test_amc2moodle/QCM.tex 
+        latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./amc2moodle/tests/payload_test_amc2moodle/QCM.tex 
     
     - name: Install amc2moodle
       run: |
