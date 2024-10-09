@@ -1,13 +1,13 @@
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
 
-[project]
+[tool.poetry]
 name = "amc2moodle"
-dynamic = ['version']
+version = "0.0.0"  # Will be replaced by poetry-dynamic-versioning
 authors = [
-    {name = "B. Nennig", email = "benoit.nennig@isae-supmeca.fr"},
-    {name = "L. Laurent", email = "luc.laurent@lecnam.net"}
+    "B. Nennig <benoit.nennig@isae-supmeca.fr>",
+    "L. Laurent <luc.laurent@lecnam.net>"
 ]
 description = "A tool to convert automultiplechoice quizz to moodle questions"
 readme = "README.md"
@@ -16,73 +16,69 @@ classifiers=[
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
 ]
-license = {file = "LICENSE"}
-dependencies = [
-    'wand>=0.5.9',
-    'lxml>=3.5.0',
-    'pyparsing>=2.4.6',
-    'wheel>=0.29.0',
-    'markdown'
+license = "LICENSE"
+homepage = "https://github.com/nennigb/amc2moodle"
+repository = "https://github.com/nennigb/amc2moodle"
+packages = [
+    { include = "amc2moodle" }
 ]
-requires-python='>=3.8'
+include = [
+    {path = "LICENSE", format = ["sdist", "wheel"]},
+    {path = "README.md", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/moodle2amc/README.md", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/amc2moodle/README.md", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/amc2moodle/bin/amc2moodle", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/amc2moodle/*.xslt", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/amc2moodle/*sty.ltxml", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/moodle2amc/bin/moodle2amc", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/moodle2amc/html2tex.xslt", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/moodle2amc/struc2tex.xslt", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/Figures/*", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/Figures/other/*", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/4.png", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/QCM.pdf", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/QCM.tex", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/QCM.xml", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/QCM_wo-tikz.tex", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/QCM_wo-tikz.xml", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/tikz.tex", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/common-bank.tex", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/numerical.tex", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/numerical.xml", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/cleaning.tex", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/cleaning.xml", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/element.tex", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_amc2moodle/includestyles.tex",     format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_moodle2amc/automultiplechoice.sty", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_moodle2amc/moodle-bank-exemple.xml", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_moodle2amc/moodle-bank-exemple.tex", format = ["sdist", "wheel"]},
+    {path = "amc2moodle/tests/payload_test_moodle2amc/moodle-bank-exemple.pdf", format = ["sdist", "wheel"]},
+]
 
-[project.urls]
-Homepage = "https://github.com/nennigb/amc2moodle"
-Repository = "https://github.com/nennigb/amc2moodle"
-Issues = "https://github.com/nennigb/amc2moodle/issues"
+[tool.poetry-dynamic-versioning]
+enable = true
 
-[project.scripts]
+[tool.poetry-dynamic-versioning.from-file]
+source = "amc2moodle/_version.py"
+pattern = '''(^__version__\s*(?::.*?)?=\s*['"])[^'"]*(['"])'''
+
+[tool.poetry.urls]
+"Issues" = "https://github.com/nennigb/amc2moodle/issues"
+
+[tool.poetry.dependencies]
+python = ">= 3.7.0"
+"wand" = ">= 0.5.9"
+"lxml" = ">= 3.5.0"
+"pyparsing" = ">= 2.4.6"
+"wheel" = ">= 0.29.0"
+"markdown" = "> 0.0.0"
+
+[tool.poetry.scripts]
 amc2moodle = "amc2moodle.amc2moodle.bin.amc2moodle:run"
 moodle2amc = "amc2moodle.moodle2amc.bin.moodle2amc:run"
 
-[tool.pdm.version]
-source = "file"
-path = "amc2moodle/_version.py"
-
-[tool.pdm.build]
-source-includes = [
-    "LICENSE",
-    "README.md"
-]
-includes = [
-    "amc2moodle/",
-    "amc2moodle/moodle2amc/README.md",
-    "amc2moodle/amc2moodle/README.md",
-    "amc2moodle/amc2moodle/bin/amc2moodle",
-    "amc2moodle/amc2moodle/*.xslt",
-    "amc2moodle/amc2moodle/*sty.ltxml",
-    "amc2moodle/moodle2amc/bin/moodle2amc",
-    "amc2moodle/moodle2amc/html2tex.xslt",
-    "amc2moodle/moodle2amc/struc2tex.xslt",
-    "amc2moodle/tests/payload_test_amc2moodle/Figures/*",
-    "amc2moodle/tests/payload_test_amc2moodle/Figures/other/*",
-    "amc2moodle/tests/payload_test_amc2moodle/4.png",
-    "amc2moodle/tests/payload_test_amc2moodle/QCM.pdf",
-    "amc2moodle/tests/payload_test_amc2moodle/QCM.tex",
-    "amc2moodle/tests/payload_test_amc2moodle/QCM.xml",
-    "amc2moodle/tests/payload_test_amc2moodle/QCM_wo-tikz.tex",
-    "amc2moodle/tests/payload_test_amc2moodle/QCM_wo-tikz.xml",
-    "amc2moodle/tests/payload_test_amc2moodle/tikz.tex",
-    "amc2moodle/tests/payload_test_amc2moodle/common-bank.tex",
-    "amc2moodle/tests/payload_test_amc2moodle/numerical.tex",
-    "amc2moodle/tests/payload_test_amc2moodle/numerical.xml",
-    "amc2moodle/tests/payload_test_amc2moodle/cleaning.tex",
-    "amc2moodle/tests/payload_test_amc2moodle/cleaning.xml",
-    "amc2moodle/tests/payload_test_amc2moodle/element.tex",
-    "amc2moodle/tests/payload_test_amc2moodle/includestyles.tex",    
-    "amc2moodle/tests/payload_test_moodle2amc/automultiplechoice.sty",
-    "amc2moodle/tests/payload_test_moodle2amc/moodle-bank-exemple.xml",
-    "amc2moodle/tests/payload_test_moodle2amc/moodle-bank-exemple.tex",
-    "amc2moodle/tests/payload_test_moodle2amc/moodle-bank-exemple.pdf"
-]
-excludes = [
-    "**/*_magic.tex",
-    "**/xmlclean*",
-    "**/__pycache__"
-]
-
-# [tool.setuptools]
-# package-dir = { "amc2moodle" = "amc2moodle", "amc2moodle.tests" = "tests"}
 
 [tool.coverage.run]
 branch = true
