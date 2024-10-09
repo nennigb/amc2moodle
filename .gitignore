@@ -1,10 +1,12 @@
 # Byte-code
 __pycache__/
+**/__pycache__/
 *.py[cod]
 
 # Distribution / packaging
 *.egg-info/
 build/
+dist/
 
 # pdoc
 html/
@@ -40,3 +42,8 @@ html/
 *.mtc1
 *.out
 *.synctex*
+
+# specific amc2moodle artifacts
+**/xmlclean*
+**/*_magic.tex
+output_tests/

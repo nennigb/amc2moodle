@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [project]
 name = "amc2moodle"
@@ -35,11 +35,54 @@ Issues = "https://github.com/nennigb/amc2moodle/issues"
 amc2moodle = "amc2moodle.amc2moodle.bin.amc2moodle:run"
 moodle2amc = "amc2moodle.moodle2amc.bin.moodle2amc:run"
 
-[tool.setuptools.dynamic]
-version = {attr = "amc2moodle.__version__"}
+[tool.pdm.version]
+source = "file"
+path = "amc2moodle/_version.py"
 
-[tool.setuptools]
-package-dir = { "amc2moodle" = "amc2moodle", "amc2moodle.tests" = "tests"}
+[tool.pdm.build]
+source-includes = [
+    "LICENSE",
+    "README.md"
+]
+includes = [
+    "amc2moodle/",
+    "amc2moodle/moodle2amc/README.md",
+    "amc2moodle/amc2moodle/README.md",
+    "amc2moodle/amc2moodle/bin/amc2moodle",
+    "amc2moodle/amc2moodle/*.xslt",
+    "amc2moodle/amc2moodle/*sty.ltxml",
+    "amc2moodle/moodle2amc/bin/moodle2amc",
+    "amc2moodle/moodle2amc/html2tex.xslt",
+    "amc2moodle/moodle2amc/struc2tex.xslt",
+    "amc2moodle/tests/payload_test_amc2moodle/Figures/*",
+    "amc2moodle/tests/payload_test_amc2moodle/Figures/other/*",
+    "amc2moodle/tests/payload_test_amc2moodle/4.png",
+    "amc2moodle/tests/payload_test_amc2moodle/QCM.pdf",
+    "amc2moodle/tests/payload_test_amc2moodle/QCM.tex",
+    "amc2moodle/tests/payload_test_amc2moodle/QCM.xml",
+    "amc2moodle/tests/payload_test_amc2moodle/QCM_wo-tikz.tex",
+    "amc2moodle/tests/payload_test_amc2moodle/QCM_wo-tikz.xml",
+    "amc2moodle/tests/payload_test_amc2moodle/tikz.tex",
+    "amc2moodle/tests/payload_test_amc2moodle/common-bank.tex",
+    "amc2moodle/tests/payload_test_amc2moodle/numerical.tex",
+    "amc2moodle/tests/payload_test_amc2moodle/numerical.xml",
+    "amc2moodle/tests/payload_test_amc2moodle/cleaning.tex",
+    "amc2moodle/tests/payload_test_amc2moodle/cleaning.xml",
+    "amc2moodle/tests/payload_test_amc2moodle/element.tex",
+    "amc2moodle/tests/payload_test_amc2moodle/includestyles.tex",    
+    "amc2moodle/tests/payload_test_moodle2amc/automultiplechoice.sty",
+    "amc2moodle/tests/payload_test_moodle2amc/moodle-bank-exemple.xml",
+    "amc2moodle/tests/payload_test_moodle2amc/moodle-bank-exemple.tex",
+    "amc2moodle/tests/payload_test_moodle2amc/moodle-bank-exemple.pdf"
+]
+excludes = [
+    "**/*_magic.tex",
+    "**/xmlclean*",
+    "**/__pycache__"
+]
+
+# [tool.setuptools]
+# package-dir = { "amc2moodle" = "amc2moodle", "amc2moodle.tests" = "tests"}
 
 [tool.coverage.run]
 branch = true
