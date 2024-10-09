@@ -17,6 +17,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from .test_amc2moodle import *
+from .test_moodle2amc import *
+from .test_utils_calculatedParser import *
+from .test_utils_text import *
 # import glob
 # import unittest
 # import os 
