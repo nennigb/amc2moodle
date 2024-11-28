@@ -166,7 +166,7 @@ class TestSuiteNoTikz(unittest.TestCase):
                             frac = float(a.attrib['fraction'])
                             frac_list.append(frac)
                             s += frac
-                        print('In {}, fraction are {}\n'.format(qname, frac_list))
+                        Logger.debug('In {}, fraction are {}\n'.format(qname, frac_list))
                         if abs(s - target_ans_sum) > TOL:
                             ok += 1
                     else:
@@ -360,7 +360,7 @@ class TestSuiteOther(unittest.TestCase):
         # check it
         equiv = check_hash(fileOut, fileRef)
         if equiv:
-            print(' > Converted XML is identical to the ref.')
+            Logger.info(' > Converted XML is identical to the ref.')
         # self.assertTrue(equiv, 'The converted file is different from the ref.')
 
     def test_tikz(self):
@@ -381,7 +381,7 @@ class TestSuiteOther(unittest.TestCase):
         # check it
         equiv = check_hash(fileOut, fileRef)
         if equiv:
-            print(' > Converted XML is identical to the ref.')
+            Logger.info(' > Converted XML is identical to the ref.')
         # self.assertTrue(equiv, 'The converted file is different from the ref.')
 
     def test_cleaning(self):

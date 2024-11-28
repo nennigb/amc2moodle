@@ -27,7 +27,7 @@ import os
 import shutil
 from importlib import util  # python 3.x
 import tempfile
-from distutils.dir_util import copy_tree
+from shutil import copytree
 import logging
 from concurrent.futures import ThreadPoolExecutor
 
@@ -341,7 +341,7 @@ class amc2moodle:
                                                dir=getPathFile(self.output))
                 #
                 Logger.info(' > Save all temp files in: %s' % tempdirSave)
-                copy_tree(self.tempdir.name, tempdirSave)
+                copytree(self.tempdir.name, tempdirSave, dirs_exist_ok=True)
 
             # clean XML file (experimental)
             if self.cleanXML:
