@@ -177,6 +177,9 @@ class amc2moodle:
         # remove magictex temp file
         if not self.keepFlag:
             os.remove(self.magictex)
+        else:
+            dst = os.path.join(getPathFile(self.output), getFilename(self.magictex))
+            shutil.move(self.magictex, dst)
 
     def showData(self):
         """Show loaded parameters."""
@@ -232,6 +235,9 @@ class amc2moodle:
         """Run LaTeXML on the input TeX file."""
         # run LaTeXML on magictex file
         Logger.info(' > Running LaTeXML conversion')
+        # store artifacts in output directory
+        pathout = getPathFile(self.output)
+        baselog = os.path.join(pathout,os.path.splitext(os.path.basename(self.magictex))[0])
         # LoggerXML = logging.getLogger('LaTexML')
         # TODO: caution with 'universal_newlines=' (new syntax from Python 3.7: text=)
         options = ['--noparse',
@@ -241,9 +247,9 @@ class amc2moodle:
         with subprocess.Popen([
                 'latexml',
                 *options,
-                '--path=%s' % os.path.dirname(__file__),
+                '--path=%s' % getPathFile(__file__),
                 '--dest=%s' % self.tempxmlfile,
-                '--log=%s.latexml.log' % os.path.splitext(self.magictex)[0],
+                '--log=%s.latexml.log' % baselog,
                 self.magictex],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -294,7 +300,7 @@ class amc2moodle:
         pattern = '%\n'
         Logger.warning("Caution: cleaning XML file is experimental")
         # copy output file and remove '%\n' (a temporary file will be used and deleted)
-        fdTemp, pathTemp = tempfile.mkstemp(dir=getPathFile(self.inputtex),
+        fdTemp, pathTemp = tempfile.mkstemp(dir=getPathFile(self.output),
                                             prefix='xmlclean')
         Logger.debug(" > Cleaning: create {} ".format(pathTemp))
         with open(self.output, 'r') as fin, open(pathTemp, 'w') as fout:
