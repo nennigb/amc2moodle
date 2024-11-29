@@ -33,7 +33,7 @@ RUN mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
 # RUN pip3 install -U pip && \
 #     pip install amc2moodle
 WORKDIR /tmp
-RUN git clone https://github.com/nennigb/amc2moodle.git -b master ${INSTALL_DIR_A2M}
+RUN git clone https://github.com/nennigb/amc2moodle.git -b fix-issue-for-building-docker-container ${INSTALL_DIR_A2M}
 WORKDIR ${INSTALL_DIR_A2M}
 RUN mkdir -p ${VENVDIR} && \
     python -m venv ${VENVDIR}
