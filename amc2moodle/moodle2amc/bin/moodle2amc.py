@@ -46,7 +46,7 @@ def run():
                         help="Output XML file (default inputfile.tex)",
                         required=False)
     parser.add_argument("--fig",
-                        help='''figures folder name (relative to current directory)''',
+                        help='''figures folder name (relative to current directory, could differ from the directory of the input file)''',
                         required=False)
     parser.add_argument("--check",
                         help='''Check if LaTeX output compile (optional)''',

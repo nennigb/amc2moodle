@@ -310,10 +310,9 @@ class amc2moodle:
                 fout.write(line)
         # copy temporary file to the output
         os.close(fdTemp)
+        shutil.copy(pathTemp, self.output)
         # keep/remove temporary file
-        if self.keepFlag:
-            shutil.copy(pathTemp, self.output)
-        else:
+        if not self.keepFlag:
             os.remove(pathTemp)
         Logger.info(" > Cleaning: done, with {} replacements.".format(nreplacement))
 
