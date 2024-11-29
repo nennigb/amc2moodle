@@ -79,7 +79,7 @@ jobs:
     - name: Generate coverage report
       if: ${{ matrix.python-version == '3.13' }}
       run: |
-        hatch test
+        hatch test --cover
         hatch run coverage xml
     - name: Creating coverage folder
       if: ${{ matrix.python-version == '3.13' }}
