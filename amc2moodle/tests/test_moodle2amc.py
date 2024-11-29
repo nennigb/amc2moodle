@@ -19,10 +19,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from amc2moodle.utils.customLogging import customLogger
-from amc2moodle.amc2moodle.test import check_hash
+from amc2moodle.utils.misc import check_hash, for_all_methods, decorator_set_cwd
 from amc2moodle.moodle2amc import Quiz
 import amc2moodle as amdlpkg
 import os
+import shutil
 import unittest
 
 # Load logger
@@ -33,11 +34,21 @@ logObj.setupConsoleLogger(verbositylevel=2,
 # Catch Logger
 Logger = logObj.getLogger()
 
+# payload data directory for running test
+__PAYLOAD_TEST_DIR__ = os.path.join(os.path.dirname(__file__), 'payload_test_moodle2amc')
+
+
+# add an output directory for tests
+__OUTPUT_TEST_DIR__ = os.path.abspath(os.path.join(os.getcwd(), 'output_tests'))
+# create output directory and switch working dir on it
+os.makedirs(__OUTPUT_TEST_DIR__, exist_ok=True)
+# os.chdir(__OUTPUT_TEST_DIR__)
+
+
 # Silence other loggers
 # for log_name, log_obj in logging.Logger.manager.loggerDict.items():
 #     if "amc2moodle" not in log_name and "tests_a2m" not in log_name:
 #         log_obj.disabled = True
-
 
 class TestSuite(unittest.TestCase):
     """ Define test cases for unittest.
@@ -47,17 +58,25 @@ class TestSuite(unittest.TestCase):
     teacher / sandbox
 
     """
-
+    @decorator_set_cwd(__OUTPUT_TEST_DIR__)
     def test_mdl_bank(self):
         """ Tests if input XML file yields reference LaTeX file.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                              "test/moodle-bank-exemple.xml"))
-        fileOut = os.path.abspath('./test_moodle-bank-exemple.tex')
-        fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               "test/moodle-bank-exemple.tex"))
-
+        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                              "moodle-bank-exemple.xml"))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,
+                                               'test_moodle-bank-exemple.tex'))
+        fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                               "moodle-bank-exemple.tex"))
+        
+        # move sty's file to output dir
+        src = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                           "automultiplechoice.sty"))
+        dst = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,
+                                           "automultiplechoice.sty"))
+        shutil.copyfile(src, dst)
+        
         Logger.info('============ Run test conversion ============')
         # create a quiz
         quiz = Quiz(fileIn)
@@ -71,10 +90,13 @@ class TestSuite(unittest.TestCase):
             Logger.info('> Converted XML is identical to the reference: OK')
         # test latex compilation
         status = quiz.compileLatex(fileOut)
+        Logger.info('cwd {}'.format(os.getcwd()))
         if status.returncode != 0:
             Logger.info('> pdflatex encounters Errors, see logs...')
         else:
             Logger.info('> pdflatex compile without Errors: OK')
+            
+        Logger.info('cwd {}'.format(os.getcwd()))
         self.assertEqual(status.returncode, 0)
 
 

@@ -23,8 +23,8 @@ from amc2moodle.utils.calculatedParser import *
 from io import StringIO
 import unittest
 from unittest.mock import patch
-# import also text test
-from amc2moodle.utils.test_text import *
+# # import also text test
+# from amc2moodle.utils.test_text import *
 
 
 class TestSuiteCalculatedParserToFP(unittest.TestCase):

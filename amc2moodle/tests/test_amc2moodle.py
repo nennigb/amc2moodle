@@ -20,9 +20,9 @@
 """
 from amc2moodle.utils.customLogging import customLogger
 from amc2moodle.amc2moodle import amc2moodle_class as a2m
+from amc2moodle.utils.misc import check_hash
 import amc2moodle as amdlpkg
 import os
-import hashlib
 import unittest
 from lxml import etree
 
@@ -34,6 +34,15 @@ logObj.setupConsoleLogger(verbositylevel=2,
 # Catch Logger
 Logger = logObj.getLogger()
 
+# payload data directory for running test
+__PAYLOAD_TEST_DIR__ = os.path.join(os.path.dirname(__file__), 'payload_test_amc2moodle')
+
+# add an output directory for tests
+__OUTPUT_TEST_DIR__ = os.path.abspath(os.path.join(os.getcwd(), 'output_tests'))
+# create output directory and switch working dir on it
+os.makedirs(__OUTPUT_TEST_DIR__, exist_ok=True)
+# os.chdir(__OUTPUT_TEST_DIR__)
+
 # Silence other loggers
 # for log_name, log_obj in logging.Logger.manager.loggerDict.items():
 #      if "tests_a2m" not in log_name and "amc2moodle" not in log_name:
@@ -42,45 +51,8 @@ Logger = logObj.getLogger()
 # TODO complete test case for Numerical questions
 # TODO Test XML Schema Definition
 
-
-def check_hash(file1, file2):
-    """ Return the md5 sum after removing all withspace.
-
-    Parameters
-    ----------
-    file1, file2 : string
-        Filenames of files to check.
-
-    Returns
-    -------
-    equiv : bool
-        equiv is True if the checksum are equal.
-    """
-
-    # list of whitespace expression, avoid pb if xml layout is changed
-    ignored_exp = [' ', '\t', '\n']
-
-    # read and replace whitespace
-    with open(file1) as f1:
-        content1 = f1.read()
-        for exp in ignored_exp:
-            content1 = content1.replace(exp, '')
-
-    # read and replace whitespace
-    with open(file2) as f2:
-        content2 = f2.read()
-        for exp in ignored_exp:
-            content2 = content2.replace(exp, '')
-
-    # compute hash
-    h1 = hashlib.md5(content1.encode()).hexdigest()
-    h2 = hashlib.md5(content2.encode()).hexdigest()
-    equiv = h1 == h2
-    return equiv
-
-
 class TestSuiteNoTikz(unittest.TestCase):
-    """ Define test cases for unittest based on test/QCM_wo-tikz.tex.
+    """ Define test cases for unittest based on __PAYLOAD_TEST_DIR__/QCM_wo-tikz.tex.
 
     This is the main part of the test. It test some key/value of the XML
     output file and that the global work finish normally.
@@ -97,11 +69,11 @@ class TestSuiteNoTikz(unittest.TestCase):
         """ Setup XML file from inpout tex (no tikz) for value checking.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                              "test/QCM_wo-tikz.tex"))
-        fileOut = os.path.abspath('./test_notikz.xml')
-        fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               "test/QCM_wo-tikz.xml"))
+        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                              "QCM_wo-tikz.tex"))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_notikz.xml'))
+        fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                               "QCM_wo-tikz.xml"))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
@@ -346,11 +318,11 @@ class TestSuiteOther(unittest.TestCase):
         """ Tests if numerical questions yields reference xml file.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                              "test/numerical.tex"))
-        fileOut = os.path.abspath('./test_numerical.xml')
-        fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               "test/numerical.xml"))
+        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                              "numerical.tex"))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_numerical.xml'))
+        fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                               "numerical.xml"))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
@@ -367,11 +339,11 @@ class TestSuiteOther(unittest.TestCase):
         """ Tests if input tex (with tikz) file yields reference xml file.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                              "test/QCM.tex"))
-        fileOut = os.path.abspath('./test_tikz.xml')
-        fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               "test/QCM.xml"))
+        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                              "QCM.tex"))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_tikz.xml'))
+        fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                               "QCM.xml"))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
@@ -388,11 +360,11 @@ class TestSuiteOther(unittest.TestCase):
         """ Tests if questions with long equation yields reference xml file.
         """
         # Define i/o file
-        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                              "test/cleaning.tex"))
-        fileOut = os.path.abspath('./cleaning.xml')
-        fileRef = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               "test/cleaning.xml"))
+        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                              "cleaning.tex"))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'cleaning.xml'))
+        fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                               "cleaning.xml"))
         # Convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
@@ -440,9 +412,9 @@ class TestSuiteElement(unittest.TestCase):
         Just test the excecution.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                              "test/element.tex"))
-        fileOut = os.path.abspath('./test_element.xml')
+        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                              "element.tex"))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_element.xml'))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
@@ -471,9 +443,9 @@ class TestSuiteStyles(unittest.TestCase):
         Error should be REMOVED when `include_styles` is switch on.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                              "test/includestyles.tex"))
-        fileOut = os.path.abspath('./test_includestyles.xml')
+        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+                                              "includestyles.tex"))
+        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_includestyles.xml'))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
