@@ -30,6 +30,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PAT }}
       - name: 'Build:dockerimage'
+        id: docker_build
         uses: docker/build-push-action@v6
         with:
           # relative path to the place where source code with Dockerfile is located
