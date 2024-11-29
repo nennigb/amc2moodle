@@ -31,6 +31,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 # output latex File
 LATEX_FILEOUT = 'out.tex'
+# default figures directory
+FIGDIR = 'Figures'
 # xslt file
 XSLT_TEXRENDERER = os.path.join(os.path.dirname(__file__), 'struc2tex.xslt')
 
@@ -62,6 +64,7 @@ class Quiz:
         """
         parser = etree.XMLParser(encoding='utf-8', strip_cdata=False)
         self.mdl = etree.parse(mdl_xml_file, parser=parser)
+        self.figdir = FIGDIR
 
     # @classmethod
     # def fromstring(cls, mdl_xml_str):
@@ -80,13 +83,17 @@ class Quiz:
                            encoding='utf8').decode('utf8')
         return '\n'.join((rep, s))
 
-    def convert(self, texfile=LATEX_FILEOUT, debug=False):
+    def convert(self, texfile=LATEX_FILEOUT, 
+                figdir=FIGDIR, 
+                debug=False):
         """ Convert moodle quiz to LaTeX amc format.
 
         Parameters
         ----------
         texfile : string, optional
             Ouput latex path/filename. The default is LATEX_FILEOUT.
+        figdir : string, optional
+            Figure directory. The default is FIGDIR.
         debug : bool, optional
             Display additional outputs. The default is False.
 
@@ -95,6 +102,8 @@ class Quiz:
         None.
 
         """
+        # get figures directory
+        self.figdir = figdir
         # convert : convert(to str) converttofile
         amc, cat_dict = self._reshape()
         if debug:
@@ -258,7 +267,7 @@ class Quiz:
                             cat_dict.update({catname: 0})
                         # there is one more question in the catname categogy
                         cat_dict[catname] += 1
-                        amc_q = CreateQuestion(qtype, question).transform(catname)
+                        amc_q = CreateQuestion(qtype, question, self.figdir).transform(catname)
                         amc.append(amc_q)
                 else:
                     Logger.error("> Question '{}' of type '{}' is not supported. Skipping.".format(qname, qtype))
@@ -301,13 +310,14 @@ class Quiz:
         latexFile : string
             full name of a latex file.
         """
-        command = "pdflatex -interaction=nonstopmode -halt-on-error -file-line-error {}".format(latexFile)
+        command = "pdflatex -interaction=nonstopmode -halt-on-error -file-line-error {}".format(os.path.basename(latexFile))
         #TODO: caution with 'universal_newlines=' (new syntax from Python 3.7: text=)
         Logger.debug('Run command {}'.format(command))
         with subprocess.Popen(command.split(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            universal_newlines=True) as latexProcess:
+            universal_newlines=True,
+            cwd=os.path.dirname(latexFile)) as latexProcess:
             #while latexProcess.poll() is None:
             #    Logger.debug(latexProcess.stdout.read())
             #writePipeOnOutput(latexProcess,latexProcess.stderr,Logger.debug)

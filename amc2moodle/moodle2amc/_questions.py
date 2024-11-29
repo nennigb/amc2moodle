@@ -81,10 +81,9 @@ class Question(ABC):
     _xslt_html2tex = os.path.join(os.path.dirname(__file__),
                                   'html2tex.xslt')
     _transform = etree.XSLT(etree.parse(_xslt_html2tex))
-    figpath = FIGURES_PATH
 
     # possible numerics, open
-    def __init__(self, q):
+    def __init__(self, q, figpath=FIGURES_PATH):
         """ Init class from an etree Element.
         """
         self.q = q
@@ -95,6 +94,8 @@ class Question(ABC):
         self.gStrategy = GRADING_STRATEGY
         # save number of svg file per question
         self.svg_id = 0
+        # set path for figures
+        self.figpath = figpath
 
     def __repr__(self):
         """ Change string representation.
@@ -285,10 +286,10 @@ class QuestionMultichoice(Question):
     """ Multiple choice question (question or questionmult)
     """
 
-    def __init__(self, q):
+    def __init__(self, q, figpath=FIGURES_PATH):
         """ Init class from an etree Element.
         """
-        super().__init__(q)
+        super().__init__(q, figpath)
         self.q = q
         self.qtype = 'multiplechoice'
 
@@ -344,10 +345,10 @@ class QuestionEssay(Question):
     """ Essai choice question (AMCopen)
     """
 
-    def __init__(self, q):
+    def __init__(self, q, figpath=FIGURES_PATH):
         """ Init class from an etree Element.
         """
-        super().__init__(q)
+        super().__init__(q, figpath)
         self.q = q
         self.qtype = 'essai'
 
@@ -395,10 +396,10 @@ class QuestionNumerical(Question):
     The unit handling is not supported.
     """
 
-    def __init__(self, q):
+    def __init__(self, q, figpath=FIGURES_PATH):
         """ Init class from an etree Element.
         """
-        super().__init__(q)
+        super().__init__(q, figpath)
         self.q = q
         self.qtype = 'numerical'
 
@@ -491,10 +492,10 @@ class QuestionDescription(Question):
     """ Description question.
     """
 
-    def __init__(self, q):
+    def __init__(self, q, figpath=FIGURES_PATH):
         """ Init class from an etree Element.
         """
-        super().__init__(q)
+        super().__init__(q, figpath)
         self.q = q
         self.qtype = 'description'
 
@@ -524,10 +525,10 @@ class QuestionCalculatedMulti(Question):
     """ Moodle Calculated question (question or questionmult).
     """
 
-    def __init__(self, q):
+    def __init__(self, q, figpath=FIGURES_PATH):
         """ Init class from an etree Element.
         """
-        super().__init__(q)
+        super().__init__(q, figpath)
         self.q = q
         self.qtype = 'calculatedmulti'
 
@@ -660,7 +661,7 @@ Q_FACTORY = {'multichoice': QuestionMultichoice,
              'numerical': QuestionNumerical,
              'calculatedmulti': QuestionCalculatedMulti}
 
-def CreateQuestion(qtype, question):
+def CreateQuestion(qtype, question, figpath=FIGURES_PATH):
     """ Factory function for creating the Questions* objects.
 
 
@@ -678,6 +679,6 @@ def CreateQuestion(qtype, question):
     """
 
     try:
-        return Q_FACTORY[qtype](question)   # *args,**kwargs)
+        return Q_FACTORY[qtype](question, figpath)   # *args,**kwargs)
     except:
         raise KeyError(" 'qtype' argument should be in {}".format(Q_FACTORY.keys() ) )

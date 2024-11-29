@@ -50,7 +50,7 @@ os.makedirs(__OUTPUT_TEST_DIR__, exist_ok=True)
 #     if "amc2moodle" not in log_name and "tests_a2m" not in log_name:
 #         log_obj.disabled = True
 
-class TestSuite(unittest.TestCase):
+class TestSuiteM2A(unittest.TestCase):
     """ Define test cases for unittest.
 
     Before changing the reference xml file, please check they can be imported
@@ -77,11 +77,15 @@ class TestSuite(unittest.TestCase):
                                            "automultiplechoice.sty"))
         shutil.copyfile(src, dst)
         
+        # figure directory
+        figdir = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,
+                                             "Figures"))
+        
         Logger.info('============ Run test conversion ============')
         # create a quiz
         quiz = Quiz(fileIn)
         # convert it
-        quiz.convert(fileOut, debug=False)
+        quiz.convert(fileOut, debug=False, figdir=figdir)
 
         Logger.info('=============== Check output ================')
         # check it (for convinience but too strict)

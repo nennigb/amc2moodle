@@ -46,8 +46,7 @@ def run():
                         help="Output XML file (default inputfile.tex)",
                         required=False)
     parser.add_argument("--fig",
-                        help='''figures folder name (default Figures not yet
-                        implemented)''',
+                        help='''figures folder name (relative to current directory)''',
                         required=False)
     parser.add_argument("--check",
                         help='''Check if LaTeX output compile (optional)''',
@@ -78,6 +77,14 @@ def run():
         fileIn = args.inputfile
     if args.output:
         fileOut = args.output
+    if args.fig:
+        figDir = args.fig
+    else:
+        figDir = os.path.join(os.path.dirname(os.path.abspath(fileIn)),'Figures')
+    # fix absolute path for figures directory
+    if not os.path.isabs(figDir):
+        figDir = os.path.abspath(figDir)
+    
     
     silentMode = args.silent
     verboseMode = args.verbose
@@ -95,7 +102,7 @@ def run():
 
     # declare log file
     if fileInOk and logFileMode:
-        logFile = os.path.splitext(os.path.basename(fileIn))[0]+'_moodle2amc.log'
+        logFile = os.path.splitext(os.path.abspath(fileIn))[0]+'_moodle2amc.log'
         # remove existing log file
         if os.path.exists(logFile):
             os.remove(logFile)
@@ -127,7 +134,7 @@ def run():
         # create a quiz
         quiz = mdl2amc.Quiz(fileIn)
         # convert it
-        quiz.convert(fileOut, debug)
+        quiz.convert(fileOut, debug=debug, figdir=figDir)
         # test latex compilation
         if args.check:
             Logger.info('============ Check output ==============')

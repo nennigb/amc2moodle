@@ -27,7 +27,7 @@ from unittest.mock import patch
 # from amc2moodle.utils.test_text import *
 
 
-class TestSuiteCalculatedParserToFP(unittest.TestCase):
+class TestSuiteA2MCalculatedParserToFP(unittest.TestCase):
     """ Define calculated question parser test cases for unittest.
     """
 
@@ -89,7 +89,7 @@ class TestSuiteCalculatedParserToFP(unittest.TestCase):
 
 
 
-class TestSuiteCalculatedParserFromFP(unittest.TestCase):
+class TestSuiteA2MCalculatedParserFromFP(unittest.TestCase):
     """ Define AMC/FP question parser test cases for unittest.
     """
 

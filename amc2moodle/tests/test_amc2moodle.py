@@ -51,7 +51,7 @@ os.makedirs(__OUTPUT_TEST_DIR__, exist_ok=True)
 # TODO complete test case for Numerical questions
 # TODO Test XML Schema Definition
 
-class TestSuiteNoTikz(unittest.TestCase):
+class TestSuiteA2MNoTikz(unittest.TestCase):
     """ Define test cases for unittest based on __PAYLOAD_TEST_DIR__/QCM_wo-tikz.tex.
 
     This is the main part of the test. It test some key/value of the XML
@@ -304,7 +304,7 @@ class TestSuiteNoTikz(unittest.TestCase):
                         break
 
 
-class TestSuiteOther(unittest.TestCase):
+class TestSuiteA2MOther(unittest.TestCase):
     """ Define test cases for unittest. Just check the process finish normally.
 
     Before changing the reference xml file, please check they can be imported
@@ -397,7 +397,7 @@ class TestSuiteOther(unittest.TestCase):
                         break
 
 
-class TestSuiteElement(unittest.TestCase):
+class TestSuiteA2MElement(unittest.TestCase):
     """ Define test cases for unittest. Just check the process finish normally.
 
     Before changing the reference xml file, please check they can be imported
@@ -423,7 +423,7 @@ class TestSuiteElement(unittest.TestCase):
                        deb=0)
 
 
-class TestSuiteStyles(unittest.TestCase):
+class TestSuiteA2MStyles(unittest.TestCase):
     """Check if `include_styles` options works as expected."""
 
     @staticmethod
