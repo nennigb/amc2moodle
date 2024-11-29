@@ -1,0 +1,77 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "amc2moodle"
+dynamic = ['version']
+authors = [
+    {name = "B. Nennig", email = "benoit.nennig@isae-supmeca.fr"},
+    {name = "L. Laurent", email = "luc.laurent@lecnam.net"}
+]
+description = "A tool to convert automultiplechoice quizz to moodle questions"
+readme = "README.md"
+classifiers=[
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+license = {file = "LICENSE"}
+dependencies = [
+    'wand>=0.5.9',
+    'lxml>=3.5.0',
+    'pyparsing>=2.4.6',
+    'wheel>=0.29.0',
+    'markdown'
+]
+requires-python='>=3.8'
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov[all]"]
+lint = [ "black", "flake8"]
+
+[project.urls]
+Homepage = "https://github.com/nennigb/amc2moodle"
+Repository = "https://github.com/nennigb/amc2moodle"
+Issues = "https://github.com/nennigb/amc2moodle/issues"
+
+[project.scripts]
+amc2moodle = "amc2moodle.amc2moodle.bin.amc2moodle:run"
+moodle2amc = "amc2moodle.moodle2amc.bin.moodle2amc:run"
+
+[tool.hatch.version]
+path = "amc2moodle/_version.py"
+
+[tool.hatch.build]
+packages = ["amc2moodle"]
+# only-packages = true
+ignore-vcs = false
+include = [
+    '/amc2moodle',
+    "LICENSE",
+    "README.md",
+    "/amc2moodle/moodle2amc/README.md",
+    "/amc2moodle/amc2moodle/README.md",
+    "/amc2moodle/amc2moodle/*.xslt",
+    "/amc2moodle/amc2moodle/*sty.ltxml",
+    "/amc2moodle/moodle2amc/html2tex.xslt",
+    "/amc2moodle/moodle2amc/struc2tex.xslt",
+]
+
+[tool.hatch.envs.hatch-test]
+default-args = ["amc2moodle/tests"]
+
+[tool.coverage.run]
+branch = true
+command_line = "-m pytest -s amc2moodle/tests/"
+
+[tool.coverage.html]
+show_contexts = true
+directory = "reportcov"
+
+[tool.coverage.xml]
+output = "reportcov/report.xml"
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
