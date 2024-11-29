@@ -3,7 +3,7 @@ FROM texlive/texlive:latest
 # labels
 LABEL AUTHOR='Luc Laurent'
 LABEL MAINTAINER='Luc Laurent & Benoit Nennig'
-LABEL org.opencontainers.image.source = "https://github.com/nennigb/amc2moodle/"
+LABEL org.opencontainers.image.source="https://github.com/nennigb/amc2moodle/"
 
 # declare useful directories using environement 
 ENV MONITOR_DIR=/tmp/work
@@ -30,16 +30,14 @@ RUN apt update && \
 RUN mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
 
 # install pip and Python pkg
-# RUN pip3 install -U pip && \
-#     pip install amc2moodle
 WORKDIR /tmp
-RUN git clone https://github.com/nennigb/amc2moodle.git -b fix-issue-for-building-docker-container ${INSTALL_DIR_A2M}
+RUN git clone https://github.com/nennigb/amc2moodle.git -b master ${INSTALL_DIR_A2M}
 WORKDIR ${INSTALL_DIR_A2M}
 RUN mkdir -p ${VENVDIR} && \
     python -m venv ${VENVDIR}
 ENV PATH="${VENVDIR}/bin:$PATH"
 RUN pip install -U pip && \
-    pip install '.[test,cov]'
+    pip install '.[test]' 
 
 # check if amc2moodle and moodle2amc work
 WORKDIR /
