@@ -26,6 +26,11 @@ dependencies = [
 ]
 requires-python='>=3.8'
 
+[project.optional-dependencies]
+test = ["pytest"]
+lint = [ "black", "flake8"]
+cov = ["pytest < 5.0.0", "pytest-cov[all]"]
+
 [project.urls]
 Homepage = "https://github.com/nennigb/amc2moodle"
 Repository = "https://github.com/nennigb/amc2moodle"

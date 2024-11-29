@@ -9,11 +9,22 @@ LABEL org.opencontainers.image.source = "https://github.com/nennigb/amc2moodle/"
 ENV MONITOR_DIR=/tmp/work
 ENV LOG_DIR=/tmp/daemon
 ENV INSTALL_DIR_A2M=/tmp/amc2moodle
+ENV VENVDIR=/tmp/venv
+SHELL ["/bin/bash", "-c"]
 
 # install debian packages
 RUN apt update && \
-    apt install -yy wget ghostscript imagemagick libtext-unidecode-perl latexml xmlindent python3-pip git && \
-    apt clean
+    apt install -yy wget \
+    ghostscript \
+    imagemagick \
+    libtext-unidecode-perl \
+    latexml \
+    xmlindent \
+    python3-pip \
+    python3-venv \
+    git && \
+    apt clean &&\
+    rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 # move policy file
 RUN mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
@@ -24,18 +35,17 @@ RUN mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
 WORKDIR /tmp
 RUN git clone https://github.com/nennigb/amc2moodle.git -b master ${INSTALL_DIR_A2M}
 WORKDIR ${INSTALL_DIR_A2M}
-RUN pip3 install -U pip && \
-    pip3 install .
+RUN mkdir -p ${VENVDIR} && \
+    python -m venv ${VENVDIR}
+ENV PATH="${VENVDIR}/bin:$PATH"
+RUN pip install -U pip && \
+    pip install '.[test,cov]'
 
 # check if amc2moodle and moodle2amc work
 WORKDIR /
-ENV TEXINPUTS=.:${INSTALL_DIR_A2M}/amc2moodle/moodle2amc/test:$TEXINPUTS
+ENV TEXINPUTS=.:${INSTALL_DIR_A2M}/amc2moodle/tests/payload_test_moodle2amc/:${TEXINPUTS}
 RUN echo ${TEXINPUTS}
-RUN python -m amc2moodle.amc2moodle.test && \
-    python -m amc2moodle.utils.test && \
-    python -m amc2moodle.moodle2amc.test
-
-
+RUN python -m pytest --pyargs amc2moodle
 
 # create dir
 RUN mkdir ${MONITOR_DIR} && \
