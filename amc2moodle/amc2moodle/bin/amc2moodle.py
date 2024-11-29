@@ -119,7 +119,7 @@ def run():
     
     # declare log file
     if fileInOk and logFileMode:
-        logFile = os.path.splitext(os.path.basename(fileIn))[0]+'_amc2moodle.log'
+        logFile = os.path.splitext(os.path.abspath(fileIn))[0]+'_amc2moodle.log'
         # remove existing log file
         if os.path.exists(logFile):
             os.remove(logFile)

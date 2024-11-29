@@ -176,7 +176,7 @@ class amc2moodle:
         self.tempdir.cleanup()
         # remove magictex temp file
         if not self.keepFlag:
-            os.unlink(self.magictex)
+            os.remove(self.magictex)
 
     def showData(self):
         """Show loaded parameters."""
@@ -243,6 +243,7 @@ class amc2moodle:
                 *options,
                 '--path=%s' % os.path.dirname(__file__),
                 '--dest=%s' % self.tempxmlfile,
+                '--log=%s.latexml.log' % os.path.splitext(self.magictex)[0],
                 self.magictex],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -309,7 +310,11 @@ class amc2moodle:
                 fout.write(line)
         # copy temporary file to the output
         os.close(fdTemp)
-        shutil.copy(pathTemp, self.output)
+        # keep/remove temporary file
+        if self.keepFlag:
+            shutil.copy(pathTemp, self.output)
+        else:
+            os.remove(pathTemp)
         Logger.info(" > Cleaning: done, with {} replacements.".format(nreplacement))
 
     def runBuilding(self):

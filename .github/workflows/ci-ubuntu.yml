@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10', '3.11', '3.12']
+        python-version: [3.8, 3.9, '3.10', '3.11', '3.12', '3.13']
         # unsupported version on ubuntu-latest 3.5, 3.6
         # see https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
     # Steps represent a sequence of tasks that will be executed as part of the job
