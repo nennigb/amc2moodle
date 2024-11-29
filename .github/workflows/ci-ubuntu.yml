@@ -64,18 +64,38 @@ jobs:
     
     - name: Test amc2moodle
       run: |
-        python -m amc2moodle.tests.test_amc2moodle
+        pytest --pyargs amc2moodle.tests.test_amc2moodle
     - name: Test moodle2amc
       run: |
         # add automultiplechoice.sty local copy to LaTeX PATH (for this step)
         # export TEXINPUTS=.:./tests/payload_test_amc2moodle/:$TEXINPUTS (during tests, automultiplechoice.sty is copied in the temproary test folder )
-        python -m amc2moodle.tests.test_moodle2amc
+        pytest --pyargs amc2moodle.tests.test_moodle2amc
     - name: Test text parser
       run: |
-        python -m amc2moodle.tests.test_utils_text
+        pytest --pyargs amc2moodle.tests.test_utils_text
     - name: Test calculated questions parsers
       run: |
-        python -m amc2moodle.tests.test_utils_calculatedParser
+        pytest --pyargs amc2moodle.tests.test_utils_calculatedParser
+    - name: Generate coverage report
+      if: ${{ matrix.python-version == '3.13' }}
+      run: |
+        hatch test
+        hatch run coverage xml
+    - name: Creating coverage folder
+      if: ${{ matrix.python-version == '3.13' }}
+      run: |
+        mkdir -p coverage
+    - name: Coverage Bagdge
+      if: ${{ matrix.python-version == '3.13' }}
+      uses: tj-actions/coverage-badge-py@v2
+      with:
+        output: coverage/coverage.svg
+    - name: Publish coverage report to coverage-badge branch
+      if: ${{ matrix.python-version == '3.13' }}
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: coverage-badge
+        folder: coverage
     
     # Store output files
     # amc2moodle

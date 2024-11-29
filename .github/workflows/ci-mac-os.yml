@@ -68,19 +68,19 @@ jobs:
     
     - name: Test amc2moodle
       run: |
-        python -m amc2moodle.tests.test_amc2moodle
+        pytest --pyargs amc2moodle.tests.test_amc2moodle
         
     - name: Test moodle2amc
       run: |
         # add automultiplechoice.sty local copy to LaTeX PATH (for this step)
         # export TEXINPUTS=.:./tests/payload_test_amc2moodle/:$TEXINPUTS  (during tests, automultiplechoice.sty is copied in the temporary test folder )
-        python -m amc2moodle.tests.test_moodle2amc
+        pytest --pyargs amc2moodle.tests.test_moodle2amc
     - name: Test text parser
       run: |
-        python -m amc2moodle.tests.test_utils_text
+        pytest --pyargs amc2moodle.tests.test_utils_text
     - name: Test calculated questions parsers
       run: |
-        python -m amc2moodle.tests.test_utils_calculatedParser
+        pytest --pyargs amc2moodle.tests.test_utils_calculatedParser
             
     
     # Store output files
