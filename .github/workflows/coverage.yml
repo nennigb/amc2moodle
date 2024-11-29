@@ -15,10 +15,10 @@ jobs:
         with:
             python-version: '3.13'
             cache: 'pip'
-      - name: Install dependencies
+      - name: Install package with optional dependencies
         run: |
           pip install .[test]
-      - name: Test with pytest
+      - name: Test with hatch-test/pytest
         run: |
           hatch test
           hatch run coverage xml

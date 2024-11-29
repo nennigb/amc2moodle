@@ -27,7 +27,7 @@ dependencies = [
 requires-python='>=3.8'
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-cov[all]"]
+test = ["pytest", "pytest-cov[all]", "hatch"]
 lint = [ "black", "flake8"]
 
 [project.urls]
