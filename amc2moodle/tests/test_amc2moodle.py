@@ -35,13 +35,13 @@ logObj.setupConsoleLogger(verbositylevel=2,
 Logger = logObj.getLogger()
 
 # payload data directory for running test
-__PAYLOAD_TEST_DIR__ = os.path.join(os.path.dirname(__file__), 'payload_test_amc2moodle')
+_PAYLOAD_TEST_DIR = os.path.join(os.path.dirname(__file__), 'payload_test_amc2moodle')
 
 # add an output directory for tests
-__OUTPUT_TEST_DIR__ = os.path.abspath(os.path.join(os.getcwd(), 'output_tests'))
+_OUTPUT_TEST_DIR = os.path.abspath(os.path.join(os.getcwd(), 'output_tests'))
 # create output directory and switch working dir on it
-os.makedirs(__OUTPUT_TEST_DIR__, exist_ok=True)
-# os.chdir(__OUTPUT_TEST_DIR__)
+os.makedirs(_OUTPUT_TEST_DIR, exist_ok=True)
+# os.chdir(_OUTPUT_TEST_DIR)
 
 # Silence other loggers
 # for log_name, log_obj in logging.Logger.manager.loggerDict.items():
@@ -52,7 +52,7 @@ os.makedirs(__OUTPUT_TEST_DIR__, exist_ok=True)
 # TODO Test XML Schema Definition
 
 class TestSuiteNoTikz(unittest.TestCase):
-    """ Define test cases for unittest based on __PAYLOAD_TEST_DIR__/QCM_wo-tikz.tex.
+    """ Define test cases for unittest based on _PAYLOAD_TEST_DIR/QCM_wo-tikz.tex.
 
     This is the main part of the test. It test some key/value of the XML
     output file and that the global work finish normally.
@@ -69,10 +69,10 @@ class TestSuiteNoTikz(unittest.TestCase):
         """ Setup XML file from inpout tex (no tikz) for value checking.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+        fileIn = os.path.abspath(os.path.join(_PAYLOAD_TEST_DIR,
                                               "QCM_wo-tikz.tex"))
-        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_notikz.xml'))
-        fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+        fileOut = os.path.abspath(os.path.join(_OUTPUT_TEST_DIR,'test_notikz.xml'))
+        fileRef = os.path.abspath(os.path.join(_PAYLOAD_TEST_DIR,
                                                "QCM_wo-tikz.xml"))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
@@ -318,10 +318,10 @@ class TestSuiteOther(unittest.TestCase):
         """ Tests if numerical questions yields reference xml file.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+        fileIn = os.path.abspath(os.path.join(_PAYLOAD_TEST_DIR,
                                               "numerical.tex"))
-        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_numerical.xml'))
-        fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+        fileOut = os.path.abspath(os.path.join(_OUTPUT_TEST_DIR,'test_numerical.xml'))
+        fileRef = os.path.abspath(os.path.join(_PAYLOAD_TEST_DIR,
                                                "numerical.xml"))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
@@ -339,10 +339,10 @@ class TestSuiteOther(unittest.TestCase):
         """ Tests if input tex (with tikz) file yields reference xml file.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+        fileIn = os.path.abspath(os.path.join(_PAYLOAD_TEST_DIR,
                                               "QCM.tex"))
-        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_tikz.xml'))
-        fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+        fileOut = os.path.abspath(os.path.join(_OUTPUT_TEST_DIR,'test_tikz.xml'))
+        fileRef = os.path.abspath(os.path.join(_PAYLOAD_TEST_DIR,
                                                "QCM.xml"))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
@@ -360,10 +360,10 @@ class TestSuiteOther(unittest.TestCase):
         """ Tests if questions with long equation yields reference xml file.
         """
         # Define i/o file
-        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+        fileIn = os.path.abspath(os.path.join(_PAYLOAD_TEST_DIR,
                                               "cleaning.tex"))
-        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'cleaning.xml'))
-        fileRef = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+        fileOut = os.path.abspath(os.path.join(_OUTPUT_TEST_DIR,'cleaning.xml'))
+        fileRef = os.path.abspath(os.path.join(_PAYLOAD_TEST_DIR,
                                                "cleaning.xml"))
         # Convert to xml
         a2m.amc2moodle(fileInput=fileIn,
@@ -412,9 +412,9 @@ class TestSuiteElement(unittest.TestCase):
         Just test the excecution.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+        fileIn = os.path.abspath(os.path.join(_PAYLOAD_TEST_DIR,
                                               "element.tex"))
-        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_element.xml'))
+        fileOut = os.path.abspath(os.path.join(_OUTPUT_TEST_DIR,'test_element.xml'))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
@@ -443,9 +443,9 @@ class TestSuiteStyles(unittest.TestCase):
         Error should be REMOVED when `include_styles` is switch on.
         """
         # define i/o file
-        fileIn = os.path.abspath(os.path.join(__PAYLOAD_TEST_DIR__,
+        fileIn = os.path.abspath(os.path.join(_PAYLOAD_TEST_DIR,
                                               "includestyles.tex"))
-        fileOut = os.path.abspath(os.path.join(__OUTPUT_TEST_DIR__,'test_includestyles.xml'))
+        fileOut = os.path.abspath(os.path.join(_OUTPUT_TEST_DIR,'test_includestyles.xml'))
         # convert to xml
         a2m.amc2moodle(fileInput=fileIn,
                        fileOutput=fileOut,
