@@ -42,17 +42,6 @@ path = "amc2moodle/_version.py"
 packages = ["amc2moodle"]
 # only-packages = true
 ignore-vcs = false
-include = [
-    '/amc2moodle',
-    "LICENSE",
-    "README.md",
-    "/amc2moodle/moodle2amc/README.md",
-    "/amc2moodle/amc2moodle/README.md",
-    "/amc2moodle/amc2moodle/*.xslt",
-    "/amc2moodle/amc2moodle/*sty.ltxml",
-    "/amc2moodle/moodle2amc/html2tex.xslt",
-    "/amc2moodle/moodle2amc/struc2tex.xslt",
-]
 
 [tool.hatch.envs.hatch-test]
 default-args = ["amc2moodle/tests"]
