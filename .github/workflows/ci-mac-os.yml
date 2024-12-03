@@ -54,12 +54,12 @@ jobs:
       run: |
         # xstring is just required for testing --includestyles
         sudo tlmgr update --self
-        sudo tlmgr install collection-fontsrecommended bophook xstring
+        sudo tlmgr install collection-fontsrecommended bophook xstring  --verify-repo=none
         
     - name: Test latexml
       run: |
         # add --strict flag to be more strict in error catching
-        latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./amc2moodle/amc2moodle/test/QCM.tex   
+        latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./amc2moodle/tests/payload_test_amc2moodle/QCM.tex 
     
     - name: Install amc2moodle
       run: |
@@ -68,16 +68,19 @@ jobs:
     
     - name: Test amc2moodle
       run: |
-        python -m amc2moodle.amc2moodle.test
+        python -m amc2moodle.tests.test_amc2moodle
         
     - name: Test moodle2amc
       run: |
         # add automultiplechoice.sty local copy to LaTeX PATH (for this step)
-        export TEXINPUTS=.:./amc2moodle/moodle2amc/test:$TEXINPUTS
-        python -m amc2moodle.moodle2amc.test
+        # export TEXINPUTS=.:./tests/payload_test_amc2moodle/:$TEXINPUTS  (during tests, automultiplechoice.sty is copied in the temporary test folder )
+        python -m amc2moodle.tests.test_moodle2amc
+    - name: Test text parser
+      run: |
+        python -m amc2moodle.tests.test_utils_text
     - name: Test calculated questions parsers
       run: |
-        python -m amc2moodle.utils.test
+        python -m amc2moodle.tests.test_utils_calculatedParser
             
     
     # Store output files
@@ -87,20 +90,20 @@ jobs:
       uses: actions/upload-artifact@main
       with:
         name: test_notikz_${{ matrix.python-version }}
-        path: test_notikz.xml    
+        path: output_tests/test_notikz.xml    
     
     - name: Archive XML test output of amc2moodle (with tikz)
       if: ${{ always() }}
       uses: actions/upload-artifact@main
       with:
         name: test_tikz_${{ matrix.python-version }}
-        path: test_tikz.xml
+        path: output_tests/test_tikz.xml
     # moodle2amc
     - name: Move latex output
       if: ${{ always() }}
       run: |
         mkdir moodle-bank-exemple-output
-        mv test_moodle-bank-exemple.* moodle-bank-exemple-output/
+        mv output_tests/test_moodle-bank-exemple.* moodle-bank-exemple-output/
         
     - name: Archive LaTeX test output (moodle2amc)
       if: ${{ always() }}
