@@ -12,6 +12,8 @@ dist/
 
 # tests
 output_tests/*
+covreport/*
+coverage_html_report/*
 
 # pdoc
 html/
