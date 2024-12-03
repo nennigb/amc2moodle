@@ -54,7 +54,7 @@ jobs:
       run: |
         # xstring is just required for testing --includestyles
         sudo tlmgr update --self
-        sudo tlmgr install collection-fontsrecommended bophook xstring  --verify-repo=none
+        sudo tlmgr install --verify-repo=none collection-fontsrecommended bophook xstring  
         
     - name: Test latexml
       run: |
