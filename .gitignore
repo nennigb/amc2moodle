@@ -10,6 +10,11 @@ __pycache__/
 build/
 dist/
 
+# tests
+output_tests/*
+covreport/*
+coverage_html_report/*
+
 # pdoc
 html/
 *.html
