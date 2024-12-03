@@ -26,6 +26,10 @@ dependencies = [
 ]
 requires-python='>=3.8'
 
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov[all]", "hatch"]
+lint = [ "black", "flake8"]
+
 [project.urls]
 Homepage = "https://github.com/nennigb/amc2moodle"
 Repository = "https://github.com/nennigb/amc2moodle"
@@ -48,7 +52,15 @@ default-args = ["amc2moodle/tests"]
 
 [tool.coverage.run]
 branch = true
-command_line = "-m unittest discover -s amc2moodle/tests/"
+command_line = "-m pytest -s amc2moodle/tests/"
 
 [tool.coverage.html]
-directory = "coverage_html_report"
+show_contexts = true
+directory = "reportcov"
+
+[tool.coverage.xml]
+output = "reportcov/report.xml"
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
