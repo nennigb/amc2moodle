@@ -28,7 +28,7 @@ requires-python='>=3.8'
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov[all]"]
-lint = [ "black", "flake8"]
+
 
 [project.urls]
 Homepage = "https://github.com/nennigb/amc2moodle"
@@ -56,3 +56,10 @@ command_line = "-m unittest discover -s amc2moodle/tests/"
 
 [tool.coverage.html]
 directory = "coverage_html_report"
+
+[tool.ruff]
+# Allow lines to be as long as 120.
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "single"

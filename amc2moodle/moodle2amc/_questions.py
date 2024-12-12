@@ -24,20 +24,24 @@ __all__ = ['Question', 'QuestionMultichoice',
            'QuestionNumerical', 'QuestionCalculatedMulti',
            'SUPPORTED_QUESTION_TYPE', 'CreateQuestion']
 
-from lxml import etree
-from xml.sax.saxutils import unescape
 import base64
+import logging
+import math
 import os
-from abc import ABC, abstractmethod
-from wand.image import Image
+import sys
+
 # decode filemame unsed in moodle
 import urllib
-import math
-import sys
-from ..utils.calculatedParser import *
-from amc2moodle.utils.text import clean_q_name
+from abc import ABC, abstractmethod
+from xml.sax.saxutils import unescape
+
 import markdown
-import logging
+from lxml import etree
+from wand.image import Image
+
+from amc2moodle.utils.text import clean_q_name
+
+from ..utils.calculatedParser import *
 
 # list of supported moodle question type for
 SUPPORTED_QUESTION_TYPE = {'multichoice', 'essay', 'description',
@@ -99,8 +103,7 @@ class Question(ABC):
     def __repr__(self):
         """ Change string representation.
         """
-        rep = ("Instance of {} containing the question '{}'."
-               .format(self.__class__.__name__, self.name))
+        rep = (f"Instance of {self.__class__.__name__} containing the question '{self.name}'.")
         return rep
 
     def __str__(self):
@@ -137,7 +140,7 @@ class Question(ABC):
                                               extensions=['extra'])
             text = self.html2tex(unescape('<text>' + cdata_content + '</text>'))
         else:
-            Logger.warning("> Unsupported format '{}'. Try with html filter.".format(text_format))
+            Logger.warning(f"> Unsupported format '{text_format}'. Try with html filter.")
             text = self.html2tex(cdata_content)
         return text
 
@@ -161,7 +164,7 @@ class Question(ABC):
         # remove manually CDATA from the string
         # FIXME use .text and etree.CDATA(new_text)
         cdata_content = (cdata_content.replace('<text><![CDATA[', '<text>')
-                         .replace('%', '\%')
+                         .replace('%', r'\%')
                          .replace(']]></text>', '</text>')
                          .replace('<br>', ''))
 
@@ -255,13 +258,11 @@ class Question(ABC):
     def gettype(self):
         """ Determine the amc question type.
         """
-        pass
 
     @abstractmethod
     def answers(self):
         """ Create and parse answers.
         """
-        pass
 
     def transform(self, catname):
         """ Main routine, applied the xml transformation.
@@ -302,7 +303,7 @@ class QuestionMultichoice(Question):
         elif single.lower() == 'false':
             amcqtype = 'questionmult'
         else:
-            Logger.error("> Unknwon question type in '{}'".format(self.name))
+            Logger.error(f"> Unknwon question type in '{self.name}'")
 
         return amcqtype
 
@@ -378,7 +379,7 @@ class QuestionEssay(Question):
             amc_open.append(amc_good)
             amc_open.append(amc_wrong)
         else:
-            raise NotImplementedError()
+            raise NotImplementedError
 
         # print(etree.tostring(amc_open).decode())
         return amc_open
@@ -516,7 +517,7 @@ class QuestionDescription(Question):
         """
         # call the class method and add `\QuestionIndicative`
         text = super().question()
-        text.text = u"\QuestionIndicative\n" + text.text
+        text.text = "\\QuestionIndicative\n" + text.text
 
         return text
 
@@ -541,7 +542,7 @@ class QuestionCalculatedMulti(Question):
         elif single.lower() in FALSE:
             amcqtype = 'questionmult'
         else:
-            Logger.error(" Unknwon question type in '{}'".format(self.name))
+            Logger.error(f" Unknwon question type in '{self.name}'")
 
         return amcqtype
 
@@ -680,4 +681,4 @@ def CreateQuestion(qtype, question):
     try:
         return Q_FACTORY[qtype](question)   # *args,**kwargs)
     except:
-        raise KeyError(" 'qtype' argument should be in {}".format(Q_FACTORY.keys() ) )
+        raise KeyError(f" 'qtype' argument should be in {Q_FACTORY.keys()}" )
