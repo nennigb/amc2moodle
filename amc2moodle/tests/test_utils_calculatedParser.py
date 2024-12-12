@@ -19,10 +19,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from amc2moodle.utils.calculatedParser import *
-from io import StringIO
 import unittest
+from io import StringIO
 from unittest.mock import patch
+
+from amc2moodle.utils.calculatedParser import *
+
 # # import also text test
 # from amc2moodle.utils.test_text import *
 
@@ -74,7 +76,7 @@ class TestSuiteCalculatedParserToFP(unittest.TestCase):
         # Create the parser
         parser = CreateCalculatedParser('xml2fp')
         for e, ref, expectedwarn in self.expr:
-            print("Expr = {} -> {}".format(e, ref))
+            print(f"Expr = {e} -> {ref}")
             # mock out std ouput for testing
             with patch('sys.stdout', new=StringIO()) as fake_out:
                 # parse answer
@@ -116,7 +118,7 @@ class TestSuiteCalculatedParserFromFP(unittest.TestCase):
         # Create the parser
         parser = CreateCalculatedParser('fp2xml')
         for e, ref, expectedwarn in self.expr:
-            print("Expr = {} -> {}".format(e, ref))
+            print(f"Expr = {e} -> {ref}")
             # mock out std ouput for testing
             with patch('sys.stdout', new=StringIO()) as fake_out:
                 # parse answer

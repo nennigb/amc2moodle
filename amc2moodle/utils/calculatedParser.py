@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Illustration of Basic Feature of Pyparsing
 
@@ -8,10 +7,24 @@ Created on Wed Jul 15 21:04:36 2020
 @author: bn
 """
 from abc import ABC, abstractmethod
-from pyparsing import Word, alphas, nums, alphas, alphanums, Char, oneOf,\
-                      Suppress, Combine, Regex, Group, ZeroOrMore, Literal,\
-                      Forward, Optional, ParseResults
+
+from pyparsing import (
+    Combine,
+    Forward,
+    Group,
+    Literal,
+    Optional,
+    ParseResults,
+    Regex,
+    Word,
+    ZeroOrMore,
+    alphanums,
+    alphas,
+    nums,
+    oneOf,
+)
 from pyparsing import __version__ as pyparsing_version
+
 # In pyparsing 3 _flatten function has been move in `util` submodule
 if int(pyparsing_version.split('.')[0]) > 2:
     from pyparsing.util import _flatten
@@ -19,7 +32,6 @@ else:
     from pyparsing import _flatten
 
 import logging
-
 
 __all__ = ['CalculatedParserToFP', 'CalculatedParserFromFP',
            'CreateCalculatedParser']
@@ -71,7 +83,7 @@ FP_EVAL_FUNCTION = {'atan': 'arctan',
 FP_UNSUPPORTED = {'atan2', 'atanh', 'bindec', 'decbin', 'decoct', 'deg2rad',
                   'expm1', 'fmod', 'is_finite', 'is_infinite', 'is_nan',
                   'log10', 'log1p', 'octdec', 'rad2deg', 'rand', 'cosh',
-                  'sinh', 'tanh', 'acosh', 'asinh', 'atanh', 'ceil', 'floor'}
+                  'sinh', 'tanh', 'acosh', 'asinh', 'ceil', 'floor'}
 
 FP_MAX = 999999999999999999.999999999999999999
 
@@ -96,7 +108,7 @@ MDL_FUNCTION = {'arctan': 'atan',
 
 MDL_UNSUPPORTED = {'clip'}
 
-''' Usefull info for pgfmathparse
+r''' Usefull info for pgfmathparse
 http://tug.ctan.org/tex-archive/graphics/pgf/base/doc/pgfmanual.pdf p 1033
 
 The following functions are recognized:
@@ -130,7 +142,6 @@ class CalculatedParser(ABC):
     @abstractmethod
     def varformat(self):
         """A formater string for rendering variable in tex. Must contains {name}"""
-        pass
 
     def grammar(self):
         """ Define the parser grammar.
@@ -212,7 +223,7 @@ class CalculatedParser(ABC):
         # notpossible to use '_' in tex name
         out = tokens.name.replace('_', '')
         if out.isalpha() == False:
-            Logger.warning("  The variable '{}' is not compatible with LaTeX naming convention. You will need to change this name in our tex file.".format(out))
+            Logger.warning(f"  The variable '{out}' is not compatible with LaTeX naming convention. You will need to change this name in our tex file.")
         return "\\" + out +' '
 
     @staticmethod
@@ -222,7 +233,7 @@ class CalculatedParser(ABC):
         # check for overflow
         x = float(tokens[0])
         if abs(x) > FP_MAX:
-            Logger.warning(" This number {} will lead to overflow in FP.".format(x))
+            Logger.warning(f" This number {x} will lead to overflow in FP.")
         # if floating point notation, need to convert to fixed point in FP
         if 'e' in tokens[0]:
             # conversion to fixed decimal format
@@ -241,14 +252,12 @@ class CalculatedParser(ABC):
         """ Render atmo. Usefull to change unary minus into neg(exp) at
         atom level.
         """
-        pass
 
     @staticmethod
     @abstractmethod
     def equation_hook(tokens):
         """ Render 'equation' expression for the LaTeX target package.
         """
-        pass
 
     @staticmethod
     @abstractmethod
@@ -256,7 +265,6 @@ class CalculatedParser(ABC):
         """ Modify the moodle function API to conform to the LaTeX target
         package api.
         """
-        pass
 
 
 class CalculatedParserToFP(CalculatedParser):
@@ -317,14 +325,14 @@ class CalculatedParserToFP(CalculatedParser):
             # remove ()
             out = FP_EVAL_FUNCTION['pi']
         # other name are just rename
-        elif tokens.name in FP_EVAL_FUNCTION.keys():
+        elif tokens.name in FP_EVAL_FUNCTION:
             out[0] = FP_EVAL_FUNCTION[tokens.name]
         # check that only valid expression are used
         elif tokens.name in FP_UNSUPPORTED:
-            Logger.error("Unsupported *function* '{}' by `fp` package in the expression.".format(tokens.name))
+            Logger.error(f"Unsupported *function* '{tokens.name}' by `fp` package in the expression.")
             out = tokens
         else:
-            Logger.error("Unsupported *function* '{}' in the expression.".format(tokens.name))
+            Logger.error(f"Unsupported *function* '{tokens.name}' in the expression.")
             out = tokens
         # print('In hook end :' , out)
         return out
@@ -412,7 +420,7 @@ class CalculatedParserFromFP(CalculatedParser):
     @staticmethod
     def atom_hook(tokens):
         """ Change unary minus into neg(exp) at atom level.
-        """      
+        """
         return tokens
 
     @staticmethod
@@ -458,14 +466,14 @@ class CalculatedParserFromFP(CalculatedParser):
             out = tokens.asList()
             out[1][1], out[1][3] = out[1][3], out[1][1]
         # other name are just rename
-        elif tokens.name in MDL_FUNCTION.keys():
+        elif tokens.name in MDL_FUNCTION:
             out[0] = MDL_FUNCTION[tokens.name]
         # check that only valid expression are used
         elif tokens.name in MDL_UNSUPPORTED:
-            Logger.error("Unsupported *function* '{}' by `moodle` interpreter in the expression.".format(tokens.name))
+            Logger.error(f"Unsupported *function* '{tokens.name}' by `moodle` interpreter in the expression.")
             out = tokens
         else:
-            Logger.error("Unsupported *function* '{}' in the expression.".format(tokens.name))
+            Logger.error(f"Unsupported *function* '{tokens.name}' in the expression.")
             out = tokens
         return out
 
@@ -490,7 +498,7 @@ def CreateCalculatedParser(ptype):
     try:
         return PARSER_FACTORY[ptype]()   # *args,**kwargs)
     except:
-        raise KeyError(" 'qtype' argument should be in {}".format(PARSER_FACTORY.keys() ) )
+        raise KeyError(f" 'qtype' argument should be in {PARSER_FACTORY.keys()}" )
 
 if __name__=="__main__":
     # Basic example of usage
@@ -508,5 +516,5 @@ if __name__=="__main__":
     print('> amc2moodle:\n', out)
 
     print('> wildcards set:', parser.wildcards)
-    
+
 

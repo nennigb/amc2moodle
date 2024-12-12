@@ -19,13 +19,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from amc2moodle.utils.customLogging import customLogger
-from amc2moodle.utils.misc import check_hash, decorator_set_cwd
-from amc2moodle.moodle2amc import Quiz
-import amc2moodle as amdlpkg
 import os
 import shutil
 import unittest
+
+import amc2moodle as amdlpkg
+from amc2moodle.moodle2amc import Quiz
+from amc2moodle.utils.customLogging import customLogger
+from amc2moodle.utils.misc import check_hash, decorator_set_cwd
 
 # Load logger
 logObj = customLogger("amc2moodle")
@@ -91,13 +92,13 @@ class TestSuite(unittest.TestCase):
             Logger.info("> Converted XML is identical to the reference: OK")
         # test latex compilation
         status = quiz.compileLatex(fileOut)
-        Logger.info("cwd {}".format(os.getcwd()))
+        Logger.info(f"cwd {os.getcwd()}")
         if status.returncode != 0:
             Logger.info("> pdflatex encounters Errors, see logs...")
         else:
             Logger.info("> pdflatex compile without Errors: OK")
 
-        Logger.info("cwd {}".format(os.getcwd()))
+        Logger.info(f"cwd {os.getcwd()}")
         self.assertEqual(status.returncode, 0)
 
 

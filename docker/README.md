@@ -15,19 +15,28 @@ The container proposes to mount two volumes:
     - `/tmp/work` (**mandatory mount**) that must be link to a specific folder on the host computer
     - `/tmp/daemon` (optional mount) that store the log file of the daemon
 
-For instance, the container can be run in CLI (in detached mode) with the following command:
+For instance, the container can be run in CLI (in detached mode) with the following command (*by relacing `DIRA` and if necessary `DIRB`):
 ```
 docker run --name amc2moodle -d -v "DIRA:/tmp/work" -v "DIRB:/tmp/daemon" ghcr.io/nennigb/amc2moodle
 ```
 
 NB: `DIRA` and `DIRB` must be absolute paths.
 
-**it is recommended to use only empty folder with no critical contents for `DIRA` and `DIRB`.**
+**it is strongly recommended to use only empty folder with no critical contents for `DIRA` and `DIRB`.**
+
+In case of permission issue to mount folder(s), consider adding option `--user "$(id -u):$(id -g)"` such as the running command is:
+
+```
+docker run --name amc2moodle --user "$(id -u):$(id -g)" -d -v "DIRA:/tmp/work" -v "DIRB:/tmp/daemon" ghcr.io/nennigb/amc2moodle
+```
+
 
 The container can be stopped using the following command
 ```
 docker stop amc2moodle
 ```
+
+
 # Usage as daemon/server (automatic building)
 
 We assume that `DIRA` has been mounted and bound to `/tmp/work`.

@@ -18,9 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from amc2moodle._version import __version__
 import logging
+
+from amc2moodle._version import __version__
+
 from .utils.customLogging import CountLogger as _CountLogger
+
 # Define the new default logger class. It has to be here to ensure that all
 # logger instances will have the good class
 # TODO check for possible side effect

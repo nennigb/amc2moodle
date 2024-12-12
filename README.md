@@ -70,7 +70,7 @@ Help and options can be obtained using
 amc2moodle -h
 ```
 Then on moodle, go to the course `administration\question bank\import` and choose 'moodle XML format' and tick: **If your grade are not conform to that you must use: 'Nearest grade if not listed' in import option in the moodle question bank** (see below for details).
-Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./amc2moodle/amc2moodle/test/QCM.pdf)
+Examples of the `amc2moodle` possibilities are given at [QCM.pdf](./amc2moodle/tests/payload_test_amc2moodle/QCM.pdf)
 
 If your original exam uses [AMC-TXT syntax](https://www.auto-multiple-choice.net/auto-multiple-choice.en/AMC-TXT.shtml), you must first convert it to LaTeX before feeding it to `amc2moodle`. To convert an AMC-TXT file to LaTeX, generate the exam documents with AMC graphical interface as usual. AMC will generate a LaTeX version of your exam called `DOC-filtered.tex` inside the project directory, which you can pass to `amc2moodle`.
 
@@ -82,7 +82,7 @@ Help and options can be obtained using
 ```
 moodle2amc -h
 ```
-Then the output LaTeX can be edited and included for creating amc exams. Examples of the `moodle2amc` possibilities are given [here](./amc2moodle/moodle2amc/test/moodle-bank-exemple.pdf).
+Then the output LaTeX can be edited and included for creating amc exams. Examples of the `moodle2amc` possibilities are given [here](./amc2moodle/tests/payload_test_moodle2amc/moodle-bank-exemple.pdf).
 
 
 
@@ -110,8 +110,8 @@ If you want to contribute to `amc2moodle`, your are welcomed! Don't hesitate to
   - add support for other language (French and English are present) in AMC command
   - ...
 
-To ensure code homogeneity among contributors, we use a source-code analyzer (e.g. `pylint`).
-Before submitting a PR, run the tests suite.
+To ensure code homogeneity among contributors, we use [`ruff`](https://docs.astral.sh/ruff/) as source-code analyzer included in [`hatch`](https://hatch.pypa.io/1.9/config/static-analysis/) (e.g. `hatch fmt --check`).
+Before submitting a PR, run the tests suite using `hatch test` (or `hatch test -c` to run test suite with covering report).
 
 ## License
 This file is part of amc2moodle, a tool to convert automultiplechoice quizzes to moodle questions.

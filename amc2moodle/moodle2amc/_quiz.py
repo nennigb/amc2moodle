@@ -19,15 +19,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from lxml import etree
-from xml.sax.saxutils import unescape
-import subprocess
-import os
-from ._questions import *
-from amc2moodle.utils.text import clean_q_name
 import logging
+import os
+import subprocess
 from concurrent.futures import ThreadPoolExecutor
+from xml.sax.saxutils import unescape
 
+from lxml import etree
+
+from amc2moodle.utils.text import clean_q_name
+
+from ._questions import *
 
 # output latex File
 LATEX_FILEOUT = 'out.tex'
@@ -69,7 +71,7 @@ class Quiz:
     def __repr__(self):
             """ Change string representation.
             """
-            rep = "Instance of {}.".format(self.__class__.__name__)
+            rep = f"Instance of {self.__class__.__name__}."
             return rep
 
     def __str__(self):
@@ -251,7 +253,7 @@ class Quiz:
                 # for tex conversion, it is done in Question __init__
                 qname = clean_q_name(qname)
                 if qtype in SUPPORTED_QUESTION_TYPE:
-                        Logger.debug("> Reshape question '{}' of type '{}'.".format(qname, qtype))
+                        Logger.debug(f"> Reshape question '{qname}' of type '{qtype}'.")
                         # if no encounter category name before this question,
                         # add the defaut catname in the cat_dict
                         if not(cat_dict):
@@ -261,7 +263,7 @@ class Quiz:
                         amc_q = CreateQuestion(qtype, question).transform(catname)
                         amc.append(amc_q)
                 else:
-                    Logger.error("> Question '{}' of type '{}' is not supported. Skipping.".format(qname, qtype))
+                    Logger.error(f"> Question '{qname}' of type '{qtype}' is not supported. Skipping.")
 
         Logger.info('> done.')
 
@@ -301,9 +303,9 @@ class Quiz:
         latexFile : string
             full name of a latex file.
         """
-        command = "pdflatex -interaction=nonstopmode -halt-on-error -file-line-error {}".format(latexFile)
+        command = f"pdflatex -interaction=nonstopmode -halt-on-error -file-line-error {latexFile}"
         #TODO: caution with 'universal_newlines=' (new syntax from Python 3.7: text=)
-        Logger.debug('Run command {}'.format(command))
+        Logger.debug(f'Run command {command}')
         with subprocess.Popen(command.split(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -326,7 +328,7 @@ class Quiz:
                         Logger.debug)
                 rstdout.result()
                 rstderr.result()
-        
+
         # status = subprocess.run(command.split(),
         #                         stdout=subprocess.DEVNULL)
         return latexProcess
@@ -338,7 +340,7 @@ class Quiz:
         # Summary of logged events in convert.py only
         log_msg = "> Found {} Warnings and {} Errors during conversion (see above)."
         # Needto sum from _questions.py and _quiz.py
-        quest_log = logging.getLogger('amc2moodle.moodle2amc._questions')        
+        quest_log = logging.getLogger('amc2moodle.moodle2amc._questions')
         warn_number = quest_log.counter['warning'] + Logger.counter['warning']
         err_number = (quest_log.counter['error'] + Logger.counter['error']
                       + quest_log.counter['critical'] + Logger.counter['critical'])

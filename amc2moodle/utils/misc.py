@@ -22,6 +22,7 @@ import hashlib
 import inspect
 import os
 
+
 def check_hash(file1, file2):
     """ Return the md5 sum after removing all withspace.
 

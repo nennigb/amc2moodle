@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     This file is part of amc2moodle, a convertion tool to recast quiz written
     with the LaTeX format used by automuliplechoice 1.0.3 into the
@@ -19,17 +18,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-import sys
-from abc import ABC, abstractmethod
-from lxml import etree
 import base64
-import os
-from wand.image import Image as wandImage
-from xml.sax.saxutils import unescape
-from ..utils.calculatedParser import *
-import random
 import logging
+import os
+import random
+from abc import ABC, abstractmethod
+from xml.sax.saxutils import unescape
 
+from lxml import etree
+from wand.image import Image as wandImage
+
+from ..utils.calculatedParser import *
 
 # Define default and global
 SUPPORTED_Q_TYPE = ('amc_questionmult', 'amc_question', 'amc_questionnumeric',
@@ -49,7 +48,7 @@ DEFAULT_OPTS = {  # Set defaut relative tolerance for float in numerical questio
                 # Add `amc_aucune` if required
                 'amc_autocomplete': 1,
                 # String for
-                'amc_aucune': u"aucune de ces réponses n'est correcte.",
+                'amc_aucune': "aucune de ces réponses n'est correcte.",
 
                 # **Scoring see AMC doc**
                 # Simple : e :incohérence, b: bonne,  m: mauvaise,  p: planché
@@ -92,7 +91,7 @@ def strtobool(s):
     elif isinstance(s, str):
         return s.lower() in ("yes", "true", "t", "1")
     else:
-        raise ValueError("The argument '{}' must be a string or a boolean.".format(s))
+        raise ValueError(f"The argument '{s}' must be a string or a boolean.")
 
 
 def basename(s):
@@ -144,10 +143,7 @@ class ImageCustom:
         im.strip()
         # for (k, v) in im.artifacts.items():
         #     print(k, v)
-        Logger.debug("   Conversion from {} to {} (imgResolution={}).".format(
-                                                    os.path.splitext(fileIn)[1],
-                                                    os.path.splitext(fileOut)[1],
-                                                    resolution))
+        Logger.debug(f"   Conversion from {os.path.splitext(fileIn)[1]} to {os.path.splitext(fileOut)[1]} (imgResolution={resolution}).")
         im.save(filename=fileOut)
         im.close()
 
@@ -216,8 +212,7 @@ class AMCQuestion(ABC):
     def __repr__(self):
         """ Change string representation.
         """
-        rep = ("Instance of {} containing the question '{}'."
-               .format(self.__class__.__name__, self.name))
+        rep = (f"Instance of {self.__class__.__name__} containing the question '{self.name}'.")
         return rep
 
     def __str__(self):
@@ -270,7 +265,7 @@ class AMCQuestion(ABC):
     def convert(self):
         """ Run all questions convertion steps.
         """
-        Logger.debug(" * processing {} question '{}'...".format(self.__class__.__name__, self.name))
+        Logger.debug(f" * processing {self.__class__.__name__} question '{self.name}'...")
         self._options()
         self._encodeImg()
         self._scoring()
@@ -291,7 +286,7 @@ class AMCQuestionSimple(AMCQuestion):
         optlist = Qi.xpath("./note[@class='amc_choices_options']")
         if optlist and 'o' in optlist[0].text.strip().split(","):
             Qiwantshuffle = False
-            Logger.debug("   Keep choices order in question '{}'.".format(self.name))
+            Logger.debug(f"   Keep choices order in question '{self.name}'.")
         etree.SubElement(Qi, "shuffleanswers").text = str(Qiwantshuffle).lower()
 
         # store local answernumbering policy
@@ -316,7 +311,7 @@ class AMCQuestionSimple(AMCQuestion):
         if len(barl) > 0:
             amc_bl_ = scoring2dict(barl[0].text)
             amc_bl.update(amc_bl_)
-            Logger.debug("   local scoring: {}".format(amc_bl))
+            Logger.debug(f"   local scoring: {amc_bl}")
             if (float(amc_bl['b']) < 1.):
                 Logger.warning("The grade of the good answser(s) may be < 100%, put b=1")
 
@@ -358,7 +353,7 @@ class AMCQuestionMult(AMCQuestionSimple):
             # partial scoring is provided
             amc_bml_ = scoring2dict(barl[0].text)
             amc_bml.update(amc_bml_)
-            Logger.debug("   local scoring : {}".format(amc_bml))
+            Logger.debug(f"   local scoring : {amc_bml}")
             if (float(amc_bml['b']) < 1):
                 Logger.warning("The grade of the good answser(s) may be < 100%, put b=1")
 
@@ -502,12 +497,10 @@ class AMCQuestionDescription(AMCQuestion):
     def _options(self):
         """ Parse options and create the required elements.
         """
-        pass
 
     def _scoring(self):
         """ Compute the scoring.
         """
-        pass
 
 
 class _Calculated:
@@ -623,7 +616,7 @@ class _Calculated:
             number_of_items.text = str(nitems)
             # set container for all random values
             dataset_items = etree.SubElement(data, 'dataset_items')
-            for i in range(0, nitems):
+            for i in range(nitems):
                 # set container for each random value
                 dataset_item = etree.SubElement(dataset_items, 'dataset_item')
                 number = etree.SubElement(dataset_item, 'number')
@@ -666,7 +659,7 @@ class _Calculated:
         super()._scoring()
         # parse fp expressions
         wildcards = self._parsemath()
-        Logger.debug('   Found {} wildcards.'.format(len(wildcards)))
+        Logger.debug(f'   Found {len(wildcards)} wildcards.')
         # TODO add a test to check that all wildcards starts with rand!
         # to control substitution
         # Add calcultaed question specific fields to all answers.
@@ -678,13 +671,11 @@ class _Calculated:
 class AMCQuestionCalcMult(_Calculated, AMCQuestionSimple):
     """ Parametrized Multiple choice question with single good answer.
     """
-    pass
 
 
 class AMCQuestionMultCalcMult(_Calculated, AMCQuestionMult):
     """ Parametrized Multiple choice question with multiple good answers.
     """
-    pass
 
 
 # dict of all available question
@@ -718,10 +709,10 @@ def CreateQuestion(qtype, Qi, context):
     try:
         return Q_FACTORY[qtype](Qi, context)
     except NameError:
-        raise KeyError(" 'qtype' argument should be in {}".format(Q_FACTORY.keys()))
+        raise KeyError(f" 'qtype' argument should be in {Q_FACTORY.keys()}")
 
 
-class Context():
+class Context:
     """ Contains the context of the quizz, like path, default options.
 
     Basically it will contains all information callected at quiz level but
@@ -816,8 +807,7 @@ class AMCQuiz:
     def __repr__(self):
         """ Change string representation.
         """
-        rep = ("Instance of {}. {} have be converted."
-               .format(self.__class__.__name__, self.Qtot))
+        rep = (f"Instance of {self.__class__.__name__}. {self.Qtot} have be converted.")
         return rep
 
     def __str__(self):
@@ -884,7 +874,7 @@ class AMCQuiz:
         Logger.debug(" ")
         Logger.debug(" > global 'shuffleanswers' is {}.".format(strtobool(self.options['shuffle_all'])))
         Logger.debug(" > global 'answerNumberingFormat' is '{}'.".format(self.options['answer_numbering_format']))
-        Logger.debug(" > {} questions converted.".format(self.Qtot))
+        Logger.debug(f" > {self.Qtot} questions converted.")
 
         # Summary of logged events in convert.py only
         log_msg = " >  Found {} Warnings and {} Errors during conversion (see above)."
@@ -901,7 +891,7 @@ class AMCQuiz:
         # These elements should be <para> nodes at roots level.
         all_para = tree.findall('./para')
         if len(all_para) > 0:
-            Logger.warning(" > {} '\\element' blocks contain text outside ".format(len(all_para))
+            Logger.warning(f" > {len(all_para)} '\\element' blocks contain text outside "
                            + "'Question environnement'. "
                            + "Skip them for moodle XML compatibility. "
                            + "Increase verbosity to see them. "
@@ -968,7 +958,7 @@ class AMCQuiz:
         if len(bars) > 0:
             # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
             amc_bs = scoring2dict(bars[0].text)
-            Logger.debug("baremeDefautS : {}".format(amc_bs))
+            Logger.debug(f"baremeDefautS : {amc_bs}")
             if (float(amc_bs['b']) < 1):
                 Logger.warning("The grade of the good answser in question will be < 100%, put b=1")
             self.amc_bs.update(amc_bs)
@@ -979,7 +969,7 @@ class AMCQuiz:
         if len(barm) > 0:
             # on découpe bar[0].text et on affecte les nouvelles valeurs par défaut
             amc_bm = scoring2dict(barm[0].text)
-            Logger.debug("baremeDefautM : {}".format(amc_bm))
+            Logger.debug(f"baremeDefautM : {amc_bm}")
             if (float(amc_bm['b']) < 1):
                 Logger.warning("The grade of the good answser(s) in questionmult may be < 100%, put b=1")
             self.amc_bm.update(amc_bm)
@@ -1113,7 +1103,7 @@ def to_moodle(filein, pathin, fileout='out.xml', pathout='.',
         wdir = workingdir
 
     # load input latexml xml file
-    with open(os.path.join(wdir, filein), 'r') as xml:
+    with open(os.path.join(wdir, filein)) as xml:
         # instanciate the Quiz object
         quiz = AMCQuiz(xml, pathin, wdir, catname, deb)
         # run the conversion and save the output

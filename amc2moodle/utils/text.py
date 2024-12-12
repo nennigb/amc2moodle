@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import unicodedata
 import re
+import unicodedata
 
 
 def remove_accent(s):
@@ -30,7 +30,7 @@ def remove_accent(s):
     Based on Python cookbook 2.9
     """
     nfkd_form = unicodedata.normalize('NFKD', s)
-    return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+    return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 
 def remove_non_ascii(s):

@@ -18,18 +18,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Callable
-from ..amc2moodle import convert
-from ..utils.flatex import Flatex
-import subprocess
-import sys
+import logging
 import os
 import shutil
-from importlib import util  # python 3.x
+import subprocess
+import sys
 import tempfile
-from shutil import copytree
-import logging
 from concurrent.futures import ThreadPoolExecutor
+from importlib import util  # python 3.x
+from shutil import copytree
+from typing import Callable
+
+from ..amc2moodle import convert
+from ..utils.flatex import Flatex
 
 # activate logger
 Logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ def checkTools(show=True):
         Logger.critical("Please install lxml's Python module")
     # LaTeXML
     latexMLwhich = subprocess.run(['which', 'latexml'],
-                                  stdout=subprocess.DEVNULL)
+                                  stdout=subprocess.DEVNULL, check=False)
     latexmlOk = latexMLwhich.returncode == 0
     if not latexmlOk:
         Logger.critical("Please install LaTeXML software (see https://dlmf.nist.gov/LaTeXML/)")
@@ -271,22 +272,22 @@ class amc2moodle:
     def runXMLindent(self):
         """Run XML indentation with subprocess."""
         # check for xmlindent
-        xmlindentwhich = subprocess.run(['which', 'xmlindent'])
+        xmlindentwhich = subprocess.run(['which', 'xmlindent'], check=False)
         xmlindentOk = xmlindentwhich.returncode == 0
         # check for xmllint (Macos)
-        xmllintwhich = subprocess.run(['which', 'xmllint'])
+        xmllintwhich = subprocess.run(['which', 'xmllint'], check=False)
         xmllintOk = xmllintwhich.returncode == 0
 
         # linux
         if xmlindentOk:
             Logger.debug(' > Indenting XML output...')
             subprocess.run(['xmlindent', self.output, '-o', self.output],
-                           stdout=subprocess.DEVNULL)
+                           stdout=subprocess.DEVNULL, check=False)
         # MacOS
         if xmllintOk and not xmlindentOk:
             Logger.debug(' > Indenting XML output...')
             subprocess.run(['xmllint', self.output, '--format', '--output', self.output],
-                           stdout=subprocess.DEVNULL)
+                           stdout=subprocess.DEVNULL, check=False)
 
     def runCleanXML(self):
         """Clean final XML file remove "%" added by LaTeXML at end of lines (EXPERIMENTAL)."""
@@ -295,8 +296,8 @@ class amc2moodle:
         # copy output file and remove '%\n' (a temporary file will be used and deleted)
         fdTemp, pathTemp = tempfile.mkstemp(dir=getPathFile(self.inputtex),
                                             prefix='xmlclean')
-        Logger.debug(" > Cleaning: create {} ".format(pathTemp))
-        with open(self.output, 'r') as fin, open(pathTemp, 'w') as fout:
+        Logger.debug(f" > Cleaning: create {pathTemp} ")
+        with open(self.output) as fin, open(pathTemp, 'w') as fout:
             # set replacement counter for patern occurence
             nreplacement = 0
             for lno, line in enumerate(fin):
@@ -305,12 +306,12 @@ class amc2moodle:
                 # remove '%' at ends of lines
                 line = line.replace(pattern, "\n")
                 if count > 0:
-                    Logger.debug("   Remove pattern at (line {} of {})".format(lno+1, self.output))
+                    Logger.debug(f"   Remove pattern at (line {lno+1} of {self.output})")
                 fout.write(line)
         # copy temporary file to the output
         os.close(fdTemp)
         shutil.copy(pathTemp, self.output)
-        Logger.info(" > Cleaning: done, with {} replacements.".format(nreplacement))
+        Logger.info(f" > Cleaning: done, with {nreplacement} replacements.")
 
     def runBuilding(self):
         """Build the xml file for Moodle quizz."""
