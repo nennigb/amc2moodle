@@ -18,25 +18,43 @@ fi
 # function to run amc2moodle
 function run_amc2moodle()
 {
-    amc2moodle -x --silent "$1"
+    amc2moodle -x "$1"
     touch "$1".lock
 }
 
 # function to run moodle2amc
 function run_moodle2amc()
 {
-    moodle2amc --silent "$1"
+    moodle2amc "$1"
     touch "$1".lock
 }
 
+# function to initialize logrotate
+function init_logrotate()
+{
+    echo -e "${LOGFILE}{\n\tmissingok\n\trotate 3\n\tmaxsize 5M\n\tcopytruncate\n\tnotifempty\n}" > ${LOG_DIR}/logrotate.conf
+    cat ${LOG_DIR}/logrotate.conf
+    touch  ${LOG_DIR}/logrotate.status
+}
+
+# function run logrotate periodically
+function run_logrotate()
+{
+    while true
+    do
+        sleep 60
+        logrotate -s ${LOG_DIR}/logrotate.status  ${LOG_DIR}/logrotate.conf        
+    done
+}
 
 #log manage
 now=$(date +"%Y-%m-%d_%H-%M-%s")
 mkdir -p ${LOG_DIR}
 LOGFILE=${LOG_DIR}/${now}_autorun.log
+init_logrotate
+run_logrotate &
 
 {
-
 printf "Start daemon\n\n"
 printf "Log dir: ${LOG_DIR}\n"
 printf "Monitored dir: ${MONITOR_DIR}\n"
@@ -56,6 +74,7 @@ do
             else
                 printf " >>> Run amc2moodle on ${file}\n"
                 run_amc2moodle "${file}"
+                printf " >>>>Done"
             fi
         done
     fi
@@ -73,6 +92,7 @@ do
             else
                 printf " >>> Run moodle2amc on ${file}\n"
                 run_moodle2amc "${file}"
+                printf " >>>>Done"
             fi
         done
     fi

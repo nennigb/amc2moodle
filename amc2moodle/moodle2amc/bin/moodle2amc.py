@@ -18,13 +18,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from amc2moodle.utils.customLogging import customLogger
-import amc2moodle as amdlpkg
-import amc2moodle.moodle2amc as mdl2amc
 import argparse
 import os
 import sys
-import logging
+
+import amc2moodle as amdlpkg
+import amc2moodle.moodle2amc as mdl2amc
+from amc2moodle.utils.customLogging import customLogger
 
 
 def run():
@@ -55,7 +55,7 @@ def run():
     parser.add_argument("-V","--version",
                         help='''Show the current version of moodle2amc''',
                         action="version",
-                        version="%(prog)s v{version}".format(version=amdlpkg.__version__))
+                        version=f"%(prog)s v{amdlpkg.__version__}")
     parser.add_argument("-v", "--verbose",
                         help='''Show all log messages in CLI. Use -vv for more verbosity.''',
                         required=False, action="count",default=0)
@@ -78,7 +78,7 @@ def run():
         fileIn = args.inputfile
     if args.output:
         fileOut = args.output
-    
+
     silentMode = args.silent
     verboseMode = args.verbose
     logFileMode = args.no_log_file
@@ -87,7 +87,7 @@ def run():
     logObj = customLogger('amc2moodle')
     logObj.setupConsoleLogger(verbositylevel=verboseMode,
                               silent=silentMode,
-                              txtinfo=amdlpkg.__version__)    
+                              txtinfo=amdlpkg.__version__)
 
 
     # check input file
@@ -141,10 +141,10 @@ def run():
         globalReturncode = 1
     #info about the log
     if fileInOk  and logFileMode:
-        Logger.info("Log file of moodle2amc's run: {}".format(logFile))
+        Logger.info(f"Log file of moodle2amc's run: {logFile}")
     # exit with error status
     sys.exit(globalReturncode)
-    
+
 
 
 # Run autonomous

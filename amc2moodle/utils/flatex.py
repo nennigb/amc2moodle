@@ -25,9 +25,9 @@ Distributed under the terms of the GNU General Public License
 See http://www.gnu.org/licenses/gpl.txt for details.
 """
 
+import logging
 import os
 import re
-import logging
 
 # activate logger
 Logger = logging.getLogger(__name__)
@@ -71,7 +71,7 @@ class Flatex:
 
     @staticmethod
     def is_input(line):
-        """
+        r"""
         Determines whether or not a read in line contains an uncommented out
         \input{} statement. Allows only spaces between start of line and
         '\input{}'.
@@ -115,7 +115,7 @@ class Flatex:
         with all the inputs replaced with the contents of the referenced file.
         """
         output_lines = []
-        with open(base_file, "r") as f:
+        with open(base_file) as f:
             for line in f:
                 # test if it contains an '\include' or '\input'
                 if self.is_input(line):
@@ -153,6 +153,4 @@ class Flatex:
         """ Print log info about the expansion.
         """
         if self._magic_comments_number > 0:
-            Logger.info('  {0} magic comments found, in {1} tex files.'.format(
-                self._magic_comments_number,
-                len(self._included_files_list)))
+            Logger.info(f'  {self._magic_comments_number} magic comments found, in {len(self._included_files_list)} tex files.')

@@ -19,10 +19,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import amc2moodle.utils.text as text
 import unittest
 
-# Run by utils.test 
+from amc2moodle.utils import text
+
+
+# Run by utils.test
 class TestText(unittest.TestCase):
     """ Define calculated question parser test cases for unittest.
     """

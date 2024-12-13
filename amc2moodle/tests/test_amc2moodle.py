@@ -18,13 +18,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from amc2moodle.utils.customLogging import customLogger
-from amc2moodle.amc2moodle import amc2moodle_class as a2m
-from amc2moodle.utils.misc import check_hash
-import amc2moodle as amdlpkg
 import os
 import unittest
+
 from lxml import etree
+
+import amc2moodle as amdlpkg
+from amc2moodle.amc2moodle import amc2moodle_class as a2m
+from amc2moodle.utils.customLogging import customLogger
+from amc2moodle.utils.misc import check_hash
 
 # Load logger
 logObj = customLogger('amc2moodle')
@@ -138,7 +140,7 @@ class TestSuiteNoTikz(unittest.TestCase):
                             frac = float(a.attrib['fraction'])
                             frac_list.append(frac)
                             s += frac
-                        Logger.debug('In {}, fraction are {}\n'.format(qname, frac_list))
+                        Logger.debug(f'In {qname}, fraction are {frac_list}\n')
                         if abs(s - target_ans_sum) > TOL:
                             ok += 1
                     else:
@@ -430,7 +432,7 @@ class TestSuiteStyles(unittest.TestCase):
     def check_error(fileOut):
         """Parse ouput file `fileOut` and check if `ERROR` are present."""
         is_error = False
-        with open(fileOut, 'r') as f:
+        with open(fileOut) as f:
             for line in f.readlines():
                 if 'ERROR' in line:
                     print(line)
