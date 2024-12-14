@@ -48,39 +48,40 @@ jobs:
       - name: Update $PATH
         # run: echo ::add-path::/Library/TeX/texbin # depreciated
         run: echo "/Library/TeX/texbin" >> $GITHUB_PATH
-
+        
       - name: Add fonts (required by moodle2amc tests)
         run: |
           # xstring is just required for testing --includestyles
           sudo tlmgr update --self
-          sudo tlmgr install --verify-repo=none collection-fontsrecommended bophook xstring
-
+          sudo tlmgr install collection-fontsrecommended bophook xstring  --verify-repo=none
+          
       - name: Test latexml
         run: |
           # add --strict flag to be more strict in error catching
-          latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./amc2moodle/tests/payload_test_amc2moodle/QCM.tex
-
+          latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./amc2moodle/tests/payload_test_amc2moodle/QCM.tex 
+      
       - name: Install amc2moodle
         run: |
           # add -e to have write access for test. TODO : change with temp file
-          pip install -e .
-
+          pip install -e .[test]             
+      
       - name: Test amc2moodle
         run: |
-          python -m amc2moodle.tests.test_amc2moodle
-
+          pytest --pyargs amc2moodle.tests.test_amc2moodle
+          
       - name: Test moodle2amc
         run: |
           # add automultiplechoice.sty local copy to LaTeX PATH (for this step)
           # export TEXINPUTS=.:./tests/payload_test_amc2moodle/:$TEXINPUTS  (during tests, automultiplechoice.sty is copied in the temporary test folder )
-          python -m amc2moodle.tests.test_moodle2amc
+          pytest --pyargs amc2moodle.tests.test_moodle2amc
       - name: Test text parser
         run: |
-          python -m amc2moodle.tests.test_utils_text
+          pytest --pyargs amc2moodle.tests.test_utils_text
       - name: Test calculated questions parsers
         run: |
-          python -m amc2moodle.tests.test_utils_calculatedParser
-
+          pytest --pyargs amc2moodle.tests.test_utils_calculatedParser
+              
+      
       # Store output files
       # amc2moodle
       - name: Archive XML test output of amc2moodle (without tikz)
@@ -88,8 +89,8 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: test_notikz_${{ matrix.python-version }}
-          path: output_tests/test_notikz.xml
-
+          path: output_tests/test_notikz.xml    
+      
       - name: Archive XML test output of amc2moodle (with tikz)
         if: ${{ always() }}
         uses: actions/upload-artifact@main
@@ -102,10 +103,12 @@ jobs:
         run: |
           mkdir moodle-bank-exemple-output
           mv output_tests/test_moodle-bank-exemple.* moodle-bank-exemple-output/
-
+          
       - name: Archive LaTeX test output (moodle2amc)
         if: ${{ always() }}
         uses: actions/upload-artifact@main
         with:
           name: test_moodle-bank-exemple_${{ matrix.python-version }}
           path: moodle-bank-exemple-output
+
+          
