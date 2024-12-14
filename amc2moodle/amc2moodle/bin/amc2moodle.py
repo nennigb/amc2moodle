@@ -18,12 +18,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from amc2moodle.utils.customLogging import customLogger
-import amc2moodle as amdlpkg
-from amc2moodle.amc2moodle import amc2moodle_class as a2m
 import argparse
 import os
 import sys
+
+import amc2moodle as amdlpkg
+from amc2moodle.amc2moodle import amc2moodle_class as a2m
+from amc2moodle.utils.customLogging import customLogger
 
 
 def run():
@@ -65,7 +66,7 @@ def run():
     parser.add_argument("-V", "--version",
                         help='''Show the current version of moodle2amc''',
                         action="version",
-                        version="%(prog)s v{version}".format(version=amdlpkg.__version__))
+                        version=f"%(prog)s v{amdlpkg.__version__}")
     parser.add_argument("-v", "--verbose",
                         help='''Show all log messages in CLI. Use -vv for more verbosity.''',
                         required=False, action="count",default=0)
@@ -110,13 +111,13 @@ def run():
     logObj = customLogger('amc2moodle')
     logObj.setupConsoleLogger(verbositylevel=verboseMode,
                               silent=silentMode,
-                              txtinfo=amdlpkg.__version__)    
+                              txtinfo=amdlpkg.__version__)
 
     # check input file
     fileInOk = False
     if fileIn is not None:
         fileInOk = os.path.exists(fileIn)
-    
+
     # declare log file
     if fileInOk and logFileMode:
         logFile = os.path.splitext(os.path.basename(fileIn))[0]+'_amc2moodle.log'
@@ -150,13 +151,13 @@ def run():
                        indentXML=indentFlag, usetempdir=tempDir,
                        magic_flag=magic_flag, cleanXML=cleanXML,
                        include_styles=include_styles)
-    else:        
+    else:
         # exit with error status
         globalReturncode = 1
     #info about the log
     if fileInOk and logFileMode:
-        Logger.info("Log file of amc2moodle's run: {}".format(logFile))
-        
+        Logger.info(f"Log file of amc2moodle's run: {logFile}")
+
     # exit with error status
     sys.exit(globalReturncode)
 

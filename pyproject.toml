@@ -27,8 +27,8 @@ dependencies = [
 requires-python='>=3.8'
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-cov[all]", "hatch"]
-lint = [ "black", "flake8"]
+test = ["pytest", "pytest-cov[all]"]
+
 
 [project.urls]
 Homepage = "https://github.com/nennigb/amc2moodle"
@@ -46,17 +46,6 @@ path = "amc2moodle/_version.py"
 packages = ["amc2moodle"]
 # only-packages = true
 ignore-vcs = false
-include = [
-    '/amc2moodle',
-    "LICENSE",
-    "README.md",
-    "/amc2moodle/moodle2amc/README.md",
-    "/amc2moodle/amc2moodle/README.md",
-    "/amc2moodle/amc2moodle/*.xslt",
-    "/amc2moodle/amc2moodle/*sty.ltxml",
-    "/amc2moodle/moodle2amc/html2tex.xslt",
-    "/amc2moodle/moodle2amc/struc2tex.xslt",
-]
 
 [tool.hatch.envs.hatch-test]
 default-args = ["amc2moodle/tests"]
@@ -75,3 +64,10 @@ output = "reportcov/report.xml"
 [tool.coverage.report]
 show_missing = true
 fail_under = 80
+
+[tool.ruff]
+# Allow lines to be as long as 120.
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "single"
