@@ -4,8 +4,8 @@ on:
   push:
     # branches:
     #   - 'master'
-    # tags:
-    #   - 'v*'
+    tags:
+      - 'v*'
 
 
 jobs:
@@ -32,14 +32,14 @@ jobs:
       - name: 'Build:dockerimage'
         id: docker_build
         uses: docker/build-push-action@master
-        # with:
-        #   # relative path to the place where source code with Dockerfile is located
-        #   context: ./docker
-        #   tags: ghcr.io/${{ github.repository_owner }}/amc2moodle:${{ steps.docker-tag.outputs.tag }},ghcr.io/${{ github.repository_owner }}/amc2moodle:latest
-        #   push: true
-        #   cache-from: type=gha
-        #   cache-to: type=gha
-        #   # # build on feature branches, push only on main branch
-        #   # push: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          # relative path to the place where source code with Dockerfile is located
+          context: ./docker
+          tags: ghcr.io/${{ github.repository_owner }}/amc2moodle:${{ steps.docker-tag.outputs.tag }},ghcr.io/${{ github.repository_owner }}/amc2moodle:latest
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha
+          # # build on feature branches, push only on main branch
+          # push: ${{ github.ref == 'refs/heads/main' }}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
