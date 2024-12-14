@@ -57,9 +57,10 @@ jobs:
         # add --strict flag to be more strict in error catching
         latexml --noparse --nocomment --strict --path=./amc2moodle/amc2moodle --dest=./out.xml  ./amc2moodle/tests/payload_test_amc2moodle/QCM.tex   
     
-    - name: Install amc2moodle
+    - name: Install amc2moodle (and hatch for coverage)
       run: |
         # add -e to have write access for test. TODO : change with temp file
+        pip install hatch
         pip install -e .[test]
     
     - name: Test amc2moodle
