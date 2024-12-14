@@ -22,16 +22,16 @@ jobs:
         uses: actions/checkout@main
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@main
+        uses: docker/setup-buildx-action@master
       - name: Login to Github Packages
-        uses: docker/login-action@main
+        uses: docker/login-action@master
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PAT }}
       - name: 'Build:dockerimage'
         id: docker_build
-        uses: docker/build-push-action@main
+        uses: docker/build-push-action@master
         with:
           # relative path to the place where source code with Dockerfile is located
           context: ./docker
