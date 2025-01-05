@@ -70,16 +70,9 @@ class Flatex:
 
     @staticmethod
     def is_input(line):
-<<<<<<< HEAD
-        r"""
-        Determines whether or not a read in line contains an uncommented out
-        \input{} statement. Allows only spaces between start of line and
-        '\input{}'.
-=======
         r"""Determine if a line contains an uncommented \input{} statement.
 
         Allows only spaces between start of line and '\input{}'.
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
         """
         # tex_input_re = r"""^\s*\\input{[^}]*}""" # input only
         # match 'input' or 'include'

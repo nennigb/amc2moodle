@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-#!/usr/bin/env python3
-=======
 # -*- coding: utf-8 -*-
 
 # This file is part of amc2moodle, a convertion tool to recast quiz written
@@ -20,7 +17,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 """
 # Illustration of Basic Feature of Pyparsing
 
@@ -122,13 +118,8 @@ MDL_FUNCTION = {'arctan': 'atan',
 
 MDL_UNSUPPORTED = {'clip'}
 
-<<<<<<< HEAD
-r''' Usefull info for pgfmathparse
-http://tug.ctan.org/tex-archive/graphics/pgf/base/doc/pgfmanual.pdf p 1033
-=======
 # Usefull info for pgfmathparse
 # http://tug.ctan.org/tex-archive/graphics/pgf/base/doc/pgfmanual.pdf p 1033
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
 # The following functions are recognized:
 # abs,acos,add,and,array,asin,atan,atan2,bin,ceil,cos,
@@ -158,12 +149,8 @@ class CalculatedParser(ABC):
     @property
     @abstractmethod
     def varformat(self):
-<<<<<<< HEAD
-        """A formater string for rendering variable in tex. Must contains {name}"""
-=======
         """Format string for rendering variable in tex. Must contains {name}."""
         pass
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
     def grammar(self):
         """Define the parser grammar."""
@@ -243,15 +230,9 @@ class CalculatedParser(ABC):
         """Change variable name for fp package."""
         # notpossible to use '_' in tex name
         out = tokens.name.replace('_', '')
-<<<<<<< HEAD
-        if out.isalpha() == False:
-            Logger.warning(f"  The variable '{out}' is not compatible with LaTeX naming convention. You will need to change this name in our tex file.")
-        return "\\" + out +' '
-=======
         if out.isalpha() is False:
             Logger.warning("  The variable '{}' is not compatible with LaTeX naming convention. You will need to change this name in our tex file.".format(out))
         return "\\" + out + ' '
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
     @staticmethod
     def real_hook(tokens):
@@ -283,25 +264,14 @@ class CalculatedParser(ABC):
     @staticmethod
     @abstractmethod
     def equation_hook(tokens):
-<<<<<<< HEAD
-        """ Render 'equation' expression for the LaTeX target package.
-        """
-=======
         """Render 'equation' expression for the LaTeX target package."""
         pass
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
     @staticmethod
     @abstractmethod
     def function_hook(tokens):
-<<<<<<< HEAD
-        """ Modify the moodle function API to conform to the LaTeX target
-        package api.
-        """
-=======
         """Modify the moodle function API to conform to the LaTeX target package api."""
         pass
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
 
 class CalculatedParserToFP(CalculatedParser):
@@ -449,12 +419,7 @@ class CalculatedParserFromFP(CalculatedParser):
 
     @staticmethod
     def atom_hook(tokens):
-<<<<<<< HEAD
-        """ Change unary minus into neg(exp) at atom level.
-        """
-=======
         """Change unary minus into neg(exp) at atom level."""
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
         return tokens
 
     @staticmethod
@@ -550,8 +515,3 @@ if __name__ == "__main__":
     print('> amc2moodle:\n', out)
 
     print('> wildcards set:', parser.wildcards)
-<<<<<<< HEAD
-
-
-=======
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76

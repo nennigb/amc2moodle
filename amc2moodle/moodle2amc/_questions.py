@@ -100,15 +100,9 @@ class Question(ABC):
         self.svg_id = 0
 
     def __repr__(self):
-<<<<<<< HEAD
-        """ Change string representation.
-        """
-        rep = (f"Instance of {self.__class__.__name__} containing the question '{self.name}'.")
-=======
         """Change string representation."""
         rep = ("Instance of {} containing the question '{}'."
                .format(self.__class__.__name__, self.name))
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
         return rep
 
     def __str__(self):
@@ -255,15 +249,6 @@ class Question(ABC):
 
     @abstractmethod
     def gettype(self):
-<<<<<<< HEAD
-        """ Determine the amc question type.
-        """
-
-    @abstractmethod
-    def answers(self):
-        """ Create and parse answers.
-        """
-=======
         """Determine the amc question type."""
         pass
 
@@ -271,7 +256,6 @@ class Question(ABC):
     def answers(self):
         """Create and parse answers."""
         pass
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
     def transform(self, catname):
         """Main routine, applied the xml transformation."""
@@ -505,10 +489,6 @@ class QuestionDescription(Question):
         # call the class method and add `\QuestionIndicative`
         text = super().question()
         text.text = "\\QuestionIndicative\n" + text.text
-<<<<<<< HEAD
-
-=======
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
         return text
 
 
@@ -663,8 +643,4 @@ def CreateQuestion(qtype, question):
     try:
         return Q_FACTORY[qtype](question)   # *args,**kwargs)
     except:
-<<<<<<< HEAD
-        raise KeyError(f" 'qtype' argument should be in {Q_FACTORY.keys()}" )
-=======
         raise KeyError(" 'qtype' argument should be in {}".format(Q_FACTORY.keys()))
->>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
