@@ -1,10 +1,46 @@
+<<<<<<< HEAD
 #!/usr/bin/env python3
+=======
+# -*- coding: utf-8 -*-
+
+# This file is part of amc2moodle, a convertion tool to recast quiz written
+# with the LaTeX format used by automuliplechoice 1.0.3 into the
+# moodle XML quiz format.
+# Copyright (C) 2016  Benoit Nennig, benoit.nennig@supmeca.fr
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 """
-Illustration of Basic Feature of Pyparsing
+# Illustration of Basic Feature of Pyparsing
 
-Created on Wed Jul 15 21:04:36 2020
+## FPeval operators
++ pow e round sin arcsin - root pi trunc cos arccos *
+exp / ln abs min clip tan arctan cot arccot neg max
+pow(#1,#2) returns #2 to the power of #1
+round(#1:#2) round #1 to #2 decimal places
 
-@author: bn
+## MOODLE operators https://docs.moodle.org/3x/fr/Question_calcul%C3%A9e
+There is more function in moodle
+abs, acos, acosh, asin, asinh, atan2, atan, atanh, bindec, ceil, cos,
+cosh, decbin, decoct, deg2rad, exp, expm1, floor, fmod, is_finite
+is_infinite , is_nan , log10, log1p , log, max , min, octdec , pi()
+pow (numberToRaise, NumberRaisedTo), rad2deg, rand , round , sin , sinh
+sqrt , tan , tanh
+
+## Remarks
+The unary prefix operation “-” is not known, therefore one should use the
+function neg() instead.
 """
 from abc import ABC, abstractmethod
 
@@ -39,28 +75,6 @@ __all__ = ['CalculatedParserToFP', 'CalculatedParserFromFP',
 # TODO create test suite
 # TODO create CalculatedParserToPGF
 # TODO create Parser for loop with python evaluation
-
-
-"""
-
-# FPeval operators
-+ pow e round sin arcsin - root pi trunc cos arccos *
-exp / ln abs min clip tan arctan cot arccot neg max
-pow(#1,#2) returns #2 to the power of #1
-round(#1:#2) round #1 to #2 decimal places
-
-# MOODLE operators https://docs.moodle.org/3x/fr/Question_calcul%C3%A9e
-there is more function in moodle
-abs, acos, acosh, asin, asinh, atan2, atan, atanh, bindec, ceil, cos,
-cosh, decbin, decoct, deg2rad, exp, expm1, floor, fmod, is_finite
-is_infinite , is_nan , log10, log1p , log, max , min, octdec , pi()
-pow (numberToRaise, NumberRaisedTo), rad2deg, rand , round , sin , sinh
-sqrt , tan , tanh
-
-# Remarks
-The unary prefix operation “-” is not known, therefore one should use the 
-function neg() instead.
-"""
 
 
 # moodle to fpeval
@@ -108,26 +122,27 @@ MDL_FUNCTION = {'arctan': 'atan',
 
 MDL_UNSUPPORTED = {'clip'}
 
+<<<<<<< HEAD
 r''' Usefull info for pgfmathparse
 http://tug.ctan.org/tex-archive/graphics/pgf/base/doc/pgfmanual.pdf p 1033
+=======
+# Usefull info for pgfmathparse
+# http://tug.ctan.org/tex-archive/graphics/pgf/base/doc/pgfmanual.pdf p 1033
+>>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
-The following functions are recognized:
+# The following functions are recognized:
+# abs,acos,add,and,array,asin,atan,atan2,bin,ceil,cos,
+#  cosec,cosh,cot,deg,depth,div,divide,e,equal,factorial, false,
+#  floor,frac,gcd,greater,height,hex,Hex,int,ifthenelse,iseven,isodd,isprime,
+#  less,ln,log10,log2,max,min,mod,Mod,multiply,
+#  neg,not,notequal,notgreater,notless,
+#  oct,or,pi,pow,rad,rand,random,real,rnd,round,
+#  scalar,sec,sign,sin,sinh,sqrt,subtract,tan,tanh,true, veclen,width
 
-abs,acos,add,and,array,asin,atan,atan2,bin,ceil,cos,
- cosec,cosh,cot,deg,depth,div,divide,e,equal,factorial, false,
- floor,frac,gcd,greater,height,hex,Hex,int,ifthenelse,iseven,isodd,isprime,
- less,ln,log10,log2,max,min,mod,Mod,multiply,
- neg,not,notequal,notgreater,notless,
- oct,or,pi,pow,rad,rand,random,real,rnd,round,
- scalar,sec,sign,sin,sinh,sqrt,subtract,tan,tanh,true, veclen,width
-
-
- pow(x,y) Raises x to the power y
- \pgfmathpi
- default is in degree need : \pgfkeys{/pgf/trig format=rad} -> use a header
-
- pgf can change its aruthmetic between fp and fpu
-'''
+#  pow(x,y) Raises x to the power y
+#  \pgfmathpi
+#  default is in degree need : \pgfkeys{/pgf/trig format=rad} -> use a header
+#  pgf can change its arithmetic between fp and fpu
 
 
 # activate logger
@@ -135,17 +150,23 @@ Logger = logging.getLogger(__name__)
 
 
 class CalculatedParser(ABC):
-    """ Define abstract class for parsing moodle calculted question and a 
-    common interface for latex rendering.
+    """Define abstract class for parsing moodle calculted question.
+
+    It defines also a common interface for latex rendering.
     """
+
     @property
     @abstractmethod
     def varformat(self):
+<<<<<<< HEAD
         """A formater string for rendering variable in tex. Must contains {name}"""
+=======
+        """Format string for rendering variable in tex. Must contains {name}."""
+        pass
+>>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
     def grammar(self):
-        """ Define the parser grammar.
-        """
+        """Define the parser grammar."""
         # Ignore TeX commands between delimiters $$, \(,  \)
         tex_eq = (Literal(r'\(') | Literal(r'$$') | Literal(r'\[')) + ... + (Literal(r'\)') | Literal(r'$$') | Literal(r'\]'))
 
@@ -189,8 +210,7 @@ class CalculatedParser(ABC):
         return equation, variable
 
     def render(self, s):
-        """ Render the input string s to the targeted latex output.
-        """
+        """Render the input string s to the targeted latex output."""
         # create the parser
         equation, variable = self.grammar()
         # parse and replace 'equation'
@@ -201,8 +221,10 @@ class CalculatedParser(ABC):
         return out2
 
     def _render_variable(self, variable, s):
-        """ Transform variable to the targeted LaTeX output. Since rendering
-        variable alone and in equation is different, need specific method.
+        """Transform variable to the targeted LaTeX output.
+
+        Since rendering variable alone and in equation is different,
+        need specific method.
         """
         vout = []
         # initial start value
@@ -218,18 +240,22 @@ class CalculatedParser(ABC):
 
     @staticmethod
     def variable_hook(tokens):
-        """ Change variable name for fp package.
-        """
+        """Change variable name for fp package."""
         # notpossible to use '_' in tex name
         out = tokens.name.replace('_', '')
+<<<<<<< HEAD
         if out.isalpha() == False:
             Logger.warning(f"  The variable '{out}' is not compatible with LaTeX naming convention. You will need to change this name in our tex file.")
         return "\\" + out +' '
+=======
+        if out.isalpha() is False:
+            Logger.warning("  The variable '{}' is not compatible with LaTeX naming convention. You will need to change this name in our tex file.".format(out))
+        return "\\" + out + ' '
+>>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
     @staticmethod
     def real_hook(tokens):
-        """ Convert real number to decimal notation and overflow checks.
-        """
+        """Convert real number to decimal notation and overflow checks."""
         # check for overflow
         x = float(tokens[0])
         if abs(x) > FP_MAX:
@@ -249,37 +275,47 @@ class CalculatedParser(ABC):
     @staticmethod
     @abstractmethod
     def atom_hook(tokens):
-        """ Render atmo. Usefull to change unary minus into neg(exp) at
-        atom level.
+        """Render atom.
+
+        Usefull to change unary minus into neg(exp) at atom level.
         """
 
     @staticmethod
     @abstractmethod
     def equation_hook(tokens):
+<<<<<<< HEAD
         """ Render 'equation' expression for the LaTeX target package.
         """
+=======
+        """Render 'equation' expression for the LaTeX target package."""
+        pass
+>>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
     @staticmethod
     @abstractmethod
     def function_hook(tokens):
+<<<<<<< HEAD
         """ Modify the moodle function API to conform to the LaTeX target
         package api.
         """
+=======
+        """Modify the moodle function API to conform to the LaTeX target package api."""
+        pass
+>>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
 
 
 class CalculatedParserToFP(CalculatedParser):
-    """ Define the class for parsing moodle calculted question into FP.
-
+    """Define the class for parsing moodle calculted question into FP.
 
     Normally only hooks have to be given.
     """
+
     # string to use for variable replacement in render
     varformat = '\\FPprint{{{name}}}'
 
     @staticmethod
     def atom_hook(tokens):
-        """ Change unary minus into neg(exp) at atom level.
-        """
+        """Change unary minus into neg(exp) at atom level."""
         # not possible to use '- expr' in tex with fp
         out = tokens.asList()
         if out[0] == '-':
@@ -289,8 +325,7 @@ class CalculatedParserToFP(CalculatedParser):
 
     @staticmethod
     def equation_hook(tokens):
-        """ Render 'equation' expression for FP package
-        """
+        """Render 'equation' expression for FP package."""
         out = []
         for tok in tokens:
             if isinstance(tok, ParseResults):
@@ -305,8 +340,7 @@ class CalculatedParserToFP(CalculatedParser):
 
     @staticmethod
     def function_hook(tokens):
-        """ Modify the moodle function API to conform to FP api.
-        """
+        """Modify the moodle function API to conform to FP api."""
         # to check : ceil; (floor 	Arrondit à l'entier inférieur ); (ceil 	Arrondit à l'entier supérieur )
         # possible with playing with trunc(#1:#2) or round()
         out = tokens.asList().copy()
@@ -339,13 +373,12 @@ class CalculatedParserToFP(CalculatedParser):
 
 
 class CalculatedParserFromFP(CalculatedParser):
-    """ Define the class for parsing LaTeXML/FP expression into moodle.
-
+    """Define the class for parsing LaTeXML/FP expression into moodle.
 
     Normally only hooks have to be given.
-
     Only equation are usefull here
     """
+
     # string to use for variable replacement in render
     varformat = '{name}'
 
@@ -354,8 +387,7 @@ class CalculatedParserFromFP(CalculatedParser):
         self.wildcards = set()
 
     def grammar(self):
-        """ Define the parser grammar for FP syntaxe. Modified from base class.
-        """
+        """Define the parser grammar for FP syntaxe. Modified from base class."""
         # Define elemtary stuff
         leftAc = Literal('{').suppress()
         rightAc = Literal('}').suppress()
@@ -376,7 +408,7 @@ class CalculatedParserFromFP(CalculatedParser):
         # Normally, no variable excepted random*, pi ...
         # may contain almost everything
         variable = Word(alphas, alphanums + "_")('name')
-        variable.setParseAction(lambda t : self.variable_hook(self.wildcards, t))
+        variable.setParseAction(lambda t: self.variable_hook(self.wildcards, t))
         # arithmetic operators
         minus = Literal('-')
         arithOp = oneOf("+ * /") | minus
@@ -395,8 +427,7 @@ class CalculatedParserFromFP(CalculatedParser):
         return equation, variable
 
     def render(self, s):
-        """ Render the input string s to the targeted moodle output.
-        """
+        """Render the input string s to the targeted moodle output."""
         # create the parser
         equation, variable = self.grammar()
         # parse and replace 'equation'
@@ -406,8 +437,7 @@ class CalculatedParserFromFP(CalculatedParser):
 
     @staticmethod
     def variable_hook(wildcards, tokens):
-        """ Change variable name for moodle interpreter.
-        """
+        """Change variable name for moodle interpreter."""
         out = tokens.asList()
         if out[0] == 'pi':
             # pi is a function in moodle
@@ -415,18 +445,21 @@ class CalculatedParserFromFP(CalculatedParser):
         else:
             # return the moodle variable format
             wildcards.add(out[0])
-            return '{' + out[0] +'}'
+            return '{' + out[0] + '}'
 
     @staticmethod
     def atom_hook(tokens):
+<<<<<<< HEAD
         """ Change unary minus into neg(exp) at atom level.
         """
+=======
+        """Change unary minus into neg(exp) at atom level."""
+>>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
         return tokens
 
     @staticmethod
     def equation_hook(tokens):
-        """ Render 'equation' expression for moodle interpreter.
-        """
+        """Render 'equation' expression for moodle interpreter."""
         out = []
         for tok in tokens:
             if isinstance(tok, ParseResults):
@@ -441,8 +474,7 @@ class CalculatedParserFromFP(CalculatedParser):
 
     @staticmethod
     def function_hook(tokens):
-        """ Modify the moodle function API to conform to FP api.
-        """
+        """Modify the moodle function API to conform to FP api."""
         # to check : ceil; (floor 	Arrondit à l'entier inférieur ); (ceil 	Arrondit à l'entier supérieur )
         # possible with playing with trunc(#1:#2) or round()
         out = tokens.asList().copy()
@@ -455,11 +487,11 @@ class CalculatedParserFromFP(CalculatedParser):
                 if abs(expo - 2) < 1e-12:
                     out[0] = 'sqrt'
                     out[1] = ['(', out[1][3], ')']
-            except :
+            except:
                 # use pow with 1/nth
                 out[0] = 'pow'
                 # take the inverse of the exponent
-                out[1][1] = ['1', '/', '(' , out[1][1] , ')']
+                out[1][1] = ['1', '/', '(', out[1][1], ')']
                 # need to swap arg order
                 out[1][1], out[1][3] = out[1][3], out[1][1]
         elif tokens.name == 'pow':
@@ -477,13 +509,15 @@ class CalculatedParserFromFP(CalculatedParser):
             out = tokens
         return out
 
+
 # dict of all available question
 PARSER_FACTORY = {'xml2fp': CalculatedParserToFP,
                   'fp2xml': CalculatedParserFromFP}
 
+
 def CreateCalculatedParser(ptype):
-    """ Factory function for creating the CalculatedParser* objects.
-    
+    """Create Factory function the CalculatedParser* objects.
+
     Parameters
     ----------
     ptype : string
@@ -494,27 +528,30 @@ def CreateCalculatedParser(ptype):
     Instance of concrete CalculatedParser* class.
 
     """
-
     try:
         return PARSER_FACTORY[ptype]()   # *args,**kwargs)
     except:
         raise KeyError(f" 'qtype' argument should be in {PARSER_FACTORY.keys()}" )
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     # Basic example of usage
     # moodle2amc
-    s= "<text><![CDATA[<p><b>Moodle</b> and <b>fp</b> latex package syntax is not always equivalent. Here some test for pathological cases.</p><p>Let {x} and {y} some real number.<br></p><ul><li>argument of 'pow' function are in a different order {=pow({x},2)}</li><li>the 'sqrt' function doesn't exist, need 'root(n, x)' in fp, {=sqrt(({x}-{y})*({x}+{y}))}</li><li>'pi' is a function in moodle, {=sin(1.5*pi())}</li><li>test with '- unary' expression {=-{x}+(-{y}+2)}<br></li></ul>]]></text>"
+    s = "<text><![CDATA[<p><b>Moodle</b> and <b>fp</b> latex package syntax is not always equivalent. Here some test for pathological cases.</p><p>Let {x} and {y} some real number.<br></p><ul><li>argument of 'pow' function are in a different order {=pow({x},2)}</li><li>the 'sqrt' function doesn't exist, need 'root(n, x)' in fp, {=sqrt(({x}-{y})*({x}+{y}))}</li><li>'pi' is a function in moodle, {=sin(1.5*pi())}</li><li>test with '- unary' expression {=-{x}+(-{y}+2)}<br></li></ul>]]></text>"
     parser = CreateCalculatedParser('xml2fp')
     out = parser.render(s)
     print('> moodle2amc:\n', out)
 
     # amc2moodle
-    #s= "fp{(sin(3) + clip((trunc(1+rand0*(10-1), 1))+(trunc(1+rand1*(10-1), 1))))}"
-    s= "blabla fp{ ( root(2, 3.0+1.0) + sin(pi+rand0) + arctan(rand1)) } blabla"
+    # s= "fp{(sin(3) + clip((trunc(1+rand0*(10-1), 1))+(trunc(1+rand1*(10-1), 1))))}"
+    s = "blabla fp{ ( root(2, 3.0+1.0) + sin(pi+rand0) + arctan(rand1)) } blabla"
     parser = CreateCalculatedParser('fp2xml')
     out = parser.render(s)
     print('> amc2moodle:\n', out)
 
     print('> wildcards set:', parser.wildcards)
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> dd2442e424dbeed24b02d38b283e505615036f76
