@@ -1,11 +1,14 @@
 name: 'Build amc2moodle container'
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Publish Python 🐍 distribution 📦 to PyPI and create a github release"]
+    types: [completed]
+  # push:
     # branches:
     #   - 'master'
-    tags:
-      - 'v*'
+    # tags:
+    #   - 'v*'
 
 
 jobs:
