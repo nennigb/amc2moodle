@@ -1,45 +1,21 @@
-name: Publish Python 🐍 distribution 📦 to PyPI and TestPyPI
+name: Publish Python 🐍 distribution 📦 to PyPI and create a github release
 
 on:
-  workflow_run:
-    workflows: [CI-mac-os,CI-Ubuntu]
-    types: [completed]
-  # push:
-  #   branches:
-  #     - 'main'
-  #   tags:
-  #     - 'v*'
-  
+  push:
+    tags:
+      - 'v*'
+
 jobs:
-  allowrun:
-    name: Check if the workflow can be ran
+  build:
+    name: Build distribution 📦
     runs-on: ubuntu-latest
-    outputs:
-      status: ${{ steps.info.outputs.status }}
-    steps:
-    - name: Check if head branch has version tag
+    steps:   
+    - name: Check if head branch has a valid version tag
       uses: actions-ecosystem/action-regex-match@v2
       id: regex-match
       with:
-        text: ${{ github.event.workflow_run.head_branch }}
-        regex: '^v[0-9]+'
-    - name: Show info
-      id: info
-      run: |
-        echo ${{ steps.regex-match.outputs.match }}
-        echo "status=${{(github.event.workflow_run.conclusion == 'success') && (steps.regex-match.outputs.match != '') }}" >> "$GITHUB_OUTPUT"
-  build:
-    name: Build distribution 📦
-    needs: allowrun
-    runs-on: ubuntu-latest
-    if: ${{ needs.allowrun.outputs.status == 'true' }}
-    steps:   
-    - name: Show event info
-      run: |
-        echo "value: ${{ needs.allowrun.outputs.status }}"
-        echo "Event info: ${{ toJson(github.event) }}"
-        echo "Workflow run info: ${{ toJson(github.event.workflow_run) }}"
-        echo "Workflow job info: ${{ github.event.workflow_run.head_branch }}"
+        text: ${{ github.ref_name }}
+        regex: '^v[0-9]+.[0-9]+.[0-9]+'  # should we add final letters like 'beta'
     - uses: actions/checkout@main
     - name: Set up Python
       uses: actions/setup-python@main
@@ -47,10 +23,22 @@ jobs:
         python-version: "3.12"
     - name: Install hatch
       run: >-
-        python3 -m
-        pip install
-        hatch
-        --user
+        python3 -m pip install hatch --user
+    - name: Compare the tag and the package version
+      env: 
+        MATCH: ${{ steps.regex-match.outputs.match }}
+      run: |
+        echo "trig on push with:" ${{ github.ref }}  # when trig on tag, contains the tag
+        echo "full branch name": ${{ github.ref_name }}
+        echo "package tag:" $(hatch version)
+        echo "matched git tag:" $MATCH
+        if [[ v$(hatch version) == $MATCH ]]; then   # In version.py no 'v' prefix
+          echo "tags are identical, continue..."
+          exit 0;
+        else 
+          echo "tags are different. Stop."
+          exit 1;
+        fi
     - name: Build a binary wheel and a source tarball
       run: hatch build    
     - name: Store the distribution packages
@@ -58,14 +46,51 @@ jobs:
       with:
         name: python-package-distributions
         path: dist/
- 
 
+  check-wheels:
+    name: Install and test from the wheels
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@main
+      with:
+        python-version: "3.12"
+    - name: Install the dependences
+      run: |
+        python -m pip install --upgrade pip
+        # install ubuntu package
+        sudo apt-get update
+        # need to add ghostscript explicitly (only 'recommanded' by imagemagick package)
+        # but 'libmagickwand-dev' is installed
+        sudo apt-get install ghostscript imagemagick
+        # move policy file
+        sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
+        # texlive-fonts-recommended (bophook in texlive-latex-extra) required by moodle2amc test
+        sudo apt-get install texlive-latex-recommended texlive-pictures texlive-fonts-recommended texlive-latex-extra
+        # add libtext-unidecode-perl to fix bug in deb package : https://github.com/brucemiller/LaTeXML/issues/1022
+        sudo apt-get install libtext-unidecode-perl
+        sudo apt-get install latexml
+        sudo apt-get install xmlindent        
+    - name: Download all the wheel
+      uses: actions/download-artifact@main
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Install the wheel
+      run: |
+        ls -lrt
+        pip install pytest
+        pip install dist/amc2moodle*.whl    
+    - name: Test the install from wheel
+      run: pytest --pyargs amc2moodle
+ 
   github-release:
     name: >-
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
     needs:
-    - build
+    - check-wheels
     runs-on: ubuntu-latest
 
     permissions:
@@ -98,13 +123,12 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
       run: >-
         gh release create        
-        '${{ github.event.workflow_run.head_branch }}'
+        '${{ github.ref_name }}'
         --repo '${{ github.repository }}'
         --generate-notes
-        --title 'amc2moodle ${{ github.event.workflow_run.head_branch }}'
+        --title 'amc2moodle ${{ github.ref_name }}'
 
         ## '${{ github.ref_name }}'
-
 
     - name: Upload artifact signatures to GitHub Release
       env:
@@ -114,38 +138,38 @@ jobs:
       # sigstore-produced signatures and certificates.
       run: >-
         gh release upload
-        '${{ github.event.workflow_run.head_branch }}' dist/**
+        '${{ github.ref_name }}' dist/**
         --repo '${{ github.repository }}'
 
-  publish-to-testpypi:
-    name: Publish Python 🐍 distribution 📦 to TestPyPI
-    needs:
-    - build
-    runs-on: ubuntu-latest
+  # publish-to-testpypi:
+  #   name: Publish Python 🐍 distribution 📦 to TestPyPI
+  #   needs:
+  #   - build
+  #   runs-on: ubuntu-latest
 
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/p/amc2moodle
+  #   environment:
+  #     name: testpypi
+  #     url: https://test.pypi.org/p/amc2moodle
 
-    permissions:
-      id-token: write  # IMPORTANT: mandatory for trusted publishing
+  #   permissions:
+  #     id-token: write  # IMPORTANT: mandatory for trusted publishing
 
-    steps:
-    - name: Download all the dists
-      uses: actions/download-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
-    - name: Publish distribution 📦 to TestPyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
+  #   steps:
+  #   - name: Download all the dists
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       name: python-package-distributions
+  #       path: dist/
+  #   - name: Publish distribution 📦 to TestPyPI
+  #     uses: pypa/gh-action-pypi-publish@release/v1
+  #     with:
+  #       repository-url: https://test.pypi.org/legacy/
 
   publish-to-pypi:
     name: >-
       Publish Python 🐍 distribution 📦 to PyPI
-    needs:
-    - publish-to-testpypi
+    # needs:
+    # - publish-to-testpypi
     runs-on: ubuntu-latest
     environment:
       name: pypi
