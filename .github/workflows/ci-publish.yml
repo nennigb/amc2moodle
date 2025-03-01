@@ -1,0 +1,187 @@
+name: Publish Python 🐍 distribution 📦 to PyPI and create a github release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build distribution 📦
+    runs-on: ubuntu-latest
+    steps:   
+    - name: Check if head branch has a valid version tag
+      uses: actions-ecosystem/action-regex-match@v2
+      id: regex-match
+      with:
+        text: ${{ github.ref_name }}
+        regex: '^v[0-9]+.[0-9]+.[0-9]+'  # should we add final letters like 'beta'
+    - uses: actions/checkout@main
+    - name: Set up Python
+      uses: actions/setup-python@main
+      with:
+        python-version: "3.12"
+    - name: Install hatch
+      run: >-
+        python3 -m pip install hatch --user
+    - name: Compare the tag and the package version
+      env: 
+        MATCH: ${{ steps.regex-match.outputs.match }}
+      run: |
+        echo "trig on push with:" ${{ github.ref }}  # when trig on tag, contains the tag
+        echo "full branch name": ${{ github.ref_name }}
+        echo "package tag:" $(hatch version)
+        echo "matched git tag:" $MATCH
+        if [[ v$(hatch version) == $MATCH ]]; then   # In version.py no 'v' prefix
+          echo "tags are identical, continue..."
+          exit 0;
+        else 
+          echo "tags are different. Stop."
+          exit 1;
+        fi
+    - name: Build a binary wheel and a source tarball
+      run: hatch build    
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@main
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  check-wheels:
+    name: Install and test from the wheels
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@main
+      with:
+        python-version: "3.12"
+    - name: Install the dependences
+      run: |
+        python -m pip install --upgrade pip
+        # install ubuntu package
+        sudo apt-get update
+        # need to add ghostscript explicitly (only 'recommanded' by imagemagick package)
+        # but 'libmagickwand-dev' is installed
+        sudo apt-get install ghostscript imagemagick
+        # move policy file
+        sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
+        # texlive-fonts-recommended (bophook in texlive-latex-extra) required by moodle2amc test
+        sudo apt-get install texlive-latex-recommended texlive-pictures texlive-fonts-recommended texlive-latex-extra
+        # add libtext-unidecode-perl to fix bug in deb package : https://github.com/brucemiller/LaTeXML/issues/1022
+        sudo apt-get install libtext-unidecode-perl
+        sudo apt-get install latexml
+        sudo apt-get install xmlindent        
+    - name: Download all the wheel
+      uses: actions/download-artifact@main
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Install the wheel
+      run: |
+        ls -lrt
+        pip install pytest
+        pip install dist/amc2moodle*.whl    
+    - name: Test the install from wheel
+      run: pytest --pyargs amc2moodle
+ 
+  github-release:
+    name: >-
+      Sign the Python 🐍 distribution 📦 with Sigstore
+      and upload them to GitHub Release
+    needs:
+    - check-wheels
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@main
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v3.0.0
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+    # - name: Release
+    #   uses: softprops/action-gh-release@master
+    #   if: startsWith(github.ref, 'refs/tags/')
+    #   with:
+    #     name: amc2moodle release ${{ github.event.release.tag_name }}
+    #     prerelease: false
+    #     files: dist/*
+    #   env:
+    #      GITHUB_TOKEN: ${{ github.token }}
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: >-
+        gh release create        
+        '${{ github.ref_name }}'
+        --repo '${{ github.repository }}'
+        --generate-notes
+        --title 'amc2moodle ${{ github.ref_name }}'
+
+        ## '${{ github.ref_name }}'
+
+    - name: Upload artifact signatures to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      # Upload to GitHub Release using the `gh` CLI.
+      # `dist/` contains the built packages, and the
+      # sigstore-produced signatures and certificates.
+      run: >-
+        gh release upload
+        '${{ github.ref_name }}' dist/**
+        --repo '${{ github.repository }}'
+
+  # publish-to-testpypi:
+  #   name: Publish Python 🐍 distribution 📦 to TestPyPI
+  #   needs:
+  #   - build
+  #   runs-on: ubuntu-latest
+
+  #   environment:
+  #     name: testpypi
+  #     url: https://test.pypi.org/p/amc2moodle
+
+  #   permissions:
+  #     id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+  #   steps:
+  #   - name: Download all the dists
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       name: python-package-distributions
+  #       path: dist/
+  #   - name: Publish distribution 📦 to TestPyPI
+  #     uses: pypa/gh-action-pypi-publish@release/v1
+  #     with:
+  #       repository-url: https://test.pypi.org/legacy/
+
+  publish-to-pypi:
+    name: >-
+      Publish Python 🐍 distribution 📦 to PyPI
+    # needs:
+    # - publish-to-testpypi
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/amc2moodle  # Replace <package-name> with your PyPI project name
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
