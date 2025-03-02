@@ -168,8 +168,8 @@ jobs:
   publish-to-pypi:
     name: >-
       Publish Python 🐍 distribution 📦 to PyPI
-    # needs:
-    # - publish-to-testpypi
+    needs:
+    - check-wheels
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -185,3 +185,4 @@ jobs:
         path: dist/
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
+
