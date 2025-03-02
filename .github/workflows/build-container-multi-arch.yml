@@ -36,7 +36,7 @@ jobs:
           # relative path to the place where source code with Dockerfile is located
           platforms: linux/amd64,linux/arm64, linux/arm/v7
           context: ./docker
-          tags: ghcr.io/${{ github.repository_owner }}/amc2moodle:${{ steps.docker-tag.outputs.tag }},ghcr.io/${{ github.repository_owner }}/amc2moodle:latest
+          tags: ghcr.io/${{ github.repository_owner }}/amc2moodle:test
           push: false
           cache-from: type=gha
           cache-to: type=gha
