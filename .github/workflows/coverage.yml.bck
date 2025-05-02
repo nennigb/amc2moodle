@@ -1,0 +1,37 @@
+name: Coverage
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.13'
+            cache: 'pip'
+      - name: Install package with optional dependencies
+        run: |
+          pip install .[test]
+      - name: Test with hatch-test/pytest
+        run: |
+          hatch test
+          hatch run coverage xml
+
+      - name: Creating coverage folder
+        run: |
+          mkdir -p coverage
+      - name: Coverage Bagdge
+        uses: tj-actions/coverage-badge-py@v2
+        with:
+          output: coverage/coverage.svg
+      - name: Publish coverage report to coverage-badge branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: coverage-badge
+          folder: coverage

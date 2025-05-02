@@ -52,10 +52,18 @@ default-args = ["amc2moodle/tests"]
 
 [tool.coverage.run]
 branch = true
-command_line = "-m unittest discover -s amc2moodle/tests/"
+command_line = "-m pytest -s amc2moodle/tests/"
 
 [tool.coverage.html]
-directory = "coverage_html_report"
+show_contexts = true
+directory = "reportcov"
+
+[tool.coverage.xml]
+output = "reportcov/report.xml"
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
 
 [tool.ruff]
 # Allow lines to be as long as 120.
