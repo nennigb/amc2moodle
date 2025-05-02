@@ -40,7 +40,8 @@ jobs:
           python -m pip install --upgrade pip
 
           # Install requirements for lateXML 
-          brew update   
+          brew update
+          brew install ghostscript
           brew install imagemagick
           brew install --cask basictex
           brew install latexml
