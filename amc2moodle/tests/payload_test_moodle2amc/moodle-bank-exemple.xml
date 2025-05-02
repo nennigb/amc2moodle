@@ -314,7 +314,7 @@ In html, it is generally recommanded to use &lt;code&gt; is an inline tag and &l
       <text>num:float</text>
     </name>
     <questiontext format="html">
-      <text><![CDATA[<p>Give an approximated value for \(\pi\) up to 3 digits?</p>]]></text>
+      <text><![CDATA[<p>Give an approximated value for \(\pi\) up to 3 digits? The error is then \(0.05%\).</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
       <text></text>
