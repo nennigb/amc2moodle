@@ -20,7 +20,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@main
       with:
-        python-version: "3.12"
+        python-version: "3.14"
     - name: Install hatch
       run: >-
         python3 -m pip install hatch --user
