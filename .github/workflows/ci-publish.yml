@@ -65,7 +65,8 @@ jobs:
         # but 'libmagickwand-dev' is installed
         sudo apt-get install ghostscript imagemagick
         # move policy file
-        sudo mv /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.off
+        IM_POLICY_FILE=$(ls /etc/ImageMagick-*/policy.xml)
+        sudo mv "$IM_POLICY_FILE" "$IM_POLICY_FILE".off
         # texlive-fonts-recommended (bophook in texlive-latex-extra) required by moodle2amc test
         sudo apt-get install texlive-latex-recommended texlive-pictures texlive-fonts-recommended texlive-latex-extra
         # add libtext-unidecode-perl to fix bug in deb package : https://github.com/brucemiller/LaTeXML/issues/1022
